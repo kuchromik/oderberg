@@ -2,7 +2,7 @@
     import {app} from "../firebase.js";
     import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
     const storage = getStorage(app);
-    const listRef = ref(storage, 'images');
+    const listRef = ref(storage, 'berlinerStrasse');
 
     
     let promise = imageload();
