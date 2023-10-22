@@ -2,7 +2,7 @@
     import { db } from "../../firebase";
     import { authHandlers, authStore } from "../../store/store";
     // @ts-ignore
-    import { getDoc, doc, setDoc } from "@firebase/firestore";
+    import { getDoc, doc, setDoc, updateDoc } from "@firebase/firestore";
     import TodoItem from "$lib/TodoItem.svelte";
     
 
@@ -27,7 +27,7 @@
         try {
             // @ts-ignore
             const userRef = doc(db, "users", $authStore.user.uid);
-            await setDoc(
+            await updateDoc(
                 userRef,
                 {
                     // @ts-ignore
