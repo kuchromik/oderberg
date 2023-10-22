@@ -4,19 +4,43 @@
     // @ts-ignore
     import { getDoc, doc, setDoc } from "@firebase/firestore";
     import TodoItem from "$lib/TodoItem.svelte";
-    // @ts-ignore
-    import { enhance } from '$app/forms';
+    
 
     // @ts-ignore
     let todoList = [];
     let currTodo = "";
     let error = false;
+    let pseudo = "";
+    let pseudoinput = "";
 
     authStore.subscribe((curr) => {
         // @ts-ignore
         todoList = curr.data.todos;
-        console.log(curr)
+        pseudo = curr.data.pseudo;
     });
+
+    async function addPseudonym() {
+    
+        // @ts-ignore
+        pseudo = pseudoinput;
+
+        try {
+            // @ts-ignore
+            const userRef = doc(db, "users", $authStore.user.uid);
+            await setDoc(
+                userRef,
+                {
+                    // @ts-ignore
+                    todos: todoList,
+                    pseudo: pseudo
+                }
+            );
+        } catch (err) {
+            console.log("Fehler beim speichern von pseudo");
+        }
+
+        pseudoinput = "";
+    }
 
     function addTodo() {
         error = false;
@@ -76,7 +100,16 @@
   
 </script>
 <center>
-<h1>Eingeloggt!</h1>
+{#if pseudo}
+<h3>Willkommen {pseudo}</h3>
+{:else}
+<h3>Willkommen</h3>
+<h3>Welchen Namen möchten Sie hier verwenden?</h3>
+<div>
+    <input bind:value={pseudoinput} type="text" placeholder="Pseudonym" />
+    <button on:click={addPseudonym}>Speichern</button>
+</div>
+{/if}
 </center>
 {#if !$authStore.loading}
     <div class="mainContainer">
