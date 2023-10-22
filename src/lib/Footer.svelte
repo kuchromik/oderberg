@@ -1,0 +1,1 @@
+<center>Copyright 2023 Kai-Uwe Chromik</center>

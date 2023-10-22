@@ -14,6 +14,17 @@
   -webkit-text-size-adjust: 100%;
 }
 
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  transition-duration: 200ms;
+}
+
+html {
+  font-family: 'Poppins', sans-serif;
+}
+
 a {
   font-weight: 500;
   color: #646cff;

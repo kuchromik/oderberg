@@ -6,8 +6,10 @@ import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 const storage = getStorage(app);
 
-
-let  avatar, imageChoosen, fileinput, image, filename;
+let imageChoosen = false;
+let fileinput = "";
+let filename = "";
+let  avatar, image;
 	
 const onFileSelected =(e)=>{
             filename = e.target.files[0].name
@@ -15,7 +17,7 @@ const onFileSelected =(e)=>{
             let reader = new FileReader();
             reader.readAsDataURL(image);
             reader.onload = e => {
-                 avatar = e.target.result
+            avatar = e.target.result
             };
             imageChoosen = true;
         }

@@ -1,19 +1,20 @@
 <script>
   import ShowImages from "$lib/ShowImages.svelte";
   import Upload from "$lib/Upload.svelte";
+  import Authenticate from "$lib/Authenticate.svelte";
   
 
 </script>
 
 <main>
   <center>
-    <h1>Imageupload to Firbase Storage</h1>
+    <h1>Willkommen im alten Oderberg</h1>
   </center>
   <div>
-    <Upload />
+    <Authenticate/>
   </div>
   <div>
-    <ShowImages />
+    
   </div>
  
 </main>
