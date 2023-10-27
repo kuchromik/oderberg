@@ -16,6 +16,7 @@
     authStore.subscribe((curr) => {
         // @ts-ignore
         todoList = curr.data.todos;
+        console.log(curr.data);
         pseudo = curr.data.pseudo;
     });
 
@@ -102,7 +103,7 @@
 <center>
 {#if pseudo}
 <h3>Willkommen {pseudo}</h3>
-{:else}
+{:else if !$authStore.loading}
 <h3>Willkommen</h3>
 <h3>Welchen Namen möchten Sie hier verwenden?</h3>
 <div>
@@ -114,11 +115,11 @@
 {#if !$authStore.loading}
     <div class="mainContainer">
         <div class="headerContainer">
-            <h1>Todo List</h1>
+            <h1>Meine Merkliste</h1>
             <div class="headerBtns">
                 <button on:click={saveTodos}>
                     <i class="fa-regular fa-floppy-disk" />
-                    <p>Save</p></button
+                    <p>Liste speichern</p></button
                 >
                 <button on:click={authHandlers.logout}>
                     <i class="fa-solid fa-right-from-bracket" />
@@ -128,15 +129,15 @@
         </div>
         <main>
             {#if todoList.length === 0}
-                <p>You have nothing to do!</p>
+                <p>Es ist nichts vermerkt</p>
             {/if}
             {#each todoList as todo, index}
                 <TodoItem {todo} {index} {removeTodo} {editTodo} />
             {/each}
         </main>
         <div class={"enterTodo " + (error ? "errorBorder" : "")}>
-            <input bind:value={currTodo} type="text" placeholder="Enter todo" />
-            <button on:click={addTodo}>ADD</button>
+            <input bind:value={currTodo} type="text" placeholder="weiteren Vermerk eingeben" />
+            <button on:click={addTodo}>In Liste eintragen</button>
         </div>
     </div>
 {/if}
@@ -144,7 +145,6 @@
     .mainContainer {
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
         gap: 24px;
         padding: 24px;
         width: 100%;
@@ -185,12 +185,6 @@
         opacity: 0.7;
     }
 
-    main {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        flex: 1;
-    }
 
     .enterTodo {
         display: flex;

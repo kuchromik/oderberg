@@ -38,31 +38,31 @@
 
 <div class="authContainer">
     <form>
-        <h1>{register ? "Register" : "Login"}</h1>
+        <h3>{register ? "Registrieren" : "Login"}</h3>
         {#if error}
-            <p class="error">The information you have entered is not correct</p>
+            <p class="error">Die Zugangsdaten sind nicht korrekt</p>
         {/if}
         <label>
-            <p class={email ? " above" : " center"}>Email</p>
-            <input bind:value={email} type="email" placeholder="Email" />
+            <p class={email ? " above" : " center"}>E-Mail</p>
+            <input bind:value={email} type="email" placeholder="E-Mail" />
         </label>
         <label>
-            <p class={password ? " above" : " center"}>Password</p>
+            <p class={password ? " above" : " center"}>Passwort</p>
             <input
                 bind:value={password}
                 type="password"
-                placeholder="Password"
+                placeholder="Passwort"
             />
         </label>
         {#if register}
             <label>
                 <p class={confirmPass ? " above" : " center"}>
-                    Confirm Password
+                    Passwort bestätigen
                 </p>
                 <input
                     bind:value={confirmPass}
                     type="password"
-                    placeholder="Confirm Password"
+                    placeholder="Passwort bestätigen"
                 />
             </label>
         {/if}
@@ -71,21 +71,21 @@
             {#if authenticating}
                 <i class="fa-solid fa-spinner loadingSpinner" />
             {:else}
-                Submit
+                Absenden
             {/if}
         </button>
     </form>
     <div class="options">
-        <p>Or</p>
+        <p>Oder</p>
         {#if register}
             <div>
-                <p>Already have an account?</p>
+                <p>Sie haben bereits Zugangsdaten?</p>
                 <p on:click={handleRegister} on:keydown={() => {}}>Login</p>
             </div>
         {:else}
             <div>
-                <p>Don't have an account?</p>
-                <p on:click={handleRegister} on:keydown={() => {}}>Register</p>
+                <p>Sie haben noch keine Zugangsdaten?</p>
+                <p on:click={handleRegister} on:keydown={() => {}}>Registrieren</p>
             </div>
         {/if}
     </div>
@@ -118,9 +118,8 @@
         width: 100%;
     }
 
-    h1 {
+    h3 {
         text-align: center;
-        font-size: 3rem;
     }
 
     form label {
@@ -237,7 +236,7 @@
     }
 
     .options div p:last-of-type {
-        color: cyan;
+        color: cornflowerblue;
         cursor: pointer;
     }
 

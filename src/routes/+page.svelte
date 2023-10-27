@@ -7,15 +7,8 @@
 </script>
 
 <main>
-  <center>
-    <h1>Willkommen im alten Oderberg</h1>
-  </center>
-  <div>
+  
     <Authenticate/>
-  </div>
-  <div>
-    
-  </div>
  
 </main>
 
