@@ -22,7 +22,13 @@
             if (!register) {
                 await authHandlers.login(email, password);
             } else {
+                if (password === confirmPass) {
                 await authHandlers.signup(email, password);
+                } else {
+                    error = true;
+                    authenticating = false;
+                    }
+
             }
         } catch (err) {
             console.log("There was an auth error", err);
@@ -40,7 +46,7 @@
     <form>
         <h3>{register ? "Registrieren" : "Login"}</h3>
         {#if error}
-            <p class="error">Die Zugangsdaten sind nicht korrekt</p>
+            <p class="error">Da stimmt etwas nicht</p>
         {/if}
         <label>
             <p class={email ? " above" : " center"}>E-Mail</p>

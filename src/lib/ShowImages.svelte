@@ -2,7 +2,7 @@
     import {app} from "../firebase.js";
     import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
     const storage = getStorage(app);
-    const listRef = ref(storage, 'oderberg/berlinerStrasse');
+    const listRef = ref(storage, '');
 
     
     let promise = imageload();
@@ -30,8 +30,8 @@
 	    <center><p>...waiting</p></center>
         {:then urlList}
         {#each urlList as url}
-        <div>
-          <center><img src = "{url}" alt="Image from Firebase" style="width:500px"></center>
+        <div class="images">
+          <img src = "{url}" alt="Image from Firebase">
           <br>
         </div>
         {/each}
@@ -41,5 +41,15 @@
       </div>
 </div>
 <style>
-
+.images {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	
+}
+.images img {
+    max-width: 80vw;
+}
 </style>

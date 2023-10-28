@@ -29,6 +29,7 @@ const onUploadOrder =()=> {
             console.log('Uploaded a blob or file!');
             imageChoosen = false;
             avatar = false;
+            window.location.href = "/dashboard";
             });
 }
 
@@ -45,27 +46,45 @@ const onUploadOrder =()=> {
         <img class="avatar" src="https://fakeimg.pl/240x150/cccccc/909090?text=Vorschau" alt="" /> 
         {/if}
         {#if imageChoosen}
-        <button on:click={onUploadOrder}>Bild hochladen</button>
+        <button class="pulsierend" on:click={onUploadOrder}>ausgewähltes Bild hochladen</button>
         {:else}
-		<img class="upload" src="https://static.thenounproject.com/png/625182-200.png" alt="" on:click={()=>{fileinput.click();}} />
+		<img class="chooseImage pulsierend" src="upload.png" alt="" on:click={()=>{fileinput.click();}} />
         <div class="chan">Bildauswahl</div>
         <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
         {/if}
 </div>
 <style>
 	#app{
-	display:flex;
+	    display:flex;
 		align-items:center;
 		justify-content:center;
 		flex-flow:column;
 }
  
-	.upload{
+	.chooseImage{
 		display:flex;
-	height:50px;
-		width:50px;
+	    height:50px;
 		cursor:pointer;
-	}
+    }
+    
+    .pulsierend {
+	    animation: pulse 2s infinite;
+    }
+
+        @keyframes pulse {
+	    0% {
+		    transform: scale(0.7);
+	        }
+
+	    70% {
+		    transform: scale(1);
+	        }
+
+	    100% {
+		    transform: scale(0.7);
+	        }
+	    }
+    
 	.avatar{
 		display:flex;
 		height:150px;

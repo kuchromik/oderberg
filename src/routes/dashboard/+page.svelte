@@ -3,21 +3,20 @@
     import { authHandlers, authStore } from "../../store/store";
     // @ts-ignore
     import { getDoc, doc, setDoc, updateDoc } from "@firebase/firestore";
-    import TodoItem from "$lib/TodoItem.svelte";
+    import Merkliste from "$lib/Merkliste.svelte";
+    import ShowImages from "$lib/ShowImages.svelte";
+    import Upload from "$lib/Upload.svelte";
     
 
     // @ts-ignore
     let todoList = [];
-    let currTodo = "";
-    let error = false;
+    
     let pseudo = "";
     let pseudoinput = "";
-    let hideSaveButton = true;
 
     authStore.subscribe((curr) => {
         // @ts-ignore
         todoList = curr.data.todos;
-        console.log(curr.data);
         pseudo = curr.data.pseudo;
     });
 
@@ -38,65 +37,12 @@
                 }
             );
         } catch (err) {
-            console.log("Fehler beim speichern von pseudo");
+            console.log("Fehler beim speichern des Pseudonyms");
         }
 
         pseudoinput = "";
     }
 
-    function addTodo() {
-        error = false;
-        if (!currTodo) {
-            return
-        }
-        // @ts-ignore
-        todoList = [...todoList, currTodo];
-        currTodo = "";
-        hideSaveButton = false;
-    }
-
-    // @ts-ignore
-    function editTodo(index) {
-        // @ts-ignore
-        let newTodoList = [...todoList].filter((val, i) => {
-            console.log(i, index, i !== index);
-            return i != index;
-        });
-        // @ts-ignore
-        currTodo = todoList[index];
-        todoList = newTodoList;
-        hideSaveButton = false;
-    }
-
-    // @ts-ignore
-    function removeTodo(index) {
-        // @ts-ignore
-        let newTodoList = [...todoList].filter((val, i) => {
-            console.log(i, index, i !== index);
-            return i != index;
-        });
-        todoList = newTodoList;
-        hideSaveButton = false;
-    }
-
-    async function saveTodos() {
-        try {
-            // @ts-ignore
-            const userRef = doc(db, "users", $authStore.user.uid);
-            await setDoc(
-                userRef,
-                {
-                    // @ts-ignore
-                    todos: todoList,
-                },
-                { merge: true }
-            );
-            hideSaveButton = true;
-        } catch (err) {
-            console.log("There was an error saving your information");
-            hideSaveButton = true;
-        }
-    }
 // showimages
 
 	/** @type {import('./$types').PageData} */
@@ -106,46 +52,34 @@
   let urlArray = Object.values(data);
   
 </script>
-<center>
-{#if pseudo}
-<h3>Willkommen {pseudo}</h3>
+<div class="mainContainer">
+    <div class="headerContainer">
+        {#if pseudo}
+        <h2>Hallo {pseudo}</h2>
+        <div class="headerBtns">
+        <button on:click={authHandlers.logout}>
+        <i class="fa-solid fa-right-from-bracket" />
+        <p>Logout</p></button>
+        </div>
+    
 {:else if !$authStore.loading}
-<h3>Willkommen</h3>
-<h3>Welchen Namen möchten Sie hier verwenden?</h3>
-<div>
-    <input bind:value={pseudoinput} type="text" placeholder="Pseudonym" />
-    <button on:click={addPseudonym}>Speichern</button>
+<div class="headerContainer2">
+    <h3>Willkommen</h3>
+    <h4>Welchen Namen möchten Sie hier verwenden?</h4>
+    <div class="headerBtns">
+        <input bind:value={pseudoinput} type="text" placeholder="Pseudonym" />
+        <button on:click={addPseudonym}>Speichern</button>
+    </div>
 </div>
 {/if}
-</center>
-{#if !$authStore.loading}
-    <div class="mainContainer">
-        <div class="headerContainer">
-            <h1>Meine Merkliste</h1>
-            <div class="headerBtns">
-                <button class="blob" class:hideSaveButton disabled='{hideSaveButton}' on:click={saveTodos}>
-                    <i class="fa-regular fa-floppy-disk" />
-                    <p>Liste speichern</p></button
-                >
-                <button on:click={authHandlers.logout}>
-                    <i class="fa-solid fa-right-from-bracket" />
-                    <p>Logout</p></button
-                >
-            </div>
-        </div>
-        <main>
-            {#if todoList.length === 0}
-                <p>Es ist nichts vermerkt</p>
-            {/if}
-            {#each todoList as todo, index}
-                <TodoItem {todo} {index} {removeTodo} {editTodo} />
-            {/each}
-        </main>
-        <div class={"enterTodo " + (error ? "errorBorder" : "")}>
-            <input bind:value={currTodo} type="text" placeholder="weiteren Vermerk eingeben" />
-            <button on:click={addTodo}>In Liste eintragen</button>
-        </div>
-    </div>
+</div>
+</div>
+{#if pseudo}
+<Upload />
+<br>
+<ShowImages />
+<br>
+<Merkliste />
 {/if}
 <style>
     .mainContainer {
@@ -162,6 +96,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .headerContainer2 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        margin: auto;
     }
 
     .headerBtns {
@@ -189,71 +132,5 @@
 
     .headerContainer button:hover {
         opacity: 0.7;
-    }
-
-
-    .enterTodo {
-        display: flex;
-        align-items: stretch;
-        border: 1px solid #0891b2;
-        border-radius: 5px;
-        overflow: hidden;
-    }
-
-    .errorBorder {
-        border-color: coral !important;
-    }
-
-    .enterTodo input {
-        background: transparent;
-        border: none;
-        padding: 14px;
-        color: white;
-        flex: 1;
-    }
-
-    .enterTodo input:focus {
-        outline: none;
-    }
-
-    .enterTodo button {
-        padding: 0 28px;
-        background: #003c5b;
-        border: none;
-        color: cyan;
-        font-weight: 600;
-        cursor: pointer;
-    }
-
-    .enterTodo button:hover {
-        background: transparent;
-    }
-
-    .hideSaveButton {
-        visibility: hidden;
-    }
-
-    .blob {
-
-	box-shadow: 0 0 0 0 rgba(255, 255, 255, 1);
-	transform: scale(1);
-	animation: pulse 2s infinite;
-}
-
-    @keyframes pulse {
-	0% {
-		transform: scale(0.95);
-		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
-	    }
-
-	70% {
-		transform: scale(1);
-		box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
-	    }
-
-	100% {
-		transform: scale(0.95);
-		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
-	    }
     }
 </style>
