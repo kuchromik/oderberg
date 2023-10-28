@@ -12,6 +12,7 @@
     let error = false;
     let pseudo = "";
     let pseudoinput = "";
+    let hideSaveButton = true;
 
     authStore.subscribe((curr) => {
         // @ts-ignore
@@ -51,6 +52,7 @@
         // @ts-ignore
         todoList = [...todoList, currTodo];
         currTodo = "";
+        hideSaveButton = false;
     }
 
     // @ts-ignore
@@ -63,6 +65,7 @@
         // @ts-ignore
         currTodo = todoList[index];
         todoList = newTodoList;
+        hideSaveButton = false;
     }
 
     // @ts-ignore
@@ -73,6 +76,7 @@
             return i != index;
         });
         todoList = newTodoList;
+        hideSaveButton = false;
     }
 
     async function saveTodos() {
@@ -87,8 +91,10 @@
                 },
                 { merge: true }
             );
+            hideSaveButton = true;
         } catch (err) {
             console.log("There was an error saving your information");
+            hideSaveButton = true;
         }
     }
 // showimages
@@ -117,7 +123,7 @@
         <div class="headerContainer">
             <h1>Meine Merkliste</h1>
             <div class="headerBtns">
-                <button on:click={saveTodos}>
+                <button class="blob" class:hideSaveButton disabled='{hideSaveButton}' on:click={saveTodos}>
                     <i class="fa-regular fa-floppy-disk" />
                     <p>Liste speichern</p></button
                 >
@@ -221,5 +227,33 @@
 
     .enterTodo button:hover {
         background: transparent;
+    }
+
+    .hideSaveButton {
+        visibility: hidden;
+    }
+
+    .blob {
+
+	box-shadow: 0 0 0 0 rgba(255, 255, 255, 1);
+	transform: scale(1);
+	animation: pulse 2s infinite;
+}
+
+    @keyframes pulse {
+	0% {
+		transform: scale(0.95);
+		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+	    }
+
+	70% {
+		transform: scale(1);
+		box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+	    }
+
+	100% {
+		transform: scale(0.95);
+		box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+	    }
     }
 </style>
