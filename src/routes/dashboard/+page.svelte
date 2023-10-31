@@ -88,14 +88,15 @@
         gap: 24px;
         padding: 24px;
         width: 100%;
-        max-width: 1000px;
+        max-width: 1280px;
         margin: 0 auto;
     }
 
     .headerContainer {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
+        gap: 1rem;
     }
 
     .headerContainer2 {
