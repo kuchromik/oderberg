@@ -52,28 +52,25 @@
   let urlArray = Object.values(data);
   
 </script>
-<div class="mainContainer">
-    <div class="headerContainer">
+<div class="headerContainer">
         {#if pseudo}
-        <h2>Hallo {pseudo}</h2>
-        <div class="headerBtns">
+        <h3>Hallo {pseudo}</h3>
         <button on:click={authHandlers.logout}>
         <i class="fa-solid fa-right-from-bracket" />
         <p>Logout</p></button>
-        </div>
-    
-{:else if !$authStore.loading}
-<div class="headerContainer2">
-    <h3>Willkommen</h3>
-    <h4>Welchen Namen möchten Sie hier verwenden?</h4>
-    <div class="headerBtns">
+        {:else if !$authStore.loading}
+        <h3>Willkommen</h3>
+        <h4>Welchen Namen möchtest Du hier verwenden?</h4>
+        <form>
+        <label>
+        <p class={pseudoinput ? " above" : " center"}>Pseudonym</p>
         <input bind:value={pseudoinput} type="text" placeholder="Pseudonym" />
+        </label>
         <button on:click={addPseudonym}>Speichern</button>
-    </div>
+        </form>
+        {/if}
 </div>
-{/if}
-</div>
-</div>
+
 {#if pseudo}
 <Upload />
 <br>
@@ -82,56 +79,85 @@
 <Merkliste />
 {/if}
 <style>
-    .mainContainer {
+
+form {
         display: flex;
         flex-direction: column;
-        gap: 24px;
-        padding: 24px;
-        width: 100%;
-        max-width: 1280px;
-        margin: 0 auto;
-    }
-
-    .headerContainer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
         gap: 1rem;
     }
 
-    .headerContainer2 {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-        margin: auto;
+
+    form input {
+        width: 100%;
     }
 
-    .headerBtns {
-        display: flex;
-        align-items: center;
-        gap: 14px;
+
+    form label {
+        position: relative;
+        border: 1px solid black;
+        border-radius: 5px;
     }
 
-    .headerContainer button {
-        background: #003c5b;
-        color: white;
-        padding: 10px 18px;
+    form input {
         border: none;
-        border-radius: 4px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        background: white;
+        color: black;
+        padding: 14px;
+    }
+
+    form input:focus {
+        border: none;
+        outline: none;
+    }
+
+    form label:focus-within {
+        border-color: black;
+    }
+
+    form button {
+        background: grey;
+        color: white;
+        border: none;
+        padding: 14px 0;
+        border-radius: 5px;
         cursor: pointer;
+        font-size: 1rem;
+        display: grid;
+        place-items: center;
     }
 
-    .headerContainer button i {
-        font-size: 1.1rem;
+    form button:hover {
+        background: black;
     }
 
-    .headerContainer button:hover {
-        opacity: 0.7;
+     .above,
+    .center {
+        position: absolute;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: white;
+        border-radius: 4px;
+        padding: 0 6px;
+        font-size: 0.8rem;
     }
+
+    .above {
+        top: 0;
+        left: 24px;
+        background: grey;
+        border: 1px solid darkgrey;
+        font-size: 0.7rem;
+    }
+
+    .center {
+        top: 50%;
+        left: 6px;
+        border: 1px solid transparent;
+        opacity: 0;
+    }
+
+    .test {
+        flex: 1;
+    }
+
 </style>

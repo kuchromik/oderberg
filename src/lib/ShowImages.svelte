@@ -5,17 +5,18 @@
     import { doc, addDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
     import { authStore } from "../store/store";
 
+    // get userinfo
     let pseudo = "";
-
     authStore.subscribe((curr) => {
         // @ts-ignore
         pseudo = curr.data.pseudo;
     });
 
+    // connection to Firebase Storage (images)
     const storage = getStorage(app);
     const listRef = ref(storage, '');
 
-    //// get images (imgList)
+    //// get images (imgList) from Firestore
 
     let imgList = [];
     const imgRef = collection(db, "images");
@@ -32,7 +33,7 @@
             
     /////
 
-    //// get locations (locList)
+    //// get locations (locList) from Firestore
 
     let locList = [];
     const locRef = collection(db, "locations");
@@ -49,7 +50,7 @@
             
     /////
 
-    //// get comments (comList)
+    //// get comments (comList) from Firestore
 
     let comList = [];
     const comRef = collection(db, "comments");
@@ -61,8 +62,7 @@
             fbJobs = [job, ...fbJobs];  
             })
             comList = fbJobs;
-            comList.sort((a, b) => a.image.localeCompare(b.image));
-            console.log(comList)
+            comList.sort((a, b) => a.image.localeCompare(b.image))
             })
             
     /////
@@ -92,8 +92,9 @@
     }
     /////-------------------------
 
+    // handle comments
     let makeComment = false;
-    let comment = ''
+    let comment = '';
 
     const createNewComment =(comment, image)=> {        
             let newComment = comment;
@@ -105,18 +106,19 @@
 
     const deleteComment =(delcom)=> {        
         const docRef = doc(db, "comments", delcom);
-        deleteDoc(docRef) .then(() => { console.log("Entire Document has been deleted successfully.") }) .catch(error => { console.log(error); })
+        deleteDoc(docRef) .then(() => { console.log("Kommentar gelöscht") }) .catch(error => { console.log(error); })
         }
     
 </script>
+<div class="mainContainer">
 <center>
-    <h3>Zu welchem Ort in Oderberg möchtest Du gehen?</h3>
+    <h3>Zu welchem Ort möchtest Du gehen?</h3>
     <br>
-    <div>
+    <div class="locationContainer">
         {#each locList as loc, id(loc)}
-        <div class="locListe">
-            <button on:click={() => showImagesOfLoc(loc.loc_name)} role="tab">{loc.loc_name}</button>
-        </div>
+        
+            <button on:click={() => showImagesOfLoc(loc.loc_name)}>{loc.loc_name}</button>
+        
         {/each}
     </div>
 </center>
@@ -131,7 +133,7 @@
 	    <center><p>Lade Bilder ...</p></center>
         {:then urlList}
         {#each urlList as url, i (i)}
-            {#if (imgList[i].location === choosedLog)}
+            {#if (imgList[i].location === choosedLog)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
             <div class="images">
                 <img src = "{url}" alt="Image from Firebase">
                 <br>
@@ -139,27 +141,30 @@
                 <button on:click={() => (makeComment = true)}>Neuer Kommentar zu diesem Bild?</button>
                 {/if}
                 <br>
+                
                 {#if makeComment}
-                <form on:submit={() => createNewComment(comment, imgList[i].imagename)}>
-                <textarea bind:value="{comment}" rows="10" cols="80"></textarea>
-                <button type="submit">Kommentar absenden</button>
-                </form>
+                    <form on:submit={() => createNewComment(comment, imgList[i].imagename)}>
+                    <textarea bind:value="{comment}" rows="10" cols="80"></textarea>
+                    <button type="submit">Kommentar absenden</button>
+                    </form>
                 <br>
                 {/if}
-            <h5>Kommentare zu diesem Bild:</h5>
-            {#each comList as com}
+                <h5>Kommentare zu diesem Bild:</h5>
+                {#each comList as com}
                 <br>
                 {#if com.image === imgList[i].imagename}
-                    <p>{com.comment}</p><small> von {com.author}</small>
+                    <small>von {com.author}: </small><p>{com.comment}</p>
                     {#if (com.author === pseudo)}
                         <form on:submit={() => deleteComment(com.id)}>
-                            <button type="submit">Kommentar löschen</button>
+                        <button type="submit">Kommentar löschen</button>
                         </form>
                     {/if}
                 {/if}
-            {/each}
-            <br>
+                {/each}
+                <br>
+                    
             </div>
+        
             {/if}
         {/each}
         {:catch error}
@@ -168,6 +173,7 @@
       </div>
     {/if}
 </center>
+</div>
 <style>
 .images {
     margin: auto;
@@ -180,12 +186,30 @@
 .images img {
     max-width: 80vw;
 }
-.locListe > button {
-    margin-bottom: .5rem;
-    font-size: medium;
+
+.locationContainer {
+  width: 16rem;
+  display: grid;
+  gap: 10px;
+  grid-template: auto 1fr / auto 1fr auto;
+  grid-auto-flow: row; /* or 'row', 'row dense', 'column dense' */
+}
+.locationContainer button {
+  max-width: 15rem;
+  background: dimgrey;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+  justify-content: center;
+}
+.locationContainer button:hover {
+  background: black;
 }
 
-textarea {
-
-}
 </style>

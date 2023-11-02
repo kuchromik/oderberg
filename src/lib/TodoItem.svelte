@@ -29,7 +29,7 @@
 
 <style>
      .todo {
-        border-left: 1px solid cyan;
+        border-left: 1px solid grey;
         padding: 8px 14px;
         display: flex;
         align-items: center;

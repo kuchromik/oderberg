@@ -90,7 +90,7 @@
         </div>
         <div class={"enterTodo " + (error ? "errorBorder" : "")}>
             <input bind:value={currTodo} type="text" placeholder="weiteren Vermerk eingeben" />
-            <button on:click={addTodo}>In Liste eintragen</button>
+            <button on:click={addTodo}>Eintragen</button>
         </div>
     </div>
 {/if}
@@ -109,47 +109,15 @@
     background-color: #333;
     border-radius: 3px;
 }
-
-    .mainContainer {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        padding: 24px;
-        width: 100%;
-        max-width: 1000px;
-        margin: 0 auto;
-    }
-
-    .headerContainer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
     .list {
         overflow: auto;
         max-height: 10rem;
         scrollbar-color: #333 #ccc ;
     }    
 
-    .headerBtns {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
 
-    .headerContainer button {
-        background: #003c5b;
-        color: white;
-        padding: 10px 18px;
-        border: none;
-        border-radius: 4px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        cursor: pointer;
-    }
+
+    
 
     .headerContainer button i {
         font-size: 1.1rem;
@@ -163,7 +131,7 @@
     .enterTodo {
         display: flex;
         align-items: stretch;
-        border: 1px solid #0891b2;
+        border: 1px solid grey;
         border-radius: 5px;
         overflow: hidden;
     }
@@ -176,7 +144,7 @@
         background: transparent;
         border: none;
         padding: 14px;
-        color: white;
+        color: black;
         flex: 1;
     }
 
@@ -186,15 +154,15 @@
 
     .enterTodo button {
         padding: 0 28px;
-        background: #003c5b;
+        background: dimgrey;
         border: none;
-        color: cyan;
+        color: white;
         font-weight: 600;
         cursor: pointer;
     }
 
     .enterTodo button:hover {
-        background: transparent;
+        background: black;
     }
 
     .hideSaveButton {

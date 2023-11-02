@@ -104,11 +104,13 @@ const onUploadBreak =()=> {
     <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
     {:else if (imageChoosen && !loacationSelected)}
         <br>
-        <p>Ordne das Bild einem einer Örtlichkeit zu:</p>
+        <p>Ordne das Bild einer Örtlichkeit zu:</p>
         <br>
         <div class="locListe">
             {#each locations as value}
-                <label><input type="radio" on:click={() => onSetLocation(value.loc_name)}> {value.loc_name}</label>
+                <label><input class="visiHidden" type="radio" on:click={() => onSetLocation(value.loc_name)}>
+                    <p class="locTextStyle">{value.loc_name}</p>
+                </label>
             {/each}
         </div>
         <br>
@@ -169,10 +171,33 @@ const onUploadBreak =()=> {
 	}
     
     .locListe {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        width: 16rem;
+        display: grid;
+        gap: 10px;
+        grid-template: auto 1fr / auto 1fr auto;
+        grid-auto-flow: row; /* or 'row', 'row dense', 'column dense' */
     }
 
     label { display: inline; }
+
+    .locTextStyle {
+        background: dimgrey;
+        color: white;
+        padding: 6px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        cursor: pointer;
+    }
+
+    .locTextStyle:hover {
+        background-color: black;
+    }
+
+    .visiHidden {
+        visibility: hidden;
+    }
 </style>

@@ -90,7 +90,7 @@
             </div>
         {:else}
             <div>
-                <p>Sie haben noch keine Zugangsdaten?</p>
+                <p>Noch keine Zugangsdaten?</p>
                 <p on:click={handleRegister} on:keydown={() => {}}>Registrieren</p>
             </div>
         {/if}
@@ -104,16 +104,15 @@
         align-items: center;
         justify-content: center;
         flex: 1;
-        padding: 24px;
+        padding: 1rem;
     }
 
     form {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 1rem;
     }
 
-    form,
     .options {
         width: 400px;
         max-width: 100%;
@@ -124,20 +123,17 @@
         width: 100%;
     }
 
-    h3 {
-        text-align: center;
-    }
 
     form label {
         position: relative;
-        border: 1px solid navy;
+        border: 1px solid black;
         border-radius: 5px;
     }
 
     form input {
         border: none;
-        background: transparent;
-        color: white;
+        background: white;
+        color: black;
         padding: 14px;
     }
 
@@ -147,11 +143,11 @@
     }
 
     form label:focus-within {
-        border-color: blue;
+        border-color: black;
     }
 
     form button {
-        background: navy;
+        background: grey;
         color: white;
         border: none;
         padding: 14px 0;
@@ -163,7 +159,7 @@
     }
 
     form button:hover {
-        background: blue;
+        background: black;
     }
 
     .above,
@@ -180,8 +176,8 @@
     .above {
         top: 0;
         left: 24px;
-        background: navy;
-        border: 1px solid blue;
+        background: grey;
+        border: 1px solid darkgrey;
         font-size: 0.7rem;
     }
 
@@ -242,7 +238,7 @@
     }
 
     .options div p:last-of-type {
-        color: cornflowerblue;
+        color:  dimgrey;
         cursor: pointer;
     }
 

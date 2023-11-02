@@ -2,7 +2,7 @@
     import Header from "$lib/Header.svelte";
     import Footer from "$lib/Footer.svelte";
 
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import { auth, db } from "../firebase";
     import { getDoc, doc, setDoc } from "@firebase/firestore";
     import { authStore } from "../store/store";
@@ -52,9 +52,9 @@
                     loading: false,
                 };
             });
-        });
+        })
         return unsubscribe;
-    });
+    })
 </script>
 <div class="mainContainer">
 <Header />
@@ -62,12 +62,4 @@
 <Footer />
 </div>
 <style>
-    .mainContainer {
-        min-height: 100vh;
-        background: linear-gradient(to right, #000428, #000046);
-        color: white;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-    }
 </style>
