@@ -116,18 +116,6 @@
     }    
 
 
-
-    
-
-    .headerContainer button i {
-        font-size: 1.1rem;
-    }
-
-    .headerContainer button:hover {
-        opacity: 0.7;
-    }
-
-
     .enterTodo {
         display: flex;
         align-items: stretch;
