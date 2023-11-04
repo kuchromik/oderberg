@@ -89,7 +89,7 @@ const onUploadBreak =()=> {
             return
         }	
 </script>
-<div id="app">
+<div class="headerContainer">
     <br>
 	<h3>Neues Bild einstellen</h3>
     <br>
@@ -100,45 +100,34 @@ const onUploadBreak =()=> {
     {/if}
     {#if !imageChoosen}
     <img class="chooseImage pulsierend" src="select.png" alt="" on:click={()=>{fileinput.click();}} />
-    <div>Bildauswahl</div>
+    <h4>Bildauswahl</h4>
     <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
     {:else if (imageChoosen && !loacationSelected)}
-        <br>
-        <p>Ordne das Bild einer Örtlichkeit zu:</p>
-        <br>
-        <div class="locListe">
-            {#each locations as value}
-                <label><input class="visiHidden" type="radio" on:click={() => onSetLocation(value.loc_name)}>
-                    <p class="locTextStyle">{value.loc_name}</p>
-                </label>
-            {/each}
-        </div>
-        <br>
-        <p>Eine passende Örtlichkeit ist nicht in der Liste?</p>
-        <form on:submit|preventDefault={() => createNewLocation(value)}>
-            <label>
-                Neue Örtlichkeit:
-                <input bind:value />
-            </label>
-            
-            <button>Anlegen</button>
-        </form>
-        
-    {:else}
+    <br>
+    <p>Ordne das Bild einer Örtlichkeit zu:</p>
+    <br>
+    <div class="locationContainer">
+        {#each locations as value}
+            <button on:click={() => onSetLocation(value.loc_name)}>{value.loc_name}</button>
+        {/each}
+    </div>
+    <br>
+    <p>Eine passende Örtlichkeit ist nicht in der Liste?</p>
+    <form on:submit|preventDefault={() => createNewLocation(value)}>
+        <label>
+            Neue Örtlichkeit:
+            <input bind:value />
+        </label>
+        <button>Anlegen</button>
+    </form>
+        {:else}
         <img class="chooseImage pulsierend" src="upload.png" alt="" on:click={onUploadOrder}/>
         <div>Bild zu <b>{orts_location || new_loc}</b> hochladen?</div>
         <br>
         <button on:click={onUploadBreak}>Vorgang abbrechen</button>
     {/if}
-       
 </div>
 <style>
-	#app{
-	    display:flex;
-		align-items:center;
-		justify-content:center;
-		flex-flow:column;
-}
  
 	.chooseImage{
 		display:flex;
@@ -170,34 +159,5 @@ const onUploadBreak =()=> {
 		width:240px;
 	}
     
-    .locListe {
-        width: 16rem;
-        display: grid;
-        gap: 10px;
-        grid-template: auto 1fr / auto 1fr auto;
-        grid-auto-flow: row; /* or 'row', 'row dense', 'column dense' */
-    }
-
-    label { display: inline; }
-
-    .locTextStyle {
-        background: dimgrey;
-        color: white;
-        padding: 6px;
-        border: none;
-        border-radius: 4px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        cursor: pointer;
-    }
-
-    .locTextStyle:hover {
-        background-color: black;
-    }
-
-    .visiHidden {
-        visibility: hidden;
-    }
+    button { display: inline; }
 </style>
