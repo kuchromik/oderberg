@@ -2,7 +2,7 @@
     import {app} from "../firebase.js";
     import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
     import { db } from "../firebase";
-    import { doc, addDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
+    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
     import { authStore } from "../store/store";
 
     // get userinfo
@@ -99,6 +99,9 @@
     
     let comment = 'Neuer Kommentar';
     let comWatch = []; // Array of Booleans on make a comment -> set visibility of comment-part
+    let commentEditMode = false;
+    let commToEdit;
+    let commToEditContent;
 
     const comClearAndSet = (i) => {
         for ( let i=0; i< imgList.length; i++ ) {
@@ -122,7 +125,15 @@
 
     const deleteComment =(delcom)=> {        
         const docRef = doc(db, "comments", delcom);
-        deleteDoc(docRef) .then(() => { console.log("Kommentar gelöscht") }) .catch(error => { console.log(error); })
+        deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
+        }
+
+        const editComment =(editcom, updatedDoc)=> {   
+        const date = new Date().toLocaleString('de-de') ;     
+        const docRef = doc(db, "comments", editcom);
+        updateDoc(docRef, {"comment": updatedDoc, "date": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
+        commentEditMode = false;
+        comment = 'Neuer Kommentar'
         }
     
 </script>
@@ -174,9 +185,33 @@
                     <p align="left">{com.comment}</p>
 
                     {#if (com.author === pseudo)}
-                        <form on:submit={() => deleteComment(com.id)}>
-                        <button type="submit">Kommentar löschen</button>
-                        </form>
+                        <div class="actions">
+                            {#if !commentEditMode}
+                            <i
+                                on:click={() => {
+                                    commentEditMode = true;
+                                    commToEdit = com.id;
+                                    commToEditContent = com.comment
+                                }
+                                }
+                                on:keydown={() => {}}
+                                class="fa-regular fa-pen-to-square"
+                            />
+                            <i
+                                on:click={() => {
+                                    deleteComment(com.id);
+                                }}
+                                on:keydown={() => {}}
+                                class="fa-regular fa-trash-can"
+                            />
+                            {/if}
+                            {#if commentEditMode && (commToEdit === com.id)}
+                            <form on:submit={() => editComment(com.id, commToEditContent)}>
+                                <textarea bind:value="{commToEditContent}" rows="10" cols="80"></textarea>
+                                <button type="submit">Kommentar ändern</button>
+                                </form>
+                            {/if}
+                        </div>
                     {/if}
                 {/if}
                 {/each}
@@ -205,4 +240,18 @@
 .images img {
     max-width: 80vw;
 }
+.actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 1.3rem;
+    }
+
+    .actions i {
+        cursor: pointer;
+    }
+
+    .actions i:hover {
+        color: coral;
+    }
 </style>
