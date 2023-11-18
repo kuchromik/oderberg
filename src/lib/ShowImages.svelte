@@ -29,6 +29,9 @@
             })
             imgList = fbJobs;
             imgList.sort((a, b) => a.imagename.localeCompare(b.imagename))
+            for ( let i=0; i< imgList.length; i++ ) {
+                comWatch.push(false)
+            }
             })
             
     /////
@@ -62,7 +65,7 @@
             fbJobs = [job, ...fbJobs];  
             })
             comList = fbJobs;
-            comList.sort((a, b) => a.image.localeCompare(b.image))
+            comList.sort((a, b) => b.date.localeCompare(a.date))
             })
             
     /////
@@ -93,15 +96,28 @@
     /////-------------------------
 
     // handle comments
-    let makeComment = false;
-    let comment = '';
+    
+    let comment = 'Neuer Kommentar';
+    let comWatch = []; // Array of Booleans on make a comment -> set visibility of comment-part
 
-    const createNewComment =(comment, image)=> {        
-            let newComment = comment;
+    const comClearAndSet = (i) => {
+        for ( let i=0; i< imgList.length; i++ ) {
+                comWatch[i] = false
+            };
+        comWatch[i] = true;
+        }
+
+    const createNewComment =(newcomm, image, i)=> {        
+            let newComment = newcomm;
             let commentImage = image;
-            makeComment = false;
+
+            const date = new Date().toLocaleString('de-de') ;
+            
             const commentRef = collection(db, 'comments');
-            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage });
+            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date });
+
+            comWatch[i] = false;
+            comment = 'Neuer Kommentar'
         }
 
     const deleteComment =(delcom)=> {        
@@ -134,16 +150,16 @@
         {:then urlList}
         {#each urlList as url, i (i)}
             {#if (imgList[i].location === choosedLog)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
-            <div class="images">
+            <div class="images headerContainer">
                 <img src = "{url}" alt="Image from Firebase">
                 <br>
                 {#if pseudo}
-                <button on:click={() => (makeComment = true)}>Neuer Kommentar zu diesem Bild?</button>
+                <button on:click={() => comClearAndSet(i)}>Neuer Kommentar zu diesem Bild? {i}</button>
                 {/if}
                 <br>
-                
-                {#if makeComment}
-                    <form on:submit={() => createNewComment(comment, imgList[i].imagename)}>
+                <!--<button on:click={() => (comWatch[i] = true)}>Neuer Kommentar zu diesem Bild? {i}</button>-->
+                {#if comWatch[i]}
+                    <form on:submit={() => createNewComment(comment, imgList[i].imagename, i)}>
                     <textarea bind:value="{comment}" rows="10" cols="80"></textarea>
                     <button type="submit">Kommentar absenden</button>
                     </form>
@@ -153,7 +169,10 @@
                 {#each comList as com}
                 <br>
                 {#if com.image === imgList[i].imagename}
-                    <small>von {com.author}: </small><p>{com.comment}</p>
+                    <small>von {com.author} am {com.date}: </small>
+                    
+                    <p align="left">{com.comment}</p>
+
                     {#if (com.author === pseudo)}
                         <form on:submit={() => deleteComment(com.id)}>
                         <button type="submit">Kommentar löschen</button>
@@ -186,5 +205,4 @@
 .images img {
     max-width: 80vw;
 }
-
 </style>
