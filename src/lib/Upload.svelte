@@ -53,15 +53,17 @@ const onFileSelected =(e)=>{
 const onUploadOrder =()=> {
             // 'file' comes from the Blob or File API
             const randomFilname = uuidv4();
-            const storageRef = ref(storage, randomFilname);
+            const storageRef = ref(storage, `oderberg/${randomFilname}`);
             uploadBytes(storageRef, image).then((snapshot) => {
             imageChoosen = false;
             avatar = false;
             const imagesRef = collection(db,'images');
+            const date = new Date().toLocaleString('de-de') ;
             addDoc(imagesRef,
                 {imagename: randomFilname,
                 location: orts_location,
-                uploader: pseudo}
+                uploader: pseudo,
+                uploadDate: date}
             ).then (() => window.location.href = "/dashboard")
                 
             });

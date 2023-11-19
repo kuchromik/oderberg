@@ -89,7 +89,7 @@
             {/each}
         </div>
         <div class={"enterTodo " + (error ? "errorBorder" : "")}>
-            <input bind:value={currTodo} type="text" placeholder="weiteren Vermerk eingeben" />
+            <input bind:value={currTodo} type="text" placeholder="Neuen Vermerk eingeben" />
             <button on:click={addTodo}>Eintragen</button>
         </div>
     </div>

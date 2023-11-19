@@ -1,6 +1,6 @@
 <script>
     import {app} from "../firebase.js";
-    import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
+    import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
     import { db } from "../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
     import { authStore } from "../store/store";
@@ -14,7 +14,7 @@
 
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
-    const listRef = ref(storage, '');
+    const listRef = ref(storage, 'oderberg/');
 
     //// get images (imgList) from Firestore
 
@@ -93,6 +93,23 @@
             throw new Error('Probleme')
         }
     }
+
+    const deleteImage = (imageID, url) => {
+        console.log(imageID);
+        console.log(url.slice(81,117));
+        let imageName = `oderberg/${url.slice(81,117)}`;
+        console.log(imageName);
+        const desertRef = ref(storage, imageName);
+        deleteObject(desertRef).then(() => {
+        console.log("Storage deleted successfully");
+        const docRef = doc(db, "images", imageID);
+        deleteDoc(docRef) .then(() => { console.log("Image deleted") }) .catch(error => { console.log(error); });
+        }).catch((error) => {
+            console.log(error);
+        })//.then (() => window.location.href = "/dashboard"); // but error occurs in console!
+        
+
+    }
     /////-------------------------
 
     // handle comments
@@ -163,9 +180,21 @@
             {#if (imgList[i].location === choosedLog)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
             <div class="images headerContainer">
                 <img src = "{url}" alt="Image from Firebase">
+                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
+                {#if (imgList[i].uploader === pseudo)}
+                        <div class="actions">
+                           <i
+                                on:click={() => {
+                                    deleteImage(imgList[i].id, url);
+                                }}
+                                on:keydown={() => {}}
+                                class="fa-regular fa-trash-can"
+                            />
+                        </div>
+                {/if}          
                 <br>
                 {#if pseudo}
-                <button on:click={() => comClearAndSet(i)}>Neuer Kommentar zu diesem Bild? {i}</button>
+                <button on:click={() => comClearAndSet(i)}>Neuer Kommentar zu diesem Bild?</button>
                 {/if}
                 <br>
                 <!--<button on:click={() => (comWatch[i] = true)}>Neuer Kommentar zu diesem Bild? {i}</button>-->
@@ -216,7 +245,6 @@
                 {/if}
                 {/each}
                 <br>
-                    
             </div>
         
             {/if}
@@ -229,29 +257,4 @@
 </center>
 </div>
 <style>
-.images {
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	
-}
-.images img {
-    max-width: 80vw;
-}
-.actions {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        font-size: 1.3rem;
-    }
-
-    .actions i {
-        cursor: pointer;
-    }
-
-    .actions i:hover {
-        color: coral;
-    }
 </style>
