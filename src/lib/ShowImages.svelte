@@ -79,9 +79,10 @@
     //// Load all images in storage
     let promise = imageload();
 
+    let urlList = [];
 
     async function imageload() {
-        let urlList = [];
+        //let urlList = [];
         const res = await listAll(listRef);
         for (let itemRef of res.items) {
         let url = await getDownloadURL(ref(itemRef));
@@ -94,22 +95,23 @@
         }
     }
 
-    const deleteImage = (imageID, url) => {
-        console.log(imageID);
-        console.log(url.slice(81,117));
+
+    async function deleteImage(imageID, url) {
+        
+        let delImgIndex = urlList.indexOf(url);
+        if (delImgIndex !== -1) {
+            urlList.splice(delImgIndex, 1);
+        }
+        
         let imageName = `oderberg/${url.slice(81,117)}`;
-        console.log(imageName);
+        
         const desertRef = ref(storage, imageName);
-        deleteObject(desertRef).then(() => {
+        deleteObject(desertRef);
         console.log("Storage deleted successfully");
         const docRef = doc(db, "images", imageID);
-        deleteDoc(docRef) .then(() => { console.log("Image deleted") }) .catch(error => { console.log(error); });
-        }).catch((error) => {
-            console.log(error);
-        })//.then (() => window.location.href = "/dashboard"); // but error occurs in console!
-        
-
-    }
+        deleteDoc(docRef);
+        console.log("Image deleted")
+        }
     /////-------------------------
 
     // handle comments
@@ -185,7 +187,7 @@
                         <div class="actions">
                            <i
                                 on:click={() => {
-                                    deleteImage(imgList[i].id, url);
+                                     deleteImage(imgList[i].id, url);
                                 }}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
@@ -193,13 +195,14 @@
                         </div>
                 {/if}          
                 <br>
+                
                 {#if pseudo}
                 <button on:click={() => comClearAndSet(i)}>Neuer Kommentar zu diesem Bild?</button>
                 {/if}
                 <br>
                 <!--<button on:click={() => (comWatch[i] = true)}>Neuer Kommentar zu diesem Bild? {i}</button>-->
                 {#if comWatch[i]}
-                    <form on:submit={() => createNewComment(comment, imgList[i].imagename, i)}>
+                    <form on:submit|preventDefault={() => createNewComment(comment, imgList[i].imagename, i)}>
                     <textarea bind:value="{comment}" rows="10" cols="80"></textarea>
                     <button type="submit">Kommentar absenden</button>
                     </form>
