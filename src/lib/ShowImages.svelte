@@ -95,6 +95,7 @@
         }
     }
 
+    let deleleImgRealy = false;
 
     async function deleteImage(imageID, url) {
         
@@ -110,7 +111,15 @@
         console.log("Storage deleted successfully");
         const docRef = doc(db, "images", imageID);
         deleteDoc(docRef);
-        console.log("Image deleted")
+        console.log("Image deleted");
+        comList.forEach(function(com) {
+            if (com.image === url.slice(81,117)) {
+                const docRef = doc(db, "comments", com.id);
+                deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
+                }
+            }
+        )
+        deleleImgRealy = false
         }
     /////-------------------------
 
@@ -147,7 +156,7 @@
         deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
         }
 
-        const editComment =(editcom, updatedDoc)=> {   
+    const editComment =(editcom, updatedDoc)=> {   
         const date = new Date().toLocaleString('de-de') ;     
         const docRef = doc(db, "comments", editcom);
         updateDoc(docRef, {"comment": updatedDoc, "date": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
@@ -185,19 +194,24 @@
                 <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
                 {#if (imgList[i].uploader === pseudo)}
                         <div class="actions">
+                            {#if !deleleImgRealy}
                            <i
-                                on:click={() => {
-                                     deleteImage(imgList[i].id, url);
-                                }}
+                                on:click={() => deleleImgRealy = true}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
                             />
+                            {/if}
+                            {#if deleleImgRealy}
+                            <button on:click|preventDefault={() => {
+                                deleteImage(imgList[i].id, url);
+                           }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                            {/if}
                         </div>
                 {/if}          
                 <br>
                 
                 {#if pseudo}
-                <button on:click={() => comClearAndSet(i)}>Neuer Kommentar zu diesem Bild?</button>
+                <button on:click|preventDefault={() => comClearAndSet(i)}>Neuer Kommentar zu diesem Bild?</button>
                 {/if}
                 <br>
                 <!--<button on:click={() => (comWatch[i] = true)}>Neuer Kommentar zu diesem Bild? {i}</button>-->
@@ -238,7 +252,7 @@
                             />
                             {/if}
                             {#if commentEditMode && (commToEdit === com.id)}
-                            <form on:submit={() => editComment(com.id, commToEditContent)}>
+                            <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
                                 <textarea bind:value="{commToEditContent}" rows="10" cols="80"></textarea>
                                 <button type="submit">Kommentar ändern</button>
                                 </form>
