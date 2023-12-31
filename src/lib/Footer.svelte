@@ -1,5 +1,5 @@
 <footer>
-    <center><p>Kai-Uwe Chromik 2023</p></center>
+    <center><p>Kai-Uwe Chromik 2024</p></center>
 </footer>
 
 <style>

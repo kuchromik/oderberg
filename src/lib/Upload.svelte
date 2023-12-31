@@ -53,7 +53,7 @@ const onFileSelected =(e)=>{
 const onUploadOrder =()=> {
             // 'file' comes from the Blob or File API
             const randomFilname = uuidv4();
-            const storageRef = ref(storage, `oderberg/${randomFilname}`);
+            const storageRef = ref(storage, `images/${randomFilname}`);
             uploadBytes(storageRef, image).then((snapshot) => {
             imageChoosen = false;
             avatar = false;

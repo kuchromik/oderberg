@@ -104,7 +104,7 @@
             urlList.splice(delImgIndex, 1);
         }
         
-        let imageName = `oderberg/${url.slice(81,117)}`;
+        let imageName = `images/${url.slice(81,117)}`;
         
         const desertRef = ref(storage, imageName);
         deleteObject(desertRef);
