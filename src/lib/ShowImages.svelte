@@ -14,7 +14,7 @@
 
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
-    const listRef = ref(storage, 'oderberg/');
+    const listRef = ref(storage, 'images/');
 
     //// get images (imgList) from Firestore
 
