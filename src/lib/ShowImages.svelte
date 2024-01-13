@@ -17,7 +17,6 @@
     const listRef = ref(storage, 'images/');
 
     //// get images (imgList) from Firestore
-
     let imgList = [];
     const imgRef = collection(db, "images");
 
@@ -34,7 +33,6 @@
             }
             })
             
-    /////
 
     //// get locations (locList) from Firestore
 
@@ -51,7 +49,6 @@
             locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
             })
             
-    /////
 
     //// get comments (comList) from Firestore
 
@@ -95,17 +92,26 @@
         }
     }
 
-    let deleleImgRealy = false;
+    let deleteImgRealy = false;
+    let deleteCommentRealy = false;
 
     async function deleteImage(imageID, url) {
+
+        // delete image-url from urlList
         
         let delImgIndex = urlList.indexOf(url);
         if (delImgIndex !== -1) {
             urlList.splice(delImgIndex, 1);
         }
         
-        let imageName = `images/${url.slice(81,117)}`;
-        
+        // delete image from storage and image from Firestore incl. comments
+
+        const searchTerm = 'images%2F';
+        const indexOfFirst = url.indexOf(searchTerm);
+
+        let imageName = `images/${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
+        console.log(imageName);
+
         const desertRef = ref(storage, imageName);
         deleteObject(desertRef);
         console.log("Storage deleted successfully");
@@ -113,13 +119,13 @@
         deleteDoc(docRef);
         console.log("Image deleted");
         comList.forEach(function(com) {
-            if (com.image === url.slice(81,117)) {
+            if (com.image === url.slice(indexOfFirst + 9,indexOfFirst + 45)) {
                 const docRef = doc(db, "comments", com.id);
                 deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
                 }
             }
         )
-        deleleImgRealy = false
+        deleteImgRealy = false
         }
     /////-------------------------
 
@@ -153,7 +159,8 @@
 
     const deleteComment =(delcom)=> {        
         const docRef = doc(db, "comments", delcom);
-        deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
+        deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); });
+        deleteCommentRealy = false
         }
 
     const editComment =(editcom, updatedDoc)=> {   
@@ -171,9 +178,8 @@
     <br>
     <div class="locationContainer">
         {#each locList as loc, id(loc)}
-        
+            
             <button on:click={() => showImagesOfLoc(loc.loc_name)}>{loc.loc_name}</button>
-        
         {/each}
     </div>
 </center>
@@ -191,20 +197,23 @@
             {#if (imgList[i].location === choosedLog)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
             <div class="images headerContainer">
                 <img src = "{url}" alt="Image from Firebase">
-                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
+                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate} Bild-ID: {imgList[i].imagename}</small>
                 {#if (imgList[i].uploader === pseudo)}
                         <div class="actions">
-                            {#if !deleleImgRealy}
+                            {#if !deleteImgRealy}
                            <i
-                                on:click={() => deleleImgRealy = true}
+                                on:click={() => deleteImgRealy = true}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
                             />
                             {/if}
-                            {#if deleleImgRealy}
+                            {#if deleteImgRealy}
                             <button on:click|preventDefault={() => {
                                 deleteImage(imgList[i].id, url);
-                           }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                                }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                            <button on:click|preventDefault={() => {
+                                deleteImgRealy = false;
+                           }}>Abbruch</button>
                             {/if}
                         </div>
                 {/if}          
@@ -217,8 +226,11 @@
                 <!--<button on:click={() => (comWatch[i] = true)}>Neuer Kommentar zu diesem Bild? {i}</button>-->
                 {#if comWatch[i]}
                     <form on:submit|preventDefault={() => createNewComment(comment, imgList[i].imagename, i)}>
-                    <textarea bind:value="{comment}" rows="10" cols="80"></textarea>
-                    <button type="submit">Kommentar absenden</button>
+                    <textarea bind:value="{comment}" rows="15" cols="40"></textarea>
+                    <div class="actions">
+                           <button type="submit">Kommentar absenden</button>
+                           <button on:click|preventDefault={() => {comWatch[i] = false; comment = 'Neuer Kommentar'}}>Abbruch</button>
+                    </div>
                     </form>
                 <br>
                 {/if}
@@ -232,7 +244,7 @@
 
                     {#if (com.author === pseudo)}
                         <div class="actions">
-                            {#if !commentEditMode}
+                            {#if (!commentEditMode && !deleteCommentRealy)}
                             <i
                                 on:click={() => {
                                     commentEditMode = true;
@@ -244,17 +256,23 @@
                                 class="fa-regular fa-pen-to-square"
                             />
                             <i
-                                on:click={() => {
-                                    deleteComment(com.id);
-                                }}
+                                on:click={() => deleteCommentRealy = true}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
                             />
                             {/if}
+                            {#if deleteCommentRealy}
+                            <button on:click|preventDefault={() => {
+                                deleteComment(com.id);
+                                }}>Diesen Kommentar wirklich löschen?</button>
+                            <button on:click|preventDefault={() => {
+                                deleteCommentRealy = false;
+                           }}>Abbruch</button>
+                            {/if}
                             {#if commentEditMode && (commToEdit === com.id)}
                             <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
-                                <textarea bind:value="{commToEditContent}" rows="10" cols="80"></textarea>
-                                <button type="submit">Kommentar ändern</button>
+                                <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
+                                <button type="submit">Änderung speichern</button>
                                 </form>
                             {/if}
                         </div>
