@@ -3,7 +3,7 @@ import {app} from "../firebase.js";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 import { db } from "../firebase";
-import { addDoc, collection, onSnapshot } from "@firebase/firestore";
+import { doc, getDocs, addDoc, deleteDoc, collection, onSnapshot, query, where, } from "@firebase/firestore";
 import { authStore } from "../store/store";
 
 let locations = [];
@@ -75,12 +75,15 @@ const onSetLocation =(loc_name)=> {
             loacationSelected = true;
         }
 
+let docRefOnBreak; // docRef of new location to use on break while uploading new image
+
 const createNewLocation =(value)=> {        
             new_loc = value;
             orts_location = new_loc;
             loacationSelected = true;
             const locationsRef = collection(db, 'locations');
-            addDoc(locationsRef, { loc_name: new_loc });
+            addDoc(locationsRef, { loc_name: new_loc }) .then((docref) => { docRefOnBreak = docref }) .catch(error => { console.log(error); });
+            
         }
 
 
@@ -88,6 +91,7 @@ const onUploadBreak =()=> {
             imageChoosen = false;
             loacationSelected = false;
             avatar = false;
+            deleteDoc(docRefOnBreak) .then(() => { docRefOnBreak = {} }) .catch((error) => { console.error("Error removing new location: ", error); });
             value = '';
             return
         }	
