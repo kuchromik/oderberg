@@ -1,5 +1,5 @@
 <script>
-    import {app} from "../firebase.js";
+    import { app } from "../firebase.js";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
     import { db } from "../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
@@ -21,12 +21,13 @@
     const imgRef = collection(db, "images");
 
     const unsubscribe1 = onSnapshot(imgRef, querysnapshot => {
-            let fbJobs = [];
+            let imgListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
-            let job = { ...doc.data(), id: doc.id};
-            fbJobs = [job, ...fbJobs];  
+            let image = { ...doc.data(), id: doc.id};
+            imgListInsideSnapshot = [image, ...imgListInsideSnapshot];  
             })
-            imgList = fbJobs;
+            imgList = imgListInsideSnapshot;
+            // Image-Liste sortieren
             imgList.sort((a, b) => a.imagename.localeCompare(b.imagename))
             for ( let i=0; i< imgList.length; i++ ) {
                 comWatch.push(false)
@@ -40,12 +41,13 @@
     const locRef = collection(db, "locations");
 
     const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
-            let fbJobs = [];
+            let locListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
-            let job = { ...doc.data(), id: doc.id};
-            fbJobs = [job, ...fbJobs];  
+            let location = { ...doc.data(), id: doc.id};
+            locListInsideSnapshot = [location, ...locListInsideSnapshot];  
             })
-            locList = fbJobs;
+            locList = locListInsideSnapshot;
+            // Location-Liste sortieren
             locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
             })
             
@@ -56,30 +58,29 @@
     const comRef = collection(db, "comments");
 
     const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
-            let fbJobs = [];
+            let comListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
-            let job = { ...doc.data(), id: doc.id};
-            fbJobs = [job, ...fbJobs];  
+            let comment = { ...doc.data(), id: doc.id};
+            comListInsideSnapshot = [comment, ...comListInsideSnapshot];  
             })
-            comList = fbJobs;
+            comList = comListInsideSnapshot;
+            // Comment-Liste sortieren
             comList.sort((a, b) => b.date.localeCompare(a.date))
             })
             
     /////
 
-    let choosedLog = "";
+    let choosedLocation = "";
 
     const showImagesOfLoc = (value) => {
-        choosedLog = value;
+        choosedLocation = value
     }
 
     //// Load all images in storage
     let promise = imageload();
-
     let urlList = [];
 
     async function imageload() {
-        //let urlList = [];
         const res = await listAll(listRef);
         for (let itemRef of res.items) {
         let url = await getDownloadURL(ref(itemRef));
@@ -92,6 +93,7 @@
         }
     }
 
+    //// delete image from storage and image from Firestore incl. comments
     let deleteImgRealy = false;
     let deleteCommentRealy = false;
 
@@ -114,10 +116,10 @@
 
         const desertRef = ref(storage, imageName);
         deleteObject(desertRef);
-        console.log("Storage deleted successfully");
+        console.log("Image deleted from Storage successfully");
         const docRef = doc(db, "images", imageID);
         deleteDoc(docRef);
-        console.log("Image deleted");
+        console.log("Image deleted from Store successfully");
         comList.forEach(function(com) {
             if (com.image === url.slice(indexOfFirst + 9,indexOfFirst + 45)) {
                 const docRef = doc(db, "comments", com.id);
@@ -127,7 +129,7 @@
         )
         deleteImgRealy = false
         }
-    /////-------------------------
+    
 
     // handle comments
     
@@ -135,6 +137,7 @@
     let comWatch = []; // Array of Booleans on make a comment -> set visibility of comment-part
     let commentEditMode = false;
     let commToEdit;
+    let commToDelete;
     let commToEditContent;
 
     const comClearAndSet = (i) => {
@@ -184,17 +187,17 @@
     </div>
 </center>
 <center>
-    {#if choosedLog}
+    {#if choosedLocation}
     
     <div>
-        <center><h1>{choosedLog}</h1></center>
+        <center><h1>{choosedLocation}</h1></center>
         <br>
         <br>
         {#await promise}
 	    <center><p>Lade Bilder ...</p></center>
         {:then urlList}
         {#each urlList as url, i (i)}
-            {#if (imgList[i].location === choosedLog)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
+            {#if (imgList[i].location === choosedLocation)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
             <div class="images headerContainer">
                 <img src = "{url}" alt="Image from Firebase">
                 <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate} Bild-ID: {imgList[i].imagename}</small>
@@ -256,12 +259,12 @@
                                 class="fa-regular fa-pen-to-square"
                             />
                             <i
-                                on:click={() => deleteCommentRealy = true}
+                                on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
                             />
                             {/if}
-                            {#if deleteCommentRealy}
+                            {#if deleteCommentRealy && (commToDelete === com.id)}
                             <button on:click|preventDefault={() => {
                                 deleteComment(com.id);
                                 }}>Diesen Kommentar wirklich löschen?</button>

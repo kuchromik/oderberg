@@ -88,6 +88,7 @@ const onUploadBreak =()=> {
             imageChoosen = false;
             loacationSelected = false;
             avatar = false;
+            value = '';
             return
         }	
 </script>
@@ -121,6 +122,7 @@ const onUploadBreak =()=> {
             <input bind:value />
         </label>
         <button>Anlegen</button>
+        <button on:click={onUploadBreak}>Vorgang abbrechen</button>
     </form>
         {:else}
         <img class="chooseImage pulsierend" src="upload.png" alt="" on:click={onUploadOrder}/>
