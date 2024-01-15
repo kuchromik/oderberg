@@ -16,6 +16,38 @@
     const storage = getStorage(app);
     const listRef = ref(storage, 'images/');
 
+     //// get locations (locList) from Firestore
+
+     let locList = [];
+    let imagePerLocCounter = [{
+        id: 0,
+        loc_name: "",
+        count: 0
+    }];
+    const locRef = collection(db, "locations");
+
+    const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
+            let locListInsideSnapshot = [];
+            querysnapshot.forEach((doc) => {
+            let location = { ...doc.data(), id: doc.id};
+            locListInsideSnapshot = [location, ...locListInsideSnapshot];  
+            })
+            locList = locListInsideSnapshot;
+            // Location-Liste sortieren
+            locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
+            
+            
+            for (let i = 0; i < locList.length; i++) {
+                
+                imagePerLocCounter[i] = {
+                    id: i,
+                    loc_name: locList[i].loc_name,
+                    count: 0
+                }
+            }
+        }
+    )
+
     //// get images (imgList) from Firestore
     let imgList = [];
     const imgRef = collection(db, "images");
@@ -32,24 +64,16 @@
             for ( let i=0; i< imgList.length; i++ ) {
                 comWatch.push(false)
             }
-            })
-            
-
-    //// get locations (locList) from Firestore
-
-    let locList = [];
-    const locRef = collection(db, "locations");
-
-    const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
-            let locListInsideSnapshot = [];
-            querysnapshot.forEach((doc) => {
-            let location = { ...doc.data(), id: doc.id};
-            locListInsideSnapshot = [location, ...locListInsideSnapshot];  
-            })
-            locList = locListInsideSnapshot;
-            // Location-Liste sortieren
-            locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
-            })
+            console.log(imgList);
+            for (let i = 0; i < imgList.length; i++) {
+                let foundLoc = imagePerLocCounter.find((obj) => obj.loc_name === imgList[i].location); 
+                
+                if (foundLoc) {
+                    imagePerLocCounter[foundLoc.id].count = imagePerLocCounter[foundLoc.id].count + 1;
+                }
+            }
+        }
+    )
             
 
     //// get comments (comList) from Firestore
@@ -99,12 +123,32 @@
 
     async function deleteImage(imageID, url) {
 
-        // delete image-url from urlList
+        // delete image-url from urlList and imgList
         
-        let delImgIndex = urlList.indexOf(url);
-        if (delImgIndex !== -1) {
-            urlList.splice(delImgIndex, 1);
+        let delURLIndex = urlList.indexOf(url);
+        if (delURLIndex !== -1) {
+            urlList.splice(delURLIndex, 1);
         }
+
+        let delIMGIndex = imgList.indexOf(imageID);
+        if (delIMGIndex !== -1) {
+            imgList.splice(delIMGIndex, 1);
+        }
+
+        // build new imagePerLocCounter
+
+        imagePerLocCounter = [{
+        id: 0,
+        loc_name: "",
+        count: 0
+        }];
+        for (let i = 0; i < imgList.length; i++) {
+                let foundLoc = imagePerLocCounter.find((obj) => obj.loc_name === imgList[i].location); 
+                
+                if (foundLoc) {
+                    imagePerLocCounter[foundLoc.id].count = imagePerLocCounter[foundLoc.id].count + 1;
+                }
+            }
         
         // delete image from storage and image from Firestore incl. comments
 
@@ -127,7 +171,8 @@
                 }
             }
         )
-        deleteImgRealy = false
+        deleteImgRealy = false;
+        window.location.href = "/dashboard"
         }
     
 
@@ -173,7 +218,7 @@
         commentEditMode = false;
         comment = 'Neuer Kommentar'
         }
-    
+     
 </script>
 <div class="mainContainer">
 <center>
@@ -182,7 +227,7 @@
     <div class="locationContainer">
         {#each locList as loc, id(loc)}
             
-            <button on:click={() => showImagesOfLoc(loc.loc_name)}>{loc.loc_name}</button>
+            <button on:click={() => showImagesOfLoc(loc.loc_name)}><p>{loc.loc_name} ({imagePerLocCounter[id].count})</p></button>
         {/each}
     </div>
 </center>

@@ -91,7 +91,9 @@ const onUploadBreak =()=> {
             imageChoosen = false;
             loacationSelected = false;
             avatar = false;
-            deleteDoc(docRefOnBreak) .then(() => { docRefOnBreak = {} }) .catch((error) => { console.error("Error removing new location: ", error); });
+            if (value) {
+                deleteDoc(docRefOnBreak) .then(() => { docRefOnBreak = {} }) .catch((error) => { console.error("Error removing new location: ", error); });
+                }
             value = '';
             return
         }	
