@@ -1,5 +1,5 @@
 <script>
-    import {app} from "../firebase.js";
+    import { app } from "../firebase.js";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
     import { db } from "../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
@@ -16,42 +16,65 @@
     const storage = getStorage(app);
     const listRef = ref(storage, 'images/');
 
-    //// get images (imgList) from Firestore
+     //// get locations (locList) from Firestore
 
+     let locList = [];
+    let imagePerLocCounter = [{
+        id: 0,
+        loc_name: "",
+        count: 0
+    }];
+    const locRef = collection(db, "locations");
+
+    const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
+            let locListInsideSnapshot = [];
+            querysnapshot.forEach((doc) => {
+            let location = { ...doc.data(), id: doc.id};
+            locListInsideSnapshot = [location, ...locListInsideSnapshot];  
+            })
+            locList = locListInsideSnapshot;
+            // Location-Liste sortieren
+            locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
+            
+            
+            for (let i = 0; i < locList.length; i++) {
+                
+                imagePerLocCounter[i] = {
+                    id: i,
+                    loc_name: locList[i].loc_name,
+                    count: 0
+                }
+            }
+        }
+    )
+
+    //// get images (imgList) from Firestore
     let imgList = [];
     const imgRef = collection(db, "images");
 
     const unsubscribe1 = onSnapshot(imgRef, querysnapshot => {
-            let fbJobs = [];
+            let imgListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
-            let job = { ...doc.data(), id: doc.id};
-            fbJobs = [job, ...fbJobs];  
+            let image = { ...doc.data(), id: doc.id};
+            imgListInsideSnapshot = [image, ...imgListInsideSnapshot];  
             })
-            imgList = fbJobs;
+            imgList = imgListInsideSnapshot;
+            // Image-Liste sortieren
             imgList.sort((a, b) => a.imagename.localeCompare(b.imagename))
             for ( let i=0; i< imgList.length; i++ ) {
                 comWatch.push(false)
             }
-            })
+            console.log(imgList);
+            for (let i = 0; i < imgList.length; i++) {
+                let foundLoc = imagePerLocCounter.find((obj) => obj.loc_name === imgList[i].location); 
+                
+                if (foundLoc) {
+                    imagePerLocCounter[foundLoc.id].count = imagePerLocCounter[foundLoc.id].count + 1;
+                }
+            }
+        }
+    )
             
-    /////
-
-    //// get locations (locList) from Firestore
-
-    let locList = [];
-    const locRef = collection(db, "locations");
-
-    const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
-            let fbJobs = [];
-            querysnapshot.forEach((doc) => {
-            let job = { ...doc.data(), id: doc.id};
-            fbJobs = [job, ...fbJobs];  
-            })
-            locList = fbJobs;
-            locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
-            })
-            
-    /////
 
     //// get comments (comList) from Firestore
 
@@ -59,30 +82,29 @@
     const comRef = collection(db, "comments");
 
     const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
-            let fbJobs = [];
+            let comListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
-            let job = { ...doc.data(), id: doc.id};
-            fbJobs = [job, ...fbJobs];  
+            let comment = { ...doc.data(), id: doc.id};
+            comListInsideSnapshot = [comment, ...comListInsideSnapshot];  
             })
-            comList = fbJobs;
+            comList = comListInsideSnapshot;
+            // Comment-Liste sortieren
             comList.sort((a, b) => b.date.localeCompare(a.date))
             })
             
     /////
 
-    let choosedLog = "";
+    let choosedLocation = "";
 
     const showImagesOfLoc = (value) => {
-        choosedLog = value;
+        choosedLocation = value
     }
 
     //// Load all images in storage
     let promise = imageload();
-
     let urlList = [];
 
     async function imageload() {
-        //let urlList = [];
         const res = await listAll(listRef);
         for (let itemRef of res.items) {
         let url = await getDownloadURL(ref(itemRef));
@@ -95,33 +117,64 @@
         }
     }
 
-    let deleleImgRealy = false;
+    //// delete image from storage and image from Firestore incl. comments
+    let deleteImgRealy = false;
+    let deleteCommentRealy = false;
 
     async function deleteImage(imageID, url) {
+
+        // delete image-url from urlList and imgList
         
-        let delImgIndex = urlList.indexOf(url);
-        if (delImgIndex !== -1) {
-            urlList.splice(delImgIndex, 1);
+        let delURLIndex = urlList.indexOf(url);
+        if (delURLIndex !== -1) {
+            urlList.splice(delURLIndex, 1);
         }
+
+        let delIMGIndex = imgList.indexOf(imageID);
+        if (delIMGIndex !== -1) {
+            imgList.splice(delIMGIndex, 1);
+        }
+
+        // build new imagePerLocCounter
+
+        imagePerLocCounter = [{
+        id: 0,
+        loc_name: "",
+        count: 0
+        }];
+        for (let i = 0; i < imgList.length; i++) {
+                let foundLoc = imagePerLocCounter.find((obj) => obj.loc_name === imgList[i].location); 
+                
+                if (foundLoc) {
+                    imagePerLocCounter[foundLoc.id].count = imagePerLocCounter[foundLoc.id].count + 1;
+                }
+            }
         
-        let imageName = `images/${url.slice(81,117)}`;
-        
+        // delete image from storage and image from Firestore incl. comments
+
+        const searchTerm = 'images%2F';
+        const indexOfFirst = url.indexOf(searchTerm);
+
+        let imageName = `images/${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
+        console.log(imageName);
+
         const desertRef = ref(storage, imageName);
         deleteObject(desertRef);
-        console.log("Storage deleted successfully");
+        console.log("Image deleted from Storage successfully");
         const docRef = doc(db, "images", imageID);
         deleteDoc(docRef);
-        console.log("Image deleted");
+        console.log("Image deleted from Store successfully");
         comList.forEach(function(com) {
-            if (com.image === url.slice(81,117)) {
+            if (com.image === url.slice(indexOfFirst + 9,indexOfFirst + 45)) {
                 const docRef = doc(db, "comments", com.id);
                 deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
                 }
             }
         )
-        deleleImgRealy = false
+        deleteImgRealy = false;
+        window.location.href = "/dashboard"
         }
-    /////-------------------------
+    
 
     // handle comments
     
@@ -129,6 +182,7 @@
     let comWatch = []; // Array of Booleans on make a comment -> set visibility of comment-part
     let commentEditMode = false;
     let commToEdit;
+    let commToDelete;
     let commToEditContent;
 
     const comClearAndSet = (i) => {
@@ -153,7 +207,8 @@
 
     const deleteComment =(delcom)=> {        
         const docRef = doc(db, "comments", delcom);
-        deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
+        deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); });
+        deleteCommentRealy = false
         }
 
     const editComment =(editcom, updatedDoc)=> {   
@@ -163,7 +218,7 @@
         commentEditMode = false;
         comment = 'Neuer Kommentar'
         }
-    
+     
 </script>
 <div class="mainContainer">
 <center>
@@ -171,40 +226,42 @@
     <br>
     <div class="locationContainer">
         {#each locList as loc, id(loc)}
-        
-            <button on:click={() => showImagesOfLoc(loc.loc_name)}>{loc.loc_name}</button>
-        
+            
+            <button on:click={() => showImagesOfLoc(loc.loc_name)}><p>{loc.loc_name} ({imagePerLocCounter[id].count})</p></button>
         {/each}
     </div>
 </center>
 <center>
-    {#if choosedLog}
+    {#if choosedLocation}
     
     <div>
-        <center><h1>{choosedLog}</h1></center>
+        <center><h1>{choosedLocation}</h1></center>
         <br>
         <br>
         {#await promise}
 	    <center><p>Lade Bilder ...</p></center>
         {:then urlList}
         {#each urlList as url, i (i)}
-            {#if (imgList[i].location === choosedLog)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
+            {#if (imgList[i].location === choosedLocation)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
             <div class="images headerContainer">
                 <img src = "{url}" alt="Image from Firebase">
-                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
+                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate} Bild-ID: {imgList[i].imagename}</small>
                 {#if (imgList[i].uploader === pseudo)}
                         <div class="actions">
-                            {#if !deleleImgRealy}
+                            {#if !deleteImgRealy}
                            <i
-                                on:click={() => deleleImgRealy = true}
+                                on:click={() => deleteImgRealy = true}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
                             />
                             {/if}
-                            {#if deleleImgRealy}
+                            {#if deleteImgRealy}
                             <button on:click|preventDefault={() => {
                                 deleteImage(imgList[i].id, url);
-                           }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                                }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                            <button on:click|preventDefault={() => {
+                                deleteImgRealy = false;
+                           }}>Abbruch</button>
                             {/if}
                         </div>
                 {/if}          
@@ -217,8 +274,11 @@
                 <!--<button on:click={() => (comWatch[i] = true)}>Neuer Kommentar zu diesem Bild? {i}</button>-->
                 {#if comWatch[i]}
                     <form on:submit|preventDefault={() => createNewComment(comment, imgList[i].imagename, i)}>
-                    <textarea bind:value="{comment}" rows="10" cols="80"></textarea>
-                    <button type="submit">Kommentar absenden</button>
+                    <textarea bind:value="{comment}" rows="15" cols="40"></textarea>
+                    <div class="actions">
+                           <button type="submit">Kommentar absenden</button>
+                           <button on:click|preventDefault={() => {comWatch[i] = false; comment = 'Neuer Kommentar'}}>Abbruch</button>
+                    </div>
                     </form>
                 <br>
                 {/if}
@@ -232,7 +292,7 @@
 
                     {#if (com.author === pseudo)}
                         <div class="actions">
-                            {#if !commentEditMode}
+                            {#if (!commentEditMode && !deleteCommentRealy)}
                             <i
                                 on:click={() => {
                                     commentEditMode = true;
@@ -244,17 +304,23 @@
                                 class="fa-regular fa-pen-to-square"
                             />
                             <i
-                                on:click={() => {
-                                    deleteComment(com.id);
-                                }}
+                                on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
                                 on:keydown={() => {}}
                                 class="fa-regular fa-trash-can"
                             />
                             {/if}
+                            {#if deleteCommentRealy && (commToDelete === com.id)}
+                            <button on:click|preventDefault={() => {
+                                deleteComment(com.id);
+                                }}>Diesen Kommentar wirklich löschen?</button>
+                            <button on:click|preventDefault={() => {
+                                deleteCommentRealy = false;
+                           }}>Abbruch</button>
+                            {/if}
                             {#if commentEditMode && (commToEdit === com.id)}
                             <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
-                                <textarea bind:value="{commToEditContent}" rows="10" cols="80"></textarea>
-                                <button type="submit">Kommentar ändern</button>
+                                <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
+                                <button type="submit">Änderung speichern</button>
                                 </form>
                             {/if}
                         </div>
