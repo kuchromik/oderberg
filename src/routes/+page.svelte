@@ -1,6 +1,6 @@
 <script>
   import Authenticate from "$lib/Authenticate.svelte";
-	import ShowImages from "$lib/ShowImages.svelte";
+	import ChooseLocation from "$lib/ChooseLocation.svelte";
   
 
 </script>
@@ -9,7 +9,7 @@
   
     <Authenticate/>
     <br>
-    <ShowImages/>
+    <ChooseLocation/>
  
 </main>
 

@@ -1,9 +1,13 @@
 <script>
-    import { app } from "../firebase.js";
+import { app } from "../../../firebase";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
-    import { db } from "../firebase";
+    import { db } from "../../../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
-    import { authStore } from "../store/store";
+    import { authStore } from "../../../store/store";
+
+	/** @type {import('./$types').PageData} */
+	export let data;
+	let choosedLocation = data.post.title;
 
     // get userinfo
     let pseudo = "";
@@ -15,38 +19,6 @@
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
     const listRef = ref(storage, 'images/');
-
-     //// get locations (locList) from Firestore
-
-     let locList = [];
-    let imagePerLocCounter = [{
-        id: 0,
-        loc_name: "",
-        count: 0
-    }];
-    const locRef = collection(db, "locations");
-
-    const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
-            let locListInsideSnapshot = [];
-            querysnapshot.forEach((doc) => {
-            let location = { ...doc.data(), id: doc.id};
-            locListInsideSnapshot = [location, ...locListInsideSnapshot];  
-            })
-            locList = locListInsideSnapshot;
-            // Location-Liste sortieren
-            locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
-            
-            
-            for (let i = 0; i < locList.length; i++) {
-                
-                imagePerLocCounter[i] = {
-                    id: i,
-                    loc_name: locList[i].loc_name,
-                    count: 0
-                }
-            }
-        }
-    )
 
     //// get images (imgList) from Firestore
     let imgList = [];
@@ -64,17 +36,8 @@
             for ( let i=0; i< imgList.length; i++ ) {
                 comWatch.push(false)
             }
-            console.log(imgList);
-            for (let i = 0; i < imgList.length; i++) {
-                let foundLoc = imagePerLocCounter.find((obj) => obj.loc_name === imgList[i].location); 
-                
-                if (foundLoc) {
-                    imagePerLocCounter[foundLoc.id].count = imagePerLocCounter[foundLoc.id].count + 1;
-                }
-            }
         }
     )
-            
 
     //// get comments (comList) from Firestore
 
@@ -92,14 +55,7 @@
             comList.sort((a, b) => b.date.localeCompare(a.date))
             })
             
-    /////
-
-    let choosedLocation = "";
-
-    const showImagesOfLoc = (value) => {
-        choosedLocation = value
-    }
-
+    
     //// Load all images in storage
     let promise = imageload();
     let urlList = [];
@@ -131,24 +87,16 @@
         }
 
         let delIMGIndex = imgList.indexOf(imageID);
+        console.log("Index zu löschendes Bild ", delIMGIndex);
         if (delIMGIndex !== -1) {
+            console.log(imgList);
             imgList.splice(delIMGIndex, 1);
+            console.log(imgList);
+        } else {
+            console.log(imgList);
+            console.log(imageID)
         }
 
-        // build new imagePerLocCounter
-
-        imagePerLocCounter = [{
-        id: 0,
-        loc_name: "",
-        count: 0
-        }];
-        for (let i = 0; i < imgList.length; i++) {
-                let foundLoc = imagePerLocCounter.find((obj) => obj.loc_name === imgList[i].location); 
-                
-                if (foundLoc) {
-                    imagePerLocCounter[foundLoc.id].count = imagePerLocCounter[foundLoc.id].count + 1;
-                }
-            }
         
         // delete image from storage and image from Firestore incl. comments
 
@@ -160,10 +108,10 @@
 
         const desertRef = ref(storage, imageName);
         deleteObject(desertRef);
-        console.log("Image deleted from Storage successfully");
+        console.log("Image deleted from Storage successfully", url);
         const docRef = doc(db, "images", imageID);
         deleteDoc(docRef);
-        console.log("Image deleted from Store successfully");
+        console.log("Image deleted from Store successfully", imageID);
         comList.forEach(function(com) {
             if (com.image === url.slice(indexOfFirst + 9,indexOfFirst + 45)) {
                 const docRef = doc(db, "comments", com.id);
@@ -172,7 +120,7 @@
             }
         )
         deleteImgRealy = false;
-        window.location.href = "/dashboard"
+        //window.location.href = "/dashboard"
         }
     
 
@@ -221,16 +169,12 @@
      
 </script>
 <div class="mainContainer">
+<!--
 <center>
-    <h3>Zu welchem Ort möchtest Du gehen?</h3>
-    <br>
-    <div class="locationContainer">
-        {#each locList as loc, id(loc)}
-            
-            <button on:click={() => showImagesOfLoc(loc.loc_name)}><p>{loc.loc_name} ({imagePerLocCounter[id].count})</p></button>
-        {/each}
-    </div>
+	<h1>{data.post.title}</h1>
+	<div>{@html data.post.content}</div>
 </center>
+-->
 <center>
     {#if choosedLocation}
     
@@ -337,6 +281,9 @@
         {/await}
       </div>
     {/if}
+    <div class="locationContainer">
+        <a href="/dashboard">Zurück zur Hauptseite</a>
+    </div>
 </center>
 </div>
 <style>

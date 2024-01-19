@@ -2,10 +2,9 @@
     import { db } from "../../firebase";
     import { authHandlers, authStore } from "../../store/store";
     // @ts-ignore
-    import { getDoc, doc, setDoc, updateDoc } from "@firebase/firestore";
+    import { doc, updateDoc } from "@firebase/firestore";
     import Merkliste from "$lib/Merkliste.svelte";
-    import ShowImages from "$lib/ShowImages.svelte";
-    import Upload from "$lib/Upload.svelte";
+    import ChooseLocation from "$lib/ChooseLocation.svelte";
     
 
     // @ts-ignore
@@ -72,9 +71,11 @@
 </div>
 
 {#if pseudo}
+<!--
 <Upload />
+-->
 <br>
-<ShowImages />
+<ChooseLocation />
 <br>
 <Merkliste />
 {/if}
@@ -154,10 +155,6 @@ form {
         left: 6px;
         border: 1px solid transparent;
         opacity: 0;
-    }
-
-    .test {
-        flex: 1;
     }
 
 </style>
