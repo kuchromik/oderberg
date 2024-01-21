@@ -198,7 +198,7 @@ import { app } from "../../../firebase";
                 <hr>
                 <br>
                 <div class="images headerContainer">
-                <small>Bild-ID: {imgList[i].imagename} eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
+                <small>Bild-ID: {imgList[i].imagename}</small>
                 <img src = "{url}" alt="Image from Firebase">
                 <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
                 {#if (imgList[i].uploader === pseudo)}
