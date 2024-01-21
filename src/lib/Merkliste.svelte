@@ -2,7 +2,7 @@
     import { db } from "../firebase";
     import { authStore } from "../store/store";
     // @ts-ignore
-    import { getDoc, doc, setDoc, updateDoc } from "@firebase/firestore";
+    import { doc, setDoc } from "@firebase/firestore";
     import TodoItem from "$lib/TodoItem.svelte";
     
 
@@ -73,6 +73,7 @@
     <div class="mainContainer">
         <div class="headerContainer">
             <h3>Deine Merkliste</h3>
+            <small>Dinge, die Du Dir hier merken willst</small>
             <div class="headerBtns">
                 <button class="blob" class:hideSaveButton disabled='{hideSaveButton}' on:click={saveTodos}>
                     <i class="fa-regular fa-floppy-disk" />

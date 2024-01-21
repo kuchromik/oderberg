@@ -22,6 +22,7 @@ import { app } from "../../../firebase";
 
     //// get images (imgList) from Firestore
     let imgList = [];
+
     const imgRef = collection(db, "images");
 
     const unsubscribe1 = onSnapshot(imgRef, querysnapshot => {
@@ -32,7 +33,9 @@ import { app } from "../../../firebase";
             })
             imgList = imgListInsideSnapshot;
             // Image-Liste sortieren
-            imgList.sort((a, b) => a.imagename.localeCompare(b.imagename))
+            imgList.sort((b, a) => a.uploadDate.localeCompare(b.uploadDate));
+            console.log(imgList);
+            // set comWatch to false for all images
             for ( let i=0; i< imgList.length; i++ ) {
                 comWatch.push(false)
             }
@@ -59,6 +62,7 @@ import { app } from "../../../firebase";
     //// Load all images in storage
     let promise = imageload();
     let urlList = [];
+    let urlListByDate = [];
 
     async function imageload() {
         const res = await listAll(listRef);
@@ -67,7 +71,12 @@ import { app } from "../../../firebase";
         urlList.push(url)
         }
         if (res) {
-            return urlList
+            for (let i = 0; i < imgList.length; i++) {
+                const substr = imgList[i].imagename;
+                const subArr = urlList.filter(str => str.includes(substr));
+                urlListByDate.push(subArr[0]);
+            }
+            return urlListByDate
         } else {
             throw new Error('Probleme')
         }
@@ -81,9 +90,9 @@ import { app } from "../../../firebase";
 
         // delete image-url from urlList and imgList
         
-        let delURLIndex = urlList.indexOf(url);
+        let delURLIndex = urlListByDate.indexOf(url);
         if (delURLIndex !== -1) {
-            urlList.splice(delURLIndex, 1);
+            urlListByDate.splice(delURLIndex, 1);
         }
 
         let delIMGIndex = imgList.indexOf(imageID);
@@ -177,19 +186,21 @@ import { app } from "../../../firebase";
 -->
 <center>
     {#if choosedLocation}
-    
     <div>
         <center><h1>{choosedLocation}</h1></center>
         <br>
-        <br>
         {#await promise}
-	    <center><p>Lade Bilder ...</p></center>
-        {:then urlList}
-        {#each urlList as url, i (i)}
-            {#if (imgList[i].location === choosedLocation)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
-            <div class="images headerContainer">
+	    <center><i class="fa-solid fa-spinner loadingSpinner" /></center>
+        {:then urlListByDate}
+        {#if urlListByDate.length == imgList.length}
+            {#each urlListByDate as url, i (i)}
+                {#if (imgList[i].location == choosedLocation)} <!--Probleme mit der imgList wenn imgList.length != urlList.length-->
+                <hr>
+                <br>
+                <div class="images headerContainer">
+                <small>Bild-ID: {imgList[i].imagename} eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
                 <img src = "{url}" alt="Image from Firebase">
-                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate} Bild-ID: {imgList[i].imagename}</small>
+                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
                 {#if (imgList[i].uploader === pseudo)}
                         <div class="actions">
                             {#if !deleteImgRealy}
@@ -224,11 +235,9 @@ import { app } from "../../../firebase";
                            <button on:click|preventDefault={() => {comWatch[i] = false; comment = 'Neuer Kommentar'}}>Abbruch</button>
                     </div>
                     </form>
-                <br>
                 {/if}
                 <h5>Kommentare zu diesem Bild:</h5>
                 {#each comList as com}
-                <br>
                 {#if com.image === imgList[i].imagename}
                     <small>von {com.author} am {com.date}: </small>
                     
@@ -267,24 +276,46 @@ import { app } from "../../../firebase";
                                 <button type="submit">Änderung speichern</button>
                                 </form>
                             {/if}
+                        <br>
                         </div>
                     {/if}
                 {/if}
-                {/each}
-                <br>
+            {/each}
+            <br>
             </div>
         
             {/if}
         {/each}
+        {:else}
+        <p>Bildlistenproblem ... Administrator informieren!</p>
+        {/if}
+        <br>
+        <center>
+            {#if pseudo}
+            <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>
+            {:else}
+            <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
+            {/if}
+        </center>
         {:catch error}
 	    <p style="color: red">{error.message}</p>
         {/await}
       </div>
     {/if}
-    <div class="locationContainer">
-        <a href="/dashboard">Zurück zur Hauptseite</a>
-    </div>
+    
 </center>
 </div>
 <style>
+    .loadingSpinner {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
 </style>

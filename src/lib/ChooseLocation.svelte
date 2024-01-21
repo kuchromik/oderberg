@@ -1,7 +1,15 @@
 <script>
     import { db } from "../firebase";
     import { collection, onSnapshot } from "@firebase/firestore";
+    import { authStore } from "../store/store";
 
+    let pseudo = "";
+
+     // Authentification
+     authStore.subscribe((curr) => {
+            // @ts-ignore
+            pseudo = curr.data.pseudo;
+        });
 
     //// get locations (locList) from Firestore
     let locList = [];
@@ -10,6 +18,8 @@
         loc_name: "",
         count: 0
     }];
+
+
     const locRef = collection(db, "locations");
 
     const unsubscribe2 = onSnapshot(locRef, querysnapshot => {
@@ -61,18 +71,27 @@
 
 <div class="mainContainer">
 <center>
-    <div class="locationContainer">
-        <a href="/upload">Bild einstellen</a>
-    </div>
+    <h3>Zu welchem Ort möchtest Du gehen?</h3>
     <br>
     <div class="locationContainer">
-        <h3>Zu welchem Ort möchtest Du gehen?</h3>
-        
         {#each locList as loc, id(loc)}
-            <a href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
+            <a class="a-btn-green" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
         {/each}
     </div>
+    <br>
+    <br>
+    <br>
+    {#if pseudo}
+    <div>
+        <a class="a-btn-red" href="/upload">Neues Bild einstellen</a>
+    </div>
+    {:else}
+    <center>
+        <p>Bitte registriere Dich oder melde Dich an, um weitere Bilder einzustellen</p>
+    </center>
+    {/if}
 </center>
 
 </div>
-
+<style>
+</style>

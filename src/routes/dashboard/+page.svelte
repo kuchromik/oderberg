@@ -71,10 +71,6 @@
 </div>
 
 {#if pseudo}
-<!--
-<Upload />
--->
-<br>
 <ChooseLocation />
 <br>
 <Merkliste />

@@ -3,7 +3,7 @@
     import { getStorage, ref, uploadBytes } from "firebase/storage";
     import { v4 as uuidv4 } from 'uuid';
     import { db } from "../../firebase";
-    import { doc, getDocs, addDoc, deleteDoc, collection, onSnapshot, query, where, } from "@firebase/firestore";
+    import { addDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
     import { authStore } from "../../store/store";
     
     let locations = []; // array of locations
@@ -103,10 +103,12 @@
     
     </script>
     <div class="headerContainer">
+        <!--
         {#if !setLoadMode}
         <button style="background-color:seagreen;" on:click={() => setLoadMode = true}><h4>page.svelte: Neues Bild einstellen</h4></button>
         {:else}
         <button style="background-color:brown;" on:click={() => setLoadMode = false}><h4>Abbruch Bild einstellen</h4></button>
+        -->
         {#if avatar}
         <img class="avatar" src="{avatar}" alt="avatar" />
         {:else}
@@ -138,7 +140,13 @@
             <div>Bild zu <b>{orts_location || new_loc}</b> hochladen?</div>
             <button on:click={onUploadBreak}>Vorgang abbrechen</button>
         {/if}
+        <br>
+        {#if pseudo}
+        <a class="a-btn-red" on:click={onUploadBreak} href="/dashboard">Zurück zur Hauptseite</a>
+        {:else}
+        <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
         {/if}
+        
     </div>
     <style>
      
