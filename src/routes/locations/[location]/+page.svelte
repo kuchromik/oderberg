@@ -1,5 +1,5 @@
 <script>
-import { app } from "../../../firebase";
+    import { app } from "../../../firebase";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
     import { db } from "../../../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
@@ -200,6 +200,7 @@ import { app } from "../../../firebase";
                 <div class="images headerContainer">
                 <small>Bild-ID: {imgList[i].imagename}</small>
                 <img src = "{url}" alt="Image from Firebase">
+                <a target="_blank" href="{url}">Link zum Bild</a>
                 <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
                 {#if (imgList[i].uploader === pseudo)}
                         <div class="actions">
