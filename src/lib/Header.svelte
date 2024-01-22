@@ -12,6 +12,7 @@
     {:else}
     <a href="/"><h1 id="wappentext">Willkommen im alten Oderberg</h1></a>
     {/if}
+    <h3>Stadtansichten aus früherer Zeit</h3>
 </center>
 
 <style>

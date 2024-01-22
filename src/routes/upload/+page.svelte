@@ -103,12 +103,14 @@
     
     </script>
     <div class="headerContainer">
-        <!--
-        {#if !setLoadMode}
-        <button style="background-color:seagreen;" on:click={() => setLoadMode = true}><h4>page.svelte: Neues Bild einstellen</h4></button>
-        {:else}
-        <button style="background-color:brown;" on:click={() => setLoadMode = false}><h4>Abbruch Bild einstellen</h4></button>
-        -->
+        <h2>Bild einstellen</h2>
+        <h4>Rechtliche Aspekte:</h4>
+        <p>Bei Bildern aus der Zeit vor dem 2. Weltkrieg, um die es hier in erster Linie geht, sind die Rechte in der Regel verjährt.</p>
+        <p>Im Einzelfall sollte ggfs. rechtlicher Rat eingeholt werden</p>
+        <br>
+        <h4>Technische Aspekte:</h4>
+        <p>Die Bilder sollten im Format .jpg oder .png vorliegen und eine Größe ca. 800 x 500 Pixeln haben.</p>
+        <br>
         {#if avatar}
         <img class="avatar" src="{avatar}" alt="avatar" />
         {:else}
