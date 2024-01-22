@@ -83,7 +83,7 @@
     <br>
     {#if pseudo}
     <div>
-        <a class="a-btn-red" href="/upload">Neues Bild einstellen</a>
+        <a class="a-btn-blue" href="/upload">Neues Bild einstellen</a>
     </div>
     {:else}
     <center>
