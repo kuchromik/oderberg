@@ -38,6 +38,9 @@
     let fileinput = "";
     let filename = "";
     let  avatar, image;
+    let newWidth = 800;
+    let resizedImageURL = "";
+    let canvas;
     
     // select image from local storage of user
     const onFileSelected =(e)=>{
@@ -46,7 +49,22 @@
                 let reader = new FileReader();
                 reader.readAsDataURL(image);
                 reader.onload = e => {
-                avatar = e.target.result
+                    avatar = e.target.result;
+                    // resize image
+                    let testIMG = document.createElement("img");
+                    testIMG.src = avatar;
+                    testIMG.onload = (e2) => {
+                        canvas = document.createElement("canvas");
+                        let ratio = e2.target ? newWidth / e2.target.width : 0;
+                        canvas.width = newWidth;
+                        canvas.height = e2.target.height * ratio;
+                        console.log(image);
+                        let ctx = canvas.getContext('2d');
+                        console.log(ctx);
+                        ctx.drawImage(testIMG, 0, 0, canvas.width, canvas.height);
+                        resizedImageURL = canvas.toDataURL('image/jpeg', 0.9);
+                        console.log(resizedImageURL)
+                    };
                 };
                 imageChoosen = true;
             }
@@ -55,7 +73,7 @@
                 // 'file' comes from the Blob or File API
                 const randomFilname = uuidv4();
                 const storageRef = ref(storage, `images/${randomFilname}`);
-                uploadBytes(storageRef, image).then((snapshot) => {
+                uploadBytes(storageRef, canvas).then((snapshot) => {
                 imageChoosen = false;
                 avatar = false;
                 const imagesRef = collection(db,'images');
