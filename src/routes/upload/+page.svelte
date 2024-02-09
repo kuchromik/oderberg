@@ -124,10 +124,12 @@
         <h2>Bild einstellen</h2>
         <h4>Rechtliche Aspekte:</h4>
         <p>Bei Bildern aus der Zeit vor dem 2. Weltkrieg, um die es hier in erster Linie geht, sind die Rechte in der Regel verjährt.</p>
-        <p>Im Einzelfall sollte ggfs. rechtlicher Rat eingeholt werden</p>
+        <p>Im Einzelfall sollte ggfs. fachlicher Rat eingeholt werden.</p>
+        <p>Hier eingestellte Bilder werden niemals ausserhalb dieser rein privaten und nichtkommerziellen Website verwendet.</p>
         <br>
         <h4>Technische Aspekte:</h4>
-        <p>Die Bilder sollten im Format .jpg oder .png vorliegen und eine Größe ca. 800 x 500 Pixeln haben.</p>
+        <p>Die Bilder sollten im Format .jpg oder .png vorliegen und eine Mindestbreite ca. 800 Pixeln haben.</p>
+        <p>Größere Bilder werden vor dem Upload automatisch auf eine Breite von 800 Pixeln heruntergerechnet, so dass keine langen Ladezeiten entstehen.</p>
         <br>
         {#if avatar}
         <img class="avatar" src="{avatar}" alt="avatar" />
