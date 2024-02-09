@@ -1,6 +1,6 @@
 <script>
     import {app} from "../../firebase.js";
-    import { getStorage, ref, uploadBytes } from "firebase/storage";
+    import { getStorage, ref, uploadString } from "firebase/storage";
     import { v4 as uuidv4 } from 'uuid';
     import { db } from "../../firebase";
     import { addDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
@@ -73,7 +73,7 @@
                 // 'file' comes from the Blob or File API
                 const randomFilname = uuidv4();
                 const storageRef = ref(storage, `images/${randomFilname}`);
-                uploadBytes(storageRef, canvas).then((snapshot) => {
+                uploadString(storageRef, resizedImageURL, 'data_url').then((snapshot) => {
                 imageChoosen = false;
                 avatar = false;
                 const imagesRef = collection(db,'images');
