@@ -38,7 +38,7 @@
     let fileinput = "";
     let filename = "";
     let  avatar, image;
-    let newWidth = 800;
+    let newWidth = 800; // resized new width of images before uploading
     let resizedImageURL = "";
     let canvas;
     
@@ -77,7 +77,8 @@
                 imageChoosen = false;
                 avatar = false;
                 const imagesRef = collection(db,'images');
-                const date = new Date().toLocaleString('de-de') ;
+                //const date = new Date().toLocaleString('de-de') ;
+                const date = new Date();
                 addDoc(imagesRef,
                     {imagename: randomFilname,
                     location: orts_location,
@@ -124,8 +125,7 @@
         <h2>Bild einstellen</h2>
         <h4>Rechtliche Aspekte:</h4>
         <p>Bei Bildern aus der Zeit vor dem 2. Weltkrieg, um die es hier in erster Linie geht, sind die Rechte in der Regel verjährt.</p>
-        <p>Im Einzelfall sollte ggfs. fachlicher Rat eingeholt werden.</p>
-        <p>Hier eingestellte Bilder werden niemals ausserhalb dieser rein privaten und nichtkommerziellen Website verwendet.</p>
+        <p>Im Zweifel sollte fachlicher Rat eingeholt werden.</p>
         <br>
         <h4>Technische Aspekte:</h4>
         <p>Die Bilder sollten im Format .jpg oder .png vorliegen und eine Mindestbreite ca. 800 Pixeln haben.</p>

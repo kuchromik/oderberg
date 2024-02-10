@@ -75,7 +75,9 @@
     <br>
     <div class="locationContainer">
         {#each locList as loc, id(loc)}
-            <a class="a-btn-green" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
+            {#if (imagePerLocCounter[id].count)}
+                <a class="a-btn-green" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
+            {/if}
         {/each}
     </div>
     <br>

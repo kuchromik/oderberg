@@ -31,9 +31,11 @@
             let image = { ...doc.data(), id: doc.id};
             imgListInsideSnapshot = [image, ...imgListInsideSnapshot];  
             })
-            imgList = imgListInsideSnapshot;
+            imgList = imgListInsideSnapshot.sort(
+                (b, a) => Number(a.uploadDate) - Number(b.uploadDate)
+            );
             // Image-Liste sortieren
-            imgList.sort((b, a) => a.uploadDate.localeCompare(b.uploadDate));
+            //imgList.sort((a, b) => a.uploadDate.localeCompare(b.uploadDate));
             console.log(imgList);
             // set comWatch to false for all images
             for ( let i=0; i< imgList.length; i++ ) {
@@ -76,6 +78,7 @@
                 const subArr = urlList.filter(str => str.includes(substr));
                 urlListByDate.push(subArr[0]);
             }
+            console.log(urlListByDate);
             return urlListByDate
         } else {
             throw new Error('Probleme')
@@ -200,8 +203,7 @@
                 <div class="images headerContainer">
                 <small>Bild-ID: {imgList[i].imagename}</small>
                 <img src = "{url}" alt="Image from Firebase">
-                <a target="_blank" href="{url}">Link zum Bild</a>
-                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate}</small>
+                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate.toDate()}</small>
                 {#if (imgList[i].uploader === pseudo)}
                         <div class="actions">
                             {#if !deleteImgRealy}
@@ -242,7 +244,7 @@
                 {#if com.image === imgList[i].imagename}
                     <small>von {com.author} am {com.date}: </small>
                     
-                    <p align="left">{com.comment}</p>
+                    <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
 
                     {#if (com.author === pseudo)}
                         <div class="actions">
@@ -307,6 +309,13 @@
 </center>
 </div>
 <style>
+
+    .commentcolor {
+        color: cornflowerblue;
+        font-style: italic;
+        font-weight: 600;
+    }
+
     .loadingSpinner {
         animation: spin 1s linear infinite;
     }
