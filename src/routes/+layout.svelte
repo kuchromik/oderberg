@@ -23,7 +23,6 @@
     const nonAuthRoutes = ["/"];
 
     onMount(() => {
-        console.log("onMount");
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             const currentPath = window.location.pathname;
 

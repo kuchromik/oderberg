@@ -14,6 +14,7 @@
     authStore.subscribe((curr) => {
         // @ts-ignore
         pseudo = curr.data.pseudo;
+        console.log(pseudo)
     });
 
     // connection to Firebase Storage (images)
@@ -31,12 +32,10 @@
             let image = { ...doc.data(), id: doc.id};
             imgListInsideSnapshot = [image, ...imgListInsideSnapshot];  
             })
+            // Image-Liste sortieren
             imgList = imgListInsideSnapshot.sort(
                 (b, a) => Number(a.uploadDate) - Number(b.uploadDate)
             );
-            // Image-Liste sortieren
-            //imgList.sort((a, b) => a.uploadDate.localeCompare(b.uploadDate));
-            console.log(imgList);
             // set comWatch to false for all images
             for ( let i=0; i< imgList.length; i++ ) {
                 comWatch.push(false)
@@ -78,7 +77,6 @@
                 const subArr = urlList.filter(str => str.includes(substr));
                 urlListByDate.push(subArr[0]);
             }
-            console.log(urlListByDate);
             return urlListByDate
         } else {
             throw new Error('Probleme')
@@ -99,14 +97,10 @@
         }
 
         let delIMGIndex = imgList.indexOf(imageID);
-        console.log("Index zu löschendes Bild ", delIMGIndex);
+        
         if (delIMGIndex !== -1) {
-            console.log(imgList);
             imgList.splice(delIMGIndex, 1);
             console.log(imgList);
-        } else {
-            console.log(imgList);
-            console.log(imageID)
         }
 
         
@@ -116,7 +110,6 @@
         const indexOfFirst = url.indexOf(searchTerm);
 
         let imageName = `images/${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
-        console.log(imageName);
 
         const desertRef = ref(storage, imageName);
         deleteObject(desertRef);
@@ -181,12 +174,6 @@
      
 </script>
 <div class="mainContainer">
-<!--
-<center>
-	<h1>{data.post.title}</h1>
-	<div>{@html data.post.content}</div>
-</center>
--->
 <center>
     {#if choosedLocation}
     <div>
@@ -203,8 +190,8 @@
                 <div class="images headerContainer">
                 <small>Bild-ID: {imgList[i].imagename}</small>
                 <img src = "{url}" alt="Image from Firebase">
-                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate.toDate()}</small>
-                {#if (imgList[i].uploader === pseudo)}
+                <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate.toDate().toLocaleString()}</small>
+                {#if (imgList[i].uploader === pseudo || 'Horst Kippowski')}
                         <div class="actions">
                             {#if !deleteImgRealy}
                            <i
@@ -246,7 +233,7 @@
                     
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
 
-                    {#if (com.author === pseudo)}
+                    {#if (com.author === pseudo || 'Horst Kippowski')}
                         <div class="actions">
                             {#if (!commentEditMode && !deleteCommentRealy)}
                             <i
@@ -305,27 +292,7 @@
         {/await}
       </div>
     {/if}
-    
 </center>
 </div>
 <style>
-
-    .commentcolor {
-        color: cornflowerblue;
-        font-style: italic;
-        font-weight: 600;
-    }
-
-    .loadingSpinner {
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
 </style>

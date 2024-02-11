@@ -58,12 +58,9 @@
                         let ratio = e2.target ? newWidth / e2.target.width : 0;
                         canvas.width = newWidth;
                         canvas.height = e2.target.height * ratio;
-                        console.log(image);
                         let ctx = canvas.getContext('2d');
-                        console.log(ctx);
                         ctx.drawImage(testIMG, 0, 0, canvas.width, canvas.height);
-                        resizedImageURL = canvas.toDataURL('image/jpeg', 0.9);
-                        console.log(resizedImageURL)
+                        resizedImageURL = canvas.toDataURL('image/jpeg', 0.9)
                     };
                 };
                 imageChoosen = true;

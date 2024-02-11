@@ -6,6 +6,7 @@
     import Merkliste from "$lib/Merkliste.svelte";
     import ChooseLocation from "$lib/ChooseLocation.svelte";
     
+    
 
     // @ts-ignore
     let todoList = [];
@@ -37,9 +38,11 @@
             );
         } catch (err) {
             console.log("Fehler beim speichern des Pseudonyms");
+            pseudoinput = "";
         }
 
-        pseudoinput = "";
+        window.location.href = "/dashboard";
+
     }
 
 // showimages

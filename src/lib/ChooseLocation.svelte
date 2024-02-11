@@ -70,7 +70,7 @@
 </script>
 
 <div class="mainContainer">
-<center>
+    <center>
     <h3>Zu welchem Ort möchtest Du gehen?</h3>
     <br>
     <div class="locationContainer">
@@ -93,7 +93,6 @@
     </center>
     {/if}
 </center>
-
 </div>
 <style>
 </style>

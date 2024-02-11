@@ -178,3 +178,23 @@
   .actions i:hover {
     color: coral;
   }
+
+  
+  .commentcolor {
+    color: navy;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.loadingSpinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
