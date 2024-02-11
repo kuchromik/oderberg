@@ -191,7 +191,7 @@
                 <small>Bild-ID: {imgList[i].imagename}</small>
                 <img src = "{url}" alt="Image from Firebase">
                 <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate.toDate().toLocaleString()}</small>
-                {#if (imgList[i].uploader === pseudo || 'Horst Kippowski')}
+                {#if (imgList[i].uploader === (pseudo))}
                         <div class="actions">
                             {#if !deleteImgRealy}
                            <i
@@ -233,7 +233,7 @@
                     
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
 
-                    {#if (com.author === pseudo || 'Horst Kippowski')}
+                    {#if (com.author === (pseudo))}
                         <div class="actions">
                             {#if (!commentEditMode && !deleteCommentRealy)}
                             <i
