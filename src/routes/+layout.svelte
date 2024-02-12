@@ -74,7 +74,9 @@
 <slot></slot>
 <Footer />
 </div>
+<!--styles belongs to onNavigate-->
 <style>
+    
     @keyframes fade-in {
 	from {
 		opacity: 0;

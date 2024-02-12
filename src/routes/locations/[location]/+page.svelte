@@ -335,9 +335,9 @@
         <br>
         <center>
             {#if pseudo}
-            <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>
+            <a class="a-btn-red fixed" href="/dashboard">Zurück zur Hauptseite</a>
             {:else}
-            <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
+            <a class="a-btn-red fixed" href="/">Zurück zur Hauptseite</a>
             {/if}
         </center>
         {:catch error}
@@ -348,4 +348,10 @@
 </center>
 </div>
 <style>
+    .fixed {
+  position: fixed;
+  top: 92%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 </style>
