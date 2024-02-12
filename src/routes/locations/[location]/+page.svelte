@@ -191,7 +191,25 @@
                 <small>Bild-ID: {imgList[i].imagename}</small>
                 <img src = "{url}" alt="Image from Firebase">
                 <small>eingestellt von {imgList[i].uploader} am {imgList[i].uploadDate.toDate().toLocaleString()}</small>
-                {#if (imgList[i].uploader === (pseudo))}
+                {#if (pseudo === imgList[i].uploader)}
+                        <div class="actions">
+                            {#if !deleteImgRealy}
+                           <i
+                                on:click={() => deleteImgRealy = true}
+                                on:keydown={() => {}}
+                                class="fa-regular fa-trash-can"
+                            />
+                            {/if}
+                            {#if deleteImgRealy}
+                            <button on:click|preventDefault={() => {
+                                deleteImage(imgList[i].id, url);
+                                }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                            <button on:click|preventDefault={() => {
+                                deleteImgRealy = false;
+                           }}>Abbruch</button>
+                            {/if}
+                        </div>
+                {:else if (pseudo === "Horst Kippowski")}
                         <div class="actions">
                             {#if !deleteImgRealy}
                            <i
@@ -233,8 +251,43 @@
                     
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
 
-                    {#if (com.author === (pseudo))}
+                    {#if (pseudo === com.author)}
                         <div class="actions">
+                            {#if (!commentEditMode && !deleteCommentRealy)}
+                            <i
+                                on:click={() => {
+                                    commentEditMode = true;
+                                    commToEdit = com.id;
+                                    commToEditContent = com.comment
+                                }
+                                }
+                                on:keydown={() => {}}
+                                class="fa-regular fa-pen-to-square"
+                            />
+                            <i
+                                on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
+                                on:keydown={() => {}}
+                                class="fa-regular fa-trash-can"
+                            />
+                            {/if}
+                            {#if deleteCommentRealy && (commToDelete === com.id)}
+                            <button on:click|preventDefault={() => {
+                                deleteComment(com.id);
+                                }}>Diesen Kommentar wirklich löschen?</button>
+                            <button on:click|preventDefault={() => {
+                                deleteCommentRealy = false;
+                           }}>Abbruch</button>
+                            {/if}
+                            {#if commentEditMode && (commToEdit === com.id)}
+                            <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
+                                <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
+                                <button type="submit">Änderung speichern</button>
+                                </form>
+                            {/if}
+                        <br>
+                        </div>
+                    {:else if pseudo === "Horst Kippowski"}
+                    <div class="actions">
                             {#if (!commentEditMode && !deleteCommentRealy)}
                             <i
                                 on:click={() => {
