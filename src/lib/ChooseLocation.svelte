@@ -82,6 +82,7 @@
     </div>
     <br>
     <br>
+    <p><b>Insgesamt {imgList.length} eingestellte Bilder</b></p>
     <br>
     {#if pseudo}
     <div>
