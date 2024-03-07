@@ -62,7 +62,9 @@
         <p>Logout</p></button>
         {:else if !$authStore.loading}
         <h3>Willkommen</h3>
-        <h4>Welchen Namen möchtest Du hier verwenden?</h4>
+        <h4>Welches Pseudonym möchtest Du hier verwenden?</h4>
+        <p>Dein Pseudonym wird an deinen Bildern und Kommentaren vermerkt.</p>
+        <p>Es ist nicht zu empfehlen, den echten Namen zu verwenden.</p>
         <form>
         <label>
         <p class={pseudoinput ? " above" : " center"}>Pseudonym</p>
