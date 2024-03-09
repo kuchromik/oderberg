@@ -13,6 +13,15 @@
             pseudo = curr.data.pseudo;
         });
 
+    const adminData = {
+        name: import.meta.env.VITE_ADMIN_NAME,
+        mail: import.meta.env.VITE_ADMIN_MAIL,
+        phone: import.meta.env.VITE_ADMIN_PHONE,
+        street: import.meta.env.VITE_ADMIN_STREET,
+        zip: import.meta.env.VITE_ADMIN_ZIP,
+        city: import.meta.env.VITE_ADMIN_CITY
+};
+
 </script>
 
 <main>
@@ -20,13 +29,13 @@
     <h1>Impressum</h1>
     <br>
     <small>Die folgenden Angaben entsprechen den Vorgaben von § 5 TMG:</small>
-    <p>{name}</p>
+    <p>{adminData.name}</p>
 
-    <p>{address}</p>
+    <p>{adminData.zip} {adminData.city}, {adminData.street}</p>
 
-    <p>{email}</p>
+    <p>{adminData.mail}</p>
 
-    <p>{phone}</p>
+    <p>{adminData.phone}</p>
     <br>
     <h4>Haftung für Inhalte:</h4>
     <br>
