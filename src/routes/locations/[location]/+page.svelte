@@ -173,6 +173,7 @@
         }
      
 </script>
+
 <div class="mainContainer">
 <center>
     {#if choosedLocation}

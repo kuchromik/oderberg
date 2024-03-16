@@ -63,8 +63,8 @@
         {:else if !$authStore.loading}
         <h3>Willkommen</h3>
         <h4>Welches Pseudonym möchtest Du hier verwenden?</h4>
-        <p>Dein Pseudonym wird an deinen Bildern und Kommentaren vermerkt.</p>
-        <p>Es ist nicht zu empfehlen, den echten Namen zu verwenden.</p>
+        <p>Dein Pseudonym wird an den Bildern und Kommentaren vermerkt, die Du einstellst.</p>
+        <p>Es ist nicht zu empfehlen, Deinen echten Namen zu verwenden.</p>
         <form>
         <label>
         <p class={pseudoinput ? " above" : " center"}>Pseudonym</p>
