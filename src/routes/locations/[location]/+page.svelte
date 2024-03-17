@@ -377,8 +377,8 @@
 }
 .mainPageButtonOnRight {
     position: fixed;
-    top: 95%;
-    right: 10%;
+    top: 90%;
+    right: 12%;
     transform: translate(-50%, -50%);
 }
 </style>
