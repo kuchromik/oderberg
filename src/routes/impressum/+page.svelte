@@ -41,6 +41,11 @@
     <br>
     <p>Im Sinne von § 7 Absatz 1 TMG sind wir für die eigenen Inhalte auf dieser Webseite verantwortlich. Durch §§ 8 bis einschließlich 10 TMG sind wir aber nicht verpflichtet, gespeicherte oder übermittelte fremde Inhalte zu überwachen oder diese auf Rechtswidrigkeit zu prüfen. Das befreit uns jedoch nicht von der Pflicht, der Sperrung und Entfernung von Informationen nach geltenden Gesetzen nachzukommen.</p>
     <br>
+    {#if pseudo === "Horst Kippowski"}
+    <a class="a-btn-green" href="/cleanup">Aufräumen</a>
+    {/if}
+    <br>
+    <br>
     {#if pseudo}
     <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>
     {:else}

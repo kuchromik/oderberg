@@ -26,7 +26,10 @@
             let locListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
             let location = { ...doc.data(), id: doc.id};
-            locListInsideSnapshot = [location, ...locListInsideSnapshot];  
+            console.log("location", location);
+            if (location.loc_name) {
+            locListInsideSnapshot = [location, ...locListInsideSnapshot];
+            }
             })
             locList = locListInsideSnapshot;
             // Location-Liste sortieren
