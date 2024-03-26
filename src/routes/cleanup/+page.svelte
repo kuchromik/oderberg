@@ -17,10 +17,10 @@
             let location = { ...doc.data(), id: doc.id};
             
             // check if location is empty comming soon
-            
-            locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
-            
-        })
+            if (location.loc_name !== "") {
+                locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
+            }
+            })
         locListToCleanUp = locListInsideGetDocs;
     }
 
@@ -57,7 +57,9 @@
         return filteredUrlList;
     }
 
-    function setImageLoc(location, url) {
+    async function setImageLoc(location, url) {
+
+        console.log("STart Location setting: ", location);
 
         const searchTerm = 'images%2F';
         const indexOfFirst = url.indexOf(searchTerm);
@@ -67,12 +69,14 @@
         for (let i = 0; i < imgListToCleanUp.length; i++) {
             if (imgListToCleanUp[i].imagename === imageName) {
                 const docRef = doc(db, "images", imgListToCleanUp[i].id);
-                updateDoc(docRef, {
+                await updateDoc(docRef, {
                     location: location
                 });
                 console.log("Location updated successfully", location);
+                
             }
-        }
+        } window.location.href = "/cleanup";
+        
     }
   
 </script>
@@ -93,7 +97,7 @@
                 <div class="newLocForImage">
                 <img src={url} alt="image" class="imgToCleanUp" />
                 <br>
-                <p>Ort aus bestehemder Liste zuweisen:</p>
+                <p>Ort aus bestehender Liste zuweisen:</p>
                 <br>
                 <!-- <ChooseLocation /> -->
                 <select bind:value={selected_Location} on:change ={() => setImageLoc(selected_Location, url)}>
