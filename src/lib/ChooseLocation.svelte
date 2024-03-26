@@ -26,7 +26,6 @@
             let locListInsideSnapshot = [];
             querysnapshot.forEach((doc) => {
             let location = { ...doc.data(), id: doc.id};
-            console.log("location", location);
             if (location.loc_name) {
             locListInsideSnapshot = [location, ...locListInsideSnapshot];
             }
