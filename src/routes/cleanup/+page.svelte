@@ -13,14 +13,19 @@
         const locRef = collection(db, "locations");
         const querySnapshot_loc = await getDocs(locRef);
         let locListInsideGetDocs = [];
-        querySnapshot_loc.forEach((doc) => {
-            let location = { ...doc.data(), id: doc.id};
+        querySnapshot_loc.forEach((doci) => {
+            let location = { ...doci.data(), id: doci.id};
             
             // check if location is empty comming soon
             if (location.loc_name !== "") {
                 locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
             }
-            })
+            else {
+                const locRef = doc(db, "locations", location.id);
+                deleteDoc(locRef);
+                console.log("Location deleted successfully", location.id);
+            }
+        })
         locListToCleanUp = locListInsideGetDocs;
     }
 
