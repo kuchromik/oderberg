@@ -1,78 +1,61 @@
 <script>
-    import { db } from "../../firebase";
-    import { app } from "../../firebase";
+    import { db, app } from "../../firebase";
     import { collection, getDocs, doc, deleteDoc, updateDoc, onSnapshot } from "@firebase/firestore";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
 
-    // connection to Firebase Storage (images)
-    const storage = getStorage(app);
-    const listRef = ref(storage, 'images/');
-
-     // get locations (locList) from Firestore
+    let selected_Location;
+   
+    // get locations (locList) from Firestore
     
-     let locListToCleanUp = [];
+    let locListToCleanUp = [];
 
     async function getLocations() {
-    const locRef = collection(db, "locations");
-    const querySnapshot_loc = await getDocs(locRef);
+        const locRef = collection(db, "locations");
+        const querySnapshot_loc = await getDocs(locRef);
         let locListInsideGetDocs = [];
         querySnapshot_loc.forEach((doc) => {
-            let image = { ...doc.data(), id: doc.id};
+            let location = { ...doc.data(), id: doc.id};
             
-            // check if location is empty
+            // check if location is empty comming soon
             
-            locListInsideGetDocs = [image, ...locListInsideGetDocs]; 
+            locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
             
         })
         locListToCleanUp = locListInsideGetDocs;
     }
 
+     getLocations();
+
     // get images (imgList) from Firestore
+
+     // connection to Firebase Storage (images)
+    const storage = getStorage(app);
+    const listRef = ref(storage, 'images/');
     
     let imgListToCleanUp = [];
+    let filteredUrlList = [];
 
     async function getImages() {
         const imgRef = collection(db, "images");
         const querySnapshot_img = await getDocs(imgRef);
-            let imgListInsideGetDocs = [];
-            querySnapshot_img.forEach((doc) => {
-                let image = { ...doc.data(), id: doc.id};
-                
-                // check if location is empty
-                if (image.location === "") {
+        let imgListInsideGetDocs = [];
+        querySnapshot_img.forEach((doc) => {
+            let image = { ...doc.data(), id: doc.id};
+            if (image.location === "") {
                 imgListInsideGetDocs = [image, ...imgListInsideGetDocs]; 
-                }
-            })
-            imgListToCleanUp = imgListInsideGetDocs;
-            
-    }
-
-    //// Load all images in storage
-    let promise = imageload();
-    let urlList = [];
-    let urlListByDate = [];
-
-    async function imageload() {
-        const res = await listAll(listRef);
-        for (let itemRef of res.items) {
-        let url = await getDownloadURL(ref(itemRef));
-        urlList.push(url)
-        }
-        if (res) {
-            for (let i = 0; i < imgListToCleanUp.length; i++) {
-                const substr = imgListToCleanUp[i].imagename;
-                const subArr = urlList.filter(str => str.includes(substr));
-                urlListByDate.push(subArr[0]);
             }
-            return urlListByDate
-        } else {
-            throw new Error('Probleme')
+        })
+        imgListToCleanUp = imgListInsideGetDocs;
+        
+        // Load Image-Date for the images which have no location
+
+        for (let i = 0; i < imgListToCleanUp.length; i++) {
+            const imagename = imgListToCleanUp[i].imagename;
+            const url = await getDownloadURL(ref(storage, `images/${imagename}`));
+            filteredUrlList.push(url)
         }
+        return filteredUrlList;
     }
-
-
-    getImages();
-    getLocations();
 
     function setImageLoc(location, url) {
 
@@ -90,33 +73,24 @@
                 console.log("Location updated successfully", location);
             }
         }
-
-        
-
-        // delete image from storage
-        //const docRef = doc(db, "images", imageID);
-        //deleteDoc(docRef);
-        //console.log("Image deleted from Store successfully", imageID);
-    
     }
-
-    let selected_Location;
-        
+  
 </script>
 
 
+    {#await getImages()}
 
-{#await promise}
-
-<center><i class="fa-solid fa-spinner loadingSpinner" /></center>
-{:then urlListByDate}
+    <center><i class="fa-solid fa-spinner loadingSpinnerGreen" /></center>
+    
+    {:then filteredUrlList}
     <center>
         <h1>Hier wird aufgeräumt!</h1>
         <br>
         <h2>Bilder ohne Ortszuweisung:</h2>
         <br>
         <div class="imgContainer">
-            {#each urlListByDate as url}
+            {#each filteredUrlList as url}
+                <div class="newLocForImage">
                 <img src={url} alt="image" class="imgToCleanUp" />
                 <br>
                 <p>Ort aus bestehemder Liste zuweisen:</p>
@@ -127,9 +101,40 @@
                         <option value={location.loc_name}>{location.loc_name}</option>
                     {/each}
                 </select>
+                </div>
             {/each}
         </div>
     </center>
-{:catch error}
-    <center><p>{error.message}</p></center>
-{/await}
+    
+    {/await}
+<style>
+   
+
+    .imgContainer {
+        max-width: 80vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .newLocForImage {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .imgToCleanUp {
+        margin: 10px;
+        width: 200px;
+    }
+
+    .loadingSpinnerGreen {
+        font-size: 30px;
+        color: #2ecc71;
+    }
+
+  
+</style>
