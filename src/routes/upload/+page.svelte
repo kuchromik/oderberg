@@ -65,7 +65,8 @@
                 };
                 imageChoosen = true;
             }
-    
+    let thanksForImage = false;
+
     const onUploadOrder =()=> {
                 // 'file' comes from the Blob or File API
                 const randomFilname = uuidv4();
@@ -81,14 +82,21 @@
                     location: orts_location,
                     uploader: pseudo,
                     uploadDate: date}
-                ).then (() => window.location.href = "/dashboard")
+                ).then (() => {
+                    thanksForImage = true;
+                    //window.location.href = "/dashboard"
+                })
                     
                 });
     }
     
     const onSetLocation =(loc_name)=> {
                 
-                orts_location = loc_name;
+                if (loc_name === "" || loc_name === undefined) {
+                    orts_location = "nicht zugeordnet";
+                } else {
+                    orts_location = loc_name;
+                }
                 loacationSelected = true;
             }
     
@@ -119,6 +127,7 @@
     
     </script>
     <div class="headerContainer">
+        {#if !thanksForImage}
         <h2>Bild einstellen</h2>
         <h4>Rechtliche Aspekte:</h4>
         <p>Bei Bildern aus der Zeit vor dem 2. Weltkrieg, um die es hier in erster Linie geht, sind die Rechte in der Regel verjährt.</p>
@@ -155,9 +164,16 @@
             <button on:click={onUploadBreak}>Vorgang abbrechen</button>
         </form>
             {:else}
-            <img class="chooseImage pulsierend" src="upload.png" alt="" on:click={onUploadOrder}/>
+            <img class="chooseImage pulsierend" src="upload.png" alt="" on:click={onUploadOrder} />
             <div>Bild zu <b>{orts_location || new_loc}</b> hochladen?</div>
             <button on:click={onUploadBreak}>Vorgang abbrechen</button>
+        {/if}
+        {/if}
+        <br>
+        {#if thanksForImage}
+        <h3>Vielen Dank für das Bild!</h3>
+        <br>
+        <a class="a-btn-blue" on:click={() => {thanksForImage = false; window.location.href = "/upload"}} on:keydown={() => {}} role="button" href="#">Weiteres Bild einstellen?</a>
         {/if}
         <br>
         {#if pseudo}

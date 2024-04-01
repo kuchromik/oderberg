@@ -2,7 +2,7 @@
     import { app } from "../../../firebase";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
     import { db } from "../../../firebase";
-    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc } from "@firebase/firestore";
+    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs } from "@firebase/firestore";
     import { authStore } from "../../../store/store";
 
 	/** @type {import('./$types').PageData} */
@@ -19,6 +19,33 @@
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
     const listRef = ref(storage, 'images/');
+
+    let locListToCleanUp = [];
+    let selected_Location;
+
+    async function getLocations() {
+        const locRef = collection(db, "locations");
+        const querySnapshot_loc = await getDocs(locRef);
+        let locListInsideGetDocs = [];
+        querySnapshot_loc.forEach((doci) => {
+            let location = { ...doci.data(), id: doci.id};
+        
+            // check if location is empty comming soon
+            if (location.loc_name !== "") {
+                locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
+            }
+            else {
+                const locRef = doc(db, "locations", location.id);
+                deleteDoc(locRef);
+                console.log("Location without a name deleted successfully", location.id);
+            }
+        })
+    locListToCleanUp = locListInsideGetDocs.filter(location => location.loc_name !== "nicht zugeordnet");
+    locListToCleanUp.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
+    
+}
+
+ getLocations();
 
     //// get images (imgList) from Firestore
     let imgList = [];
@@ -181,6 +208,31 @@
         })
         return count;
     }
+
+    async function setImageLoc(location, url) {
+
+        console.log("Start Location setting: ", location, url);
+
+        const searchTerm = 'images%2F';
+        const indexOfFirst = url.indexOf(searchTerm);
+
+        let imageName = `${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
+
+        
+
+        
+        for (let i = 0; i < imgList.length; i++) {
+            if (imgList[i].imagename === imageName) {
+            const docRef = doc(db, "images", imgList[i].id);
+            await updateDoc(docRef, {
+            location: location
+            });
+            console.log("Location updated successfully", location);
+            selected_Location = "";
+            }
+        } 
+        
+    }
      
 </script>
 
@@ -238,7 +290,23 @@
                            }}>Abbruch</button>
                             {/if}
                         </div>
-                    {/if} 
+                    {/if}
+
+                    <!-- nicht zugeordnetes Bild einer Location zuordnen -->
+                    {#if pseudo}
+                        {#if choosedLocation === "nicht zugeordnet"}
+                            
+                            <p>Dem Bild einen Ort zuordnen?</p>
+                            
+                            <!-- <ChooseLocation /> -->
+                            <select bind:value={selected_Location} on:change ={() => setImageLoc(selected_Location, url)}>
+                                {#each locListToCleanUp as location}
+                                    <option value={location.loc_name}>{location.loc_name}</option>
+                                {/each}
+                            </select>
+                        {/if}
+                    {/if}
+
                     {#if !comWatch[i]}
                         <p>Zu diesem Bild gibt es {countComments(i)} Kommentare</p>       
                         <br>

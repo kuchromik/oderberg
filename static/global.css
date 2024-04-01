@@ -46,7 +46,6 @@
     }
 
     .a-btn-blue {
-      min-width: 16rem;
       background: dodgerblue;
       color: white;
       padding: 6px;
@@ -56,6 +55,7 @@
       cursor: pointer;
       text-decoration: none;
       justify-self: center;
+      align-items: center;
       }
       .a-btn-blue:hover {
       background: black;

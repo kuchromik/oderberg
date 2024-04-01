@@ -2,6 +2,14 @@
     import { db, app } from "../../firebase";
     import { collection, getDocs, doc, deleteDoc, updateDoc, onSnapshot } from "@firebase/firestore";
     import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
+    import { authStore } from "../../store/store";
+
+    let pseudo = "";
+     // Authentification
+     authStore.subscribe((curr) => {
+            // @ts-ignore
+            pseudo = curr.data.pseudo;
+        });
 
     let selected_Location;
    
@@ -23,10 +31,12 @@
             else {
                 const locRef = doc(db, "locations", location.id);
                 deleteDoc(locRef);
-                console.log("Location deleted successfully", location.id);
+                console.log("Location without a name deleted successfully", location.id);
             }
         })
         locListToCleanUp = locListInsideGetDocs;
+        locListToCleanUp.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
+        
     }
 
      getLocations();
@@ -80,7 +90,9 @@
                 console.log("Location updated successfully", location);
                 
             }
-        } window.location.href = "/cleanup";
+        }
+        selected_Location = "";
+        window.location.href = "/cleanup"
         
     }
   
@@ -113,6 +125,12 @@
                 </div>
             {/each}
         </div>
+        <br>
+        {#if pseudo}
+        <a class="a-btn-red fixed" href="/dashboard">Zurück zur Hauptseite</a>
+        {:else}
+        <a class="a-btn-red fixed" href="/">Zurück zur Hauptseite</a>
+        {/if}
     </center>
     
     {/await}
