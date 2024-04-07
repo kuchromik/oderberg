@@ -91,24 +91,24 @@
     }
     
     const onSetLocation =(loc_name)=> {
-                
-                if (loc_name === "" || loc_name === undefined) {
-                    orts_location = "nicht zugeordnet";
-                } else {
-                    orts_location = loc_name;
-                }
+                orts_location = loc_name;
                 loacationSelected = true;
             }
     
     let docRefOnBreak; // docRef of new location to use on break while uploading new image
     
-    const createNewLocation =(value)=> {        
+    const createNewLocation =(value)=> {      
+        
+                if (value) {
                 new_loc = value;
                 orts_location = new_loc;
                 loacationSelected = true;
                 const locationsRef = collection(db, 'locations');
                 addDoc(locationsRef, { loc_name: new_loc }) .then((docref) => { docRefOnBreak = docref }) .catch(error => { console.log(error); });
-                
+                } else {
+                    orts_location = "z.Z. nicht zugeordnet";
+                    loacationSelected = true;
+                }
             }
     
     // break upload process by user

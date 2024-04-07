@@ -41,10 +41,16 @@
     <br>
     <p>Im Sinne von § 7 Absatz 1 TMG sind wir für die eigenen Inhalte auf dieser Webseite verantwortlich. Durch §§ 8 bis einschließlich 10 TMG sind wir aber nicht verpflichtet, gespeicherte oder übermittelte fremde Inhalte zu überwachen oder diese auf Rechtswidrigkeit zu prüfen. Das befreit uns jedoch nicht von der Pflicht, der Sperrung und Entfernung von Informationen nach geltenden Gesetzen nachzukommen.</p>
     <br>
-    {#if pseudo === "Horst Kippowski"}
-    <a class="a-btn-green" href="/cleanup">Aufräumen</a>
-    {/if}
+    <h4>Datenschutz</h4>
     <br>
+    <p>Die von Ihnen zur Registrierung benutzte E-Mail-Adresse wird ausschließlich im Rahmen dieser Website genutzt und keinesfalls an Dritte weitergegeben. Falls die Löschung einer Registrierung gewünscht wird senden Sie bitte eine E-Mail von der registrierten Mail-Adresse aus mit dem Betreff "Löschung der Registrierung" an:</p>
+    <p><strong>{adminData.mail}</strong></p>
+    <br>
+    {#if pseudo}
+        <p>Hochgeladene Bilder und erstellte Kommentare bleiben unter Angabe des von Ihnen gewählten Pseudonyms &#187;{pseudo}&#171; auch nach Löschung der Registrierung erhalten.</p>
+    {:else}
+        <p>Hochgeladene Bilder und erstellte Kommentare bleiben unter Angabe des von Ihnen gewählten Pseudonyms auch nach Löschung der Registrierung erhalten.</p>
+    {/if}
     <br>
     {#if pseudo}
     <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>

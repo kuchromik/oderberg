@@ -40,7 +40,7 @@
                 console.log("Location without a name deleted successfully", location.id);
             }
         })
-    locListToCleanUp = locListInsideGetDocs.filter(location => location.loc_name !== "nicht zugeordnet");
+    locListToCleanUp = locListInsideGetDocs.filter(location => location.loc_name !== "z.Z. nicht zugeordnet");
     locListToCleanUp.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
     
 }
@@ -294,7 +294,7 @@
 
                     <!-- nicht zugeordnetes Bild einer Location zuordnen -->
                     {#if pseudo}
-                        {#if choosedLocation === "nicht zugeordnet"}
+                        {#if choosedLocation === "z.Z. nicht zugeordnet"}
                             
                             <p>Dem Bild einen Ort zuordnen?</p>
                             
