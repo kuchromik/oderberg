@@ -1,9 +1,9 @@
 <script>
     import {app} from "../../firebase.js";
-    import { getStorage, ref, uploadString } from "firebase/storage";
+    import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
     import { v4 as uuidv4 } from 'uuid';
     import { db } from "../../firebase";
-    import { addDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
+    import { addDoc, updateDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
     import { authStore } from "../../store/store";
     
     let locations = []; // array of locations
@@ -69,26 +69,38 @@
 
     const onUploadOrder =()=> {
                 // 'file' comes from the Blob or File API
-                const randomFilname = uuidv4();
-                const storageRef = ref(storage, `images/${randomFilname}`);
+                let downloadURL = "";
+                const randomFilename = uuidv4();
+                const storageRef = ref(storage, `images/${randomFilename}`);
                 uploadString(storageRef, resizedImageURL, 'data_url').then((snapshot) => {
-                imageChoosen = false;
-                avatar = false;
-                const imagesRef = collection(db,'images');
-                //const date = new Date().toLocaleString('de-de') ;
-                const date = new Date();
-                addDoc(imagesRef,
-                    {imagename: randomFilname,
-                    location: orts_location,
-                    uploader: pseudo,
-                    uploadDate: date}
-                ).then (() => {
-                    thanksForImage = true;
-                    //window.location.href = "/dashboard"
-                })
-                    
+
+                    getDownloadURL(snapshot.ref).then((gotDownloadURL) => {
+                        // Use the downloadURL here
+                        downloadURL = gotDownloadURL;
+
+                    }).catch((error) => {
+                        // Handle any errors
+                        console.error(error);
+                    }).then(() => {
+                        imageChoosen = false;
+                        avatar = false;
+                        const imagesRef = collection(db,'images');
+                        //const date = new Date().toLocaleString('de-de') ;
+                        const date = new Date();
+                
+                        addDoc(imagesRef,
+                            {imagename: randomFilename,
+                            location: orts_location,
+                            uploader: pseudo,
+                            uploadDate: date,
+                            url: downloadURL}
+                        )
+                        .then (() => {
+                            thanksForImage = true;
+                        });
+                    })
                 });
-    }
+            }
     
     const onSetLocation =(loc_name)=> {
                 orts_location = loc_name;
