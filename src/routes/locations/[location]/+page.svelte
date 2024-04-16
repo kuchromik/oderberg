@@ -1,6 +1,6 @@
 <script>
     import { app } from "../../../firebase";
-    import { getStorage, ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
+    import { getStorage, ref, deleteObject } from "firebase/storage";
     import { db } from "../../../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs } from "@firebase/firestore";
     import { authStore } from "../../../store/store";
@@ -18,7 +18,6 @@
 
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
-    const listRef = ref(storage, 'images/');
 
     let locListToCleanUp = [];
     let selected_Location;
@@ -73,6 +72,7 @@
 
     let comList = [];
     const comRef = collection(db, "comments");
+    let comListReady = false;
 
     const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
             let comListInsideSnapshot = [];
@@ -82,7 +82,8 @@
             })
             comList = comListInsideSnapshot;
             // Comment-Liste sortieren
-            comList.sort((a, b) => b.date.localeCompare(a.date))
+            comList.sort((a, b) => b.date.localeCompare(a.date));
+            comListReady = true;
             })
             
    
@@ -122,7 +123,6 @@
             }
         )
         deleteImgRealy = false;
-        //window.location.href = "/dashboard"
         }
     
 
@@ -202,8 +202,7 @@
         let commentCounter = 0;
         comList.forEach(com => {
             if (com.image === imgList[i].imagename) {
-                commentCounter++;
-                console.log("Comment found", commentCounter);
+                commentCounter++
                 }
             })
         
@@ -223,7 +222,7 @@
             <br>
             <div class="images headerContainer">
             <small>Bild-ID: {img.imagename}</small>
-            <img src = "{img.url}" alt="Image from Firebase">
+            <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
             <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
             {#if (pseudo === img.uploader)}
                 <div class="actions">
@@ -279,13 +278,13 @@
                 {/if}
 
                 {#if !comWatch[i]}
-                    
+                    {#if comListReady}
                         {#await countComments(i)}
                             <p>Await commentCounter</p>
                         {:then commentCounter} 
                         <p>Zu diesem Bild gibt es {commentCounter} Kommentare</p>
                         {/await}
-                        
+                    {/if}    
                         
                     
                            
