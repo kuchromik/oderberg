@@ -19,6 +19,8 @@
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
 
+    //// get locations from Firestore
+
     let locListToCleanUp = [];
     let selected_Location;
 
@@ -29,7 +31,7 @@
         querySnapshot_loc.forEach((doci) => {
             let location = { ...doci.data(), id: doci.id};
         
-            // check if location is empty comming soon
+            // check if location is empty and delete empty location
             if (location.loc_name !== "") {
                 locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
             }
@@ -39,6 +41,7 @@
                 console.log("Location without a name deleted successfully", location.id);
             }
         })
+    // generate an aphabetical sprted list of locations without the location "z.Z. nicht zugeordnet"
     locListToCleanUp = locListInsideGetDocs.filter(location => location.loc_name !== "z.Z. nicht zugeordnet");
     locListToCleanUp.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
     }
@@ -56,7 +59,7 @@
             let image = { ...doc.data(), id: doc.id};
             imgListInsideSnapshot = [image, ...imgListInsideSnapshot];  
             })
-            // Image-Liste sortieren
+            // sort Imagelist by date
             imgList = imgListInsideSnapshot.sort(
                 (b, a) => Number(a.uploadDate) - Number(b.uploadDate)
                 );
@@ -72,7 +75,7 @@
 
     let comList = [];
     const comRef = collection(db, "comments");
-    let comListReady = false;
+    let comListReady = false; // wait for comList to be ready
 
     const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
             let comListInsideSnapshot = [];
@@ -279,11 +282,9 @@
 
                 {#if !comWatch[i]}
                     {#if comListReady}
-                        {#await countComments(i)}
-                            <p>Await commentCounter</p>
-                        {:then commentCounter} 
-                        <p>Zu diesem Bild gibt es {commentCounter} Kommentare</p>
-                        {/await}
+                       
+                        <p>Zu diesem Bild gibt es {countComments(i)} Kommentare</p>
+                        
                     {/if}    
                         
                     

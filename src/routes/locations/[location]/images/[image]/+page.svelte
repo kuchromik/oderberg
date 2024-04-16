@@ -32,8 +32,7 @@
     getImages();
 </script>
 <center>
-    <h1>Einzelbild</h1>
-    <p>{data.post.location}</p>
-    <p>{data.post.image}</p>
-    <img src={url} alt="Bild" style="width: 50%; height: auto;">
+    <h1>{data.post.location}</h1>
+    <h2>{data.post.image}</h2>
+    <img src={url} alt="Bild" style="width: 100%; height: auto;">
 </center>
