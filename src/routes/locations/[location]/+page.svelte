@@ -219,6 +219,7 @@
         <div>
         <center><h1>{choosedLocation}</h1></center>
         <br>
+        <div class="imagedivision">
         {#each imgList as img, i (i)}
             {#if img.location === choosedLocation}
             <hr>
@@ -397,6 +398,7 @@
         {/each}
         <br>
         </div>
+    </div>
     {/if}
 </center>
 </div>
@@ -419,5 +421,16 @@
     top: 90%;
     right: 12%;
     transform: translate(-50%, -50%);
+}
+
+.imagedivision {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.imagedivision img {
+    width: 300px;
+    height: auto;
 }
 </style>
