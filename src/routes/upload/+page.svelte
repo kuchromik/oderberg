@@ -110,7 +110,6 @@
     let docRefOnBreak; // docRef of new location to use on break while uploading new image
     
     const createNewLocation =(value)=> {      
-        
                 if (value) {
                 new_loc = value;
                 orts_location = new_loc;
@@ -189,7 +188,7 @@
         {/if}
         <br>
         {#if pseudo}
-        <a class="a-btn-red" on:click={onUploadBreak} href="/dashboard">Zurück zur Hauptseite</a>
+        <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>
         {:else}
         <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
         {/if}

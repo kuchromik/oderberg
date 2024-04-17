@@ -425,8 +425,9 @@
 
 .imagedivision {
     display: flex;
+    align-items: flex-start;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .imagedivision img {
