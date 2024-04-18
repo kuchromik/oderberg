@@ -225,176 +225,9 @@
             <hr>
             <br>
             <div class="images headerContainer">
-            <small>Bild-ID: {img.imagename}</small>
-            <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
-            <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
-            {#if (pseudo === img.uploader)}
-                <div class="actions">
-                {#if !deleteImgRealy}
-                    <i
-                        on:click={() => deleteImgRealy = true}
-                        on:keydown={() => {}}
-                        class="fa-regular fa-trash-can"
-                    />
-                {/if}
-                {#if deleteImgRealy}
-                    <button on:click|preventDefault={() => {
-                        deleteImage(img.id, img.url);
-                        }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
-                    <button on:click|preventDefault={() => {
-                        deleteImgRealy = false;
-                        }}>Abbruch</button>
-                {/if}
-                </div>
-                {:else if (pseudo === "Horst Kippowski")}
-                <div class="actions">
-                    {#if !deleteImgRealy}
-                    <i
-                        on:click={() => deleteImgRealy = true}
-                        on:keydown={() => {}}
-                        class="fa-regular fa-trash-can"
-                    />
-                    {/if}
-                    {#if deleteImgRealy}
-                    <button on:click|preventDefault={() => {
-                        deleteImage(img.id, img.url);
-                        }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
-                    <button on:click|preventDefault={() => {
-                        deleteImgRealy = false;
-                        }}>Abbruch</button>
-                    {/if}
-                </div>
-                {/if}
-
-                <!-- nicht zugeordnetes Bild einer Location zuordnen -->
-                {#if pseudo}
-                    {#if choosedLocation === "z.Z. nicht zugeordnet"}
-                            
-                        <p>Dem Bild einen Ort zuordnen?</p>
-                            
-                        <!-- <ChooseLocation /> -->
-                        <select bind:value={selected_Location} on:change ={() => setImageLoc(selected_Location, img.url)}>
-                            {#each locListToCleanUp as location}
-                                <option value={location.loc_name}>{location.loc_name}</option>
-                            {/each}
-                        </select>
-                    {/if}
-                {/if}
-
-                {#if !comWatch[i]}
-                    {#if comListReady}
-                       
-                        <p>Zu diesem Bild gibt es {countComments(i)} Kommentare</p>
-                        
-                    {/if}    
-                        
-                    
-                           
-                    <br>
-                    <button on:click|preventDefault={() => comWatch[i] = !comWatch[i]}>Kommentare anzeigen bzw. neu erstellen</button>
-                {/if}
-                <br>
-                {#if comWatch[i]}
-                    <br>
-                    <button on:click|preventDefault={() => comWatch[i] = !comWatch[i]}>Kommentare verbergen</button>
-                    <br>
-                    {#if pseudo}
-                        <button on:click|preventDefault={() => newComClearAndSet(i)}>Neuer Kommentar zu diesem Bild?</button>
-                    {/if}
-                    <br>
-                
-                    {#if newComWatch[i]}
-                        <form on:submit|preventDefault={() => createNewComment(comment, img.imagename, i)}>
-                        <textarea bind:value="{comment}" rows="15" cols="40"></textarea>
-                        <div class="actions">
-                           <button type="submit">Kommentar absenden</button>
-                           <button on:click|preventDefault={() => {newComWatch[i] = false; comment = 'Neuer Kommentar'}}>Abbruch</button>
-                        </div>
-                        </form>
-                    {/if}
-                    <h5>Kommentare zu diesem Bild:</h5>
-                    {#each comList as com}
-                        {#if com.image === img.imagename}
-                            <small>von {com.author} am {com.date}: </small>
-                            <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
-
-                            {#if (pseudo === com.author)}
-                                <div class="actions">
-                                    {#if (!commentEditMode && !deleteCommentRealy)}
-                                        <i
-                                        on:click={() => {
-                                            commentEditMode = true;
-                                            commToEdit = com.id;
-                                            commToEditContent = com.comment
-                                            }
-                                        }
-                                        on:keydown={() => {}}
-                                        class="fa-regular fa-pen-to-square"
-                                        />
-                                        <i
-                                        on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
-                                        on:keydown={() => {}}
-                                        class="fa-regular fa-trash-can"
-                                        />
-                                    {/if}
-                                    {#if deleteCommentRealy && (commToDelete === com.id)}
-                                        <button on:click|preventDefault={() => {
-                                            deleteComment(com.id);
-                                            }}>Diesen Kommentar wirklich löschen?</button>
-                                        <button on:click|preventDefault={() => {
-                                            deleteCommentRealy = false;
-                                            }}>Abbruch</button>
-                                    {/if}
-                                    {#if commentEditMode && (commToEdit === com.id)}
-                                        <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
-                                            <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
-                                            <button type="submit">Änderung speichern</button>
-                                        </form>
-                                    {/if}
-                                    <br>
-                                </div>
-                            {:else if pseudo === "Horst Kippowski"}
-                                <div class="actions">
-                                    {#if (!commentEditMode && !deleteCommentRealy)}
-                                        <i
-                                        on:click={() => {
-                                        commentEditMode = true;
-                                        commToEdit = com.id;
-                                        commToEditContent = com.comment
-                                            }
-                                        }
-                                        on:keydown={() => {}}
-                                        class="fa-regular fa-pen-to-square"
-                                        />
-                                        <i
-                                        on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
-                                        on:keydown={() => {}}
-                                        class="fa-regular fa-trash-can"
-                                        />
-                                    {/if}
-                                    {#if deleteCommentRealy && (commToDelete === com.id)}
-                                        <button on:click|preventDefault={() => {
-                                            deleteComment(com.id);
-                                            }}>Diesen Kommentar wirklich löschen?</button>
-                                        <button on:click|preventDefault={() => {
-                                            deleteCommentRealy = false;
-                                            }}>Abbruch</button>
-                                    {/if}
-                                    {#if commentEditMode && (commToEdit === com.id)}
-                                        <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
-                                            <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
-                                            <button type="submit">Änderung speichern</button>
-                                        </form>
-                                    {/if}
-                                    <br>
-                                </div>
-                            {/if}
-                        {/if}
-                    {/each}
-                <br>
+                <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
+            </div>
             {/if}
-        </div>
-        {/if}
         {/each}
         <br>
         </div>
@@ -425,9 +258,8 @@
 
 .imagedivision {
     display: flex;
-    align-items: flex-start;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
 }
 
 .imagedivision img {
