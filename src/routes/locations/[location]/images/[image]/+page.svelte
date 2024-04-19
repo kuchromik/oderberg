@@ -3,6 +3,8 @@
     import { db } from "../../../../../firebase";
     import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs } from "@firebase/firestore";
     import { authStore } from "../../../../../store/store";
+    import { getStorage, ref, deleteObject } from "firebase/storage";
+	import { goto } from "$app/navigation";
 
     /** @type {import('./$types').PageData} */
 	export let data;
@@ -14,10 +16,12 @@
         pseudo = curr.data.pseudo;
     });
 
-    let selected_Location;
+    // connection to Firebase Storage (images)
+    const storage = getStorage(app);
 
      //// get the image from Firestore
     let img;
+    let imgID;
     let imageReady = false;
 
     async function getImage() {
@@ -28,84 +32,65 @@
             
             if (doc.id === data.post.image) {
                 img = doc.data();
-                console.log(img);
-                imageReady = true;
+                imgID = doc.id;
+                imageReady = true
             }
         })
         
     }
-    getImage();
 
-
+    getImage().then(() => {
+        console.log("Image loaded")
+        const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
+            let comListInsideSnapshot = [];
+            querysnapshot.forEach((doci) => {
+            let comment = { ...doci.data(), id: doci.id};
+            comListInsideSnapshot = [comment, ...comListInsideSnapshot]; 
+            })
+           
+            // only comments to the choosen image
+            comList = comListInsideSnapshot.filter(com => com.image === img.imagename);
+        
+            // sort comments by date
+            comList.sort((a, b) => b.date.localeCompare(a.date));
+            commentCounter = comList.length;
+            comListReady = true;
+            })
+    });
     
     //// get comments (comList) from Firestore
 
     let comList = [];
     const comRef = collection(db, "comments");
     let comListReady = false; // wait for comList to be ready
-
+    /*
     const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
             let comListInsideSnapshot = [];
-            querysnapshot.forEach((doc) => {
-            let comment = { ...doc.data(), id: doc.id};
+            querysnapshot.forEach((doci) => {
+            let comment = { ...doci.data(), id: doci.id};
             comListInsideSnapshot = [comment, ...comListInsideSnapshot]; 
             })
-            comList = comListInsideSnapshot;
-            // Comment-Liste sortieren
+           
+            // only comments to the choosen image
+            comList = comListInsideSnapshot.filter(com => com.image === img.imagename);
+        
+            // sort comments by date
             comList.sort((a, b) => b.date.localeCompare(a.date));
+            commentCounter = comList.length;
             comListReady = true;
-            console.log("comList: ", comList);
             })
-            
    
-    //// delete image from storage and image from Firestore incl. comments
-    let deleteImgRealy = false;
-    let deleteCommentRealy = false;
-
-    async function deleteImage(imageID, url) {
-
-        // delete image-url from imgList
-
-        let delIMGIndex = imgList.indexOf(imageID);
-        
-        if (delIMGIndex !== -1) {
-            imgList.splice(delIMGIndex, 1)
-        }
-
-        
-        // delete image from storage and image from Firestore incl. comments
-
-        const searchTerm = 'images%2F';
-        const indexOfFirst = url.indexOf(searchTerm);
-
-        let imageName = `images/${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
-
-        const desertRef = ref(storage, imageName);
-        deleteObject(desertRef);
-        console.log("Image deleted from Storage successfully", url);
-        const docRef = doc(db, "images", imageID);
-        deleteDoc(docRef);
-        console.log("Image deleted from Store successfully", imageID);
-        comList.forEach(function(com) {
-            if (com.image === url.slice(indexOfFirst + 9,indexOfFirst + 45)) {
-                const docRef = doc(db, "comments", com.id);
-                deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
-                }
-            }
-        )
-        deleteImgRealy = false;
-        }
-    
+   */
 
     // handle comments
     
     let comment = 'Neuer Kommentar';
-    let newComWatch = false; // Array of Booleans on make a new comment -> set visibility of new-comment-part
-    let comWatch = false; // Array of Booleans -> set visibility of comments
-    let commentEditMode = false;
+    let newComWatch = false; // watch for new comment
+    let commentEditMode = false; // watch for comment edit
     let commToEdit;
     let commToDelete;
     let commToEditContent;
+    let commentCounter;
     
     
     const createNewComment =(newcomm, image)=> {        
@@ -135,55 +120,97 @@
         comment = 'Neuer Kommentar'
         }
 
-    
+    let locList = [];
+    let selected_Location = "";
 
-    async function setImageLoc(location, url) {
-
-        console.log("Start Location setting: ", location, url);
-
-        const searchTerm = 'images%2F';
-        const indexOfFirst = url.indexOf(searchTerm);
-
-        let imageName = `${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
-
+    async function getLocations() {
+        const locRef = collection(db, "locations");
+        const querySnapshot_loc = await getDocs(locRef);
+        let locListInsideGetDocs = [];
+        querySnapshot_loc.forEach((doci) => {
+            let location = { ...doci.data(), id: doci.id};
         
+            //check if location is empty and delete empty location
+            if (location.loc_name !== "") {
+                locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
+            }
+            else {
+                const locRef = doc(db, "locations", location.id);
+                deleteDoc(locRef);
+                console.log("Location without a name deleted successfully", location.id);
+            }
+            
+        })
+    // generate an aphabetical sorted list of locations without the location "z.Z. nicht zugeordnet"
+    locList = locListInsideGetDocs.filter(location => location.loc_name !== "z.Z. nicht zugeordnet");
+    locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
+    }
 
-        
-        for (let i = 0; i < imgList.length; i++) {
-            if (imgList[i].imagename === imageName) {
-            const docRef = doc(db, "images", imgList[i].id);
+    getLocations();
+
+    async function setImageLoc(location) {
+
+       
+            const docRef = doc(db, "images", imgID);
             await updateDoc(docRef, {
             location: location
             });
-            console.log("Location updated successfully", location);
             selected_Location = "";
-            }
-        } 
-        
+            goto(`/locations/${location}`);  
     }
 
-    
-    function countComments() {
-        let commentCounter = 0;
-        comList.forEach(com => {
+     //// delete image from storage and image from Firestore incl. comments
+    let deleteImgRealy = false;
+    let deleteCommentRealy = false;
+    let afterDelete = false;
+
+    function deleteImage() {
+
+        // delete image from storage and image from Firestore incl. comments
+
+        let imageName = `images/${img.imagename}`;
+        const desertRef = ref(storage, imageName);
+        const docRef = doc(db, "images", imgID);
+
+        comList.forEach(function(com) {
             if (com.image === img.imagename) {
-                commentCounter++
+                const docRef = doc(db, "comments", com.id);
+                deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
                 }
-            })
+            }
+        )
+
+        deleteObject(desertRef)
+            .then(() => {
+                }).catch((error) => {
+                console.log("Error deleting image in Storage: ", error);
+                })
+                .then(() => {
+                deleteDoc(docRef)
+                }).catch((error) => {
+                console.log("Error deleting image in Firestore: ", error);
+                })
+                .then(() => {
+                    deleteImgRealy = false;
+                    afterDelete = true;
+                }).catch((error) => {
+                console.log("Error deleting image anyway: ", error);
+                })
         
-        return commentCounter;
-    }
+        
+        }
+    
     
 </script>
 <center>
-    {#if imageReady}
+    {#if imageReady && !afterDelete}
         <a href="/locations/{data.post.location}"><h1>{data.post.location}</h1></a>
         <br>
         <small>Bild-ID: {img.imagename}</small>
         <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
         <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
 
-        {#if (pseudo === img.uploader)}
+        {#if (pseudo === img.uploader || pseudo === "Horst Kippowski")}
             <div class="actions">
                 {#if !deleteImgRealy}
                     <i
@@ -193,153 +220,107 @@
                     />
                 {/if}
                 {#if deleteImgRealy}
-                    <button on:click|preventDefault={() => {
-                        deleteImage(img.id, img.url);
+                    <button class="a-btn-red" on:click|preventDefault={() => {
+                        deleteImage();
                         }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
-                    <button on:click|preventDefault={() => {
+                    <button class="a-btn-grey" on:click|preventDefault={() => {
                         deleteImgRealy = false;
                         }}>Abbruch</button>
                 {/if}
-            </div>
-        {:else if (pseudo === "Horst Kippowski")}
-            <div class="actions">
-                {#if !deleteImgRealy}
-                <i
-                    on:click={() => deleteImgRealy = true}
-                    on:keydown={() => {}}
-                    class="fa-regular fa-trash-can"
-                />
-                {/if}
-                {#if deleteImgRealy}
-                <button on:click|preventDefault={() => {
-                    deleteImage(img.id, img.url);
-                    }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
-                <button on:click|preventDefault={() => {
-                    deleteImgRealy = false;
-                    }}>Abbruch</button>
-                {/if}
+            <br>  
             </div>
         {/if}
-           
-        <!-- nicht zugeordnetes Bild einer Location zuordnen 
+        <br>   
+        <!-- nicht zugeordnetes Bild einer Location zuordnen -->
         {#if pseudo}
             {#if img.location === "z.Z. nicht zugeordnet"}
                 <p>Dem Bild einen Ort zuordnen?</p>
-                 <ChooseLocation /> 
-                <select bind:value={selected_Location} on:change ={() => setImageLoc(selected_Location, img.url)}>
-                    {#each locListToCleanUp as location}
+                
+                <select bind:value={selected_Location} on:change ={() => setImageLoc(selected_Location)}>
+                    {#each locList as location}
                         <option value={location.loc_name}>{location.loc_name}</option>
                     {/each}
                 </select>
+                <br>
             {/if}
-        {/if}
-        -->     
-        {#if !comWatch}
-            {#if comListReady}
-                <p>Zu diesem Bild gibt es {countComments()} Kommentare</p>
-            {/if}    
-            <br>
-            <button on:click|preventDefault={() => comWatch = !comWatch}>Kommentare anzeigen bzw. neu erstellen</button>
         {/if}
         <br>
-        {#if comWatch}
+        {#if comListReady}
+                <p>Zu diesem Bild gibt es <b>{commentCounter}</b> Kommentare</p>
+        {/if}
+        <br>
+        {#if pseudo}
+            <button class="a-btn-blue" on:click|preventDefault={() => newComWatch = true}>Neuer Kommentar zu diesem Bild?</button>
+        {/if}
+        <br>
+            
+        {#if newComWatch}
+        <br>
+            <form on:submit|preventDefault={() => createNewComment(comment, img.imagename)}>
+                <textarea bind:value="{comment}" rows="15" cols="40"></textarea>
+                <div class="actions">
+                    <button class="a-btn-green" type="submit">Kommentar absenden</button>
+                    <button class="a-btn-grey" on:click|preventDefault={() => {newComWatch = false; comment = 'Neuer Kommentar'; console.log("klick")}}>Abbruch</button>
+                </div>
+            </form>
+        {/if}
+        <br>
+        <h3>Kommentare zu diesem Bild:</h3>
+        {#each comList as com}
             <br>
-            <button on:click|preventDefault={() => comWatch = !comWatch}>Kommentare verbergen</button>
-            <br>
-            {#if pseudo}
-                <button on:click|preventDefault={() => newComWatch = true}>Neuer Kommentar zu diesem Bild?</button>
-            {/if}
-            <br>
-                
-            {#if newComWatch}
-                <form on:submit|preventDefault={() => createNewComment(comment, img.imagename)}>
-                    <textarea bind:value="{comment}" rows="15" cols="40"></textarea>
-                    <div class="actions">
-                        <button type="submit">Kommentar absenden</button>
-                        <button on:click|preventDefault={() => {newComWatch = false; comment = 'Neuer Kommentar'; console.log("klick")}}>Abbruch</button>
-                    </div>
-                </form>
-            {/if}
-            <h5>Kommentare zu diesem Bild:</h5>
-            {#each comList as com}
-                {#if com.image === img.imagename}
-                    <small>von {com.author} am {com.date}: </small>
+            {#if com.image === img.imagename}
+                <small>von {com.author} am {com.date}: </small>
+                <div class="actions">
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
-                    {#if (pseudo === com.author)}
-                        <div class="actions">
-                            {#if (!commentEditMode && !deleteCommentRealy)}
-                                <i
-                                on:click={() => {
-                                    commentEditMode = true;
-                                    commToEdit = com.id;
-                                    commToEditContent = com.comment
-                                    }
-                                }
-                                on:keydown={() => {}}
-                                class="fa-regular fa-pen-to-square"
-                                />
-                                <i
-                                on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
-                                on:keydown={() => {}}
-                                class="fa-regular fa-trash-can"
-                                />
-                            {/if}
-                            {#if deleteCommentRealy && (commToDelete === com.id)}
-                                <button on:click|preventDefault={() => {
-                                    deleteComment(com.id);
-                                    }}>Diesen Kommentar wirklich löschen?</button>
-                                <button on:click|preventDefault={() => {
-                                    deleteCommentRealy = false;
-                                    }}>Abbruch</button>
-                            {/if}
-                            {#if commentEditMode && (commToEdit === com.id)}
-                                <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
-                                    <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
-                                    <button type="submit">Änderung speichern</button>
-                                </form>
-                            {/if}
-                            <br>
-                        </div>
-                    {:else if pseudo === "Horst Kippowski"}
-                        <div class="actions">
-                            {#if (!commentEditMode && !deleteCommentRealy)}
-                                <i
-                                on:click={() => {
+                    {#if (pseudo === com.author || pseudo === "Horst Kippowski")}
+                    
+                        {#if (!commentEditMode && !deleteCommentRealy)}
+                            <i
+                            on:click={() => {
                                 commentEditMode = true;
                                 commToEdit = com.id;
                                 commToEditContent = com.comment
-                                    }
                                 }
-                                on:keydown={() => {}}
-                                class="fa-regular fa-pen-to-square"
-                                />
-                                <i
-                                on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
-                                on:keydown={() => {}}
-                                class="fa-regular fa-trash-can"
-                                />
-                            {/if}
-                            {#if deleteCommentRealy && (commToDelete === com.id)}
-                                <button on:click|preventDefault={() => {
-                                    deleteComment(com.id);
-                                    }}>Diesen Kommentar wirklich löschen?</button>
-                                <button on:click|preventDefault={() => {
-                                    deleteCommentRealy = false;
-                                    }}>Abbruch</button>
-                            {/if}
-                            {#if commentEditMode && (commToEdit === com.id)}
-                                <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
-                                    <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
-                                    <button type="submit">Änderung speichern</button>
-                                </form>
-                            {/if}
-                            <br>
-                        </div>
-                    {/if}
+                            }
+                            on:keydown={() => {}}
+                            class="fa-regular fa-pen-to-square"
+                            />
+                            <i
+                            on:click={() => {deleteCommentRealy = true; commToDelete = com.id}}
+                            on:keydown={() => {}}
+                            class="fa-regular fa-trash-can"
+                            />
+                        {/if}
+                        {#if deleteCommentRealy && (commToDelete === com.id)}
+                            <button class="a-btn-grey" on:click|preventDefault={() => {
+                                deleteComment(com.id);
+                                }}>Diesen Kommentar wirklich löschen?</button>
+                            <button class="a-btn-grey" on:click|preventDefault={() => {
+                                deleteCommentRealy = false;
+                                }}>Abbruch</button>
+                        {/if}
+                        {#if commentEditMode && (commToEdit === com.id)}
+                            <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
+                                <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
+                                <button class="a-btn-grey" type="submit">Änderung speichern</button>
+                            </form>
+                        {/if}
+                        <br>
+                    
                 {/if}
-            {/each}
-            <br>
-        {/if}
-        
+            </div>
+            {/if}
+        {/each}
+    <br>
+    {/if}
+    {#if afterDelete}
+        <p>Das Bild wurde erfolgreich gelöscht.</p>
+        <br>
+        <button class="a-btn-green" on:click|preventDefault={() => {
+            goto(`/locations/${data.post.location}`);
+            }}>Zurück zur Ortsseite</button>
+        <button class="a-btn-red" on:click|preventDefault={() => {
+            goto(`/dashboard`);
+        }}>Zurück zur Hauptseite</button>
     {/if}
 </center>

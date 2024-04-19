@@ -75,13 +75,14 @@
     <center>
     <h3>Zu welchem Ort möchtest Du gehen?</h3>
     <br>
-    <div class="locationContainer">
+    <div class="imagedivision">
+        
         {#each locList as loc, id(loc)}
             {#if (imagePerLocCounter[id].count)}
-                <a class="a-btn-green" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
+                <a class="a-btn-green-location" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
             {/if}
         {/each}
-    </div>
+    </div>   
     <br>
     <br>
     <p><b>Insgesamt {imgList.length} eingestellte Bilder</b></p>
@@ -98,4 +99,12 @@
 </center>
 </div>
 <style>
+    .imagedivision {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    }
+
 </style>

@@ -222,7 +222,6 @@
         <div class="imagedivision">
         {#each imgList as img, i (i)}
             {#if img.location === choosedLocation}
-            <hr>
             <br>
             <div class="images headerContainer">
                 <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
@@ -236,11 +235,13 @@
 </center>
 </div>
 <div class="mainPageButtonOnRight">
-    {#if pseudo}
-        <a class="a-btn-red fixed" href="/dashboard">Zurück zur Hauptseite</a>
+    <div class="btnwrapper">
+        {#if pseudo}
+            <a class="a-btn-red fixed" href="/dashboard">Zurück zur Hauptseite</a>
         {:else}
-        <a class="a-btn-red fixed" href="/">Zurück zur Hauptseite</a>
-    {/if}
+            <a class="a-btn-red fixed" href="/">Zurück zur Hauptseite</a>
+        {/if}
+    </div>
 </div>
 <style>
     .fixed {
@@ -259,11 +260,15 @@
 .imagedivision {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    gap: 10px;
+    
+    
 }
 
 .imagedivision img {
     width: 300px;
     height: auto;
 }
+
+
 </style>

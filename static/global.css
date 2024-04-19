@@ -25,15 +25,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: .5rem;
   margin: auto;
   }
-  
-  .a-btn-green {
+
+  .btnwrapper {
+    text-align: center;
+  }
+
+  .a-btn-green-location {
     min-width: 16rem;
     background: seagreen;
     color: white;
-    padding: 6px;
+    padding: 10px;
     border: none;
     border-radius: 4px;
     font-weight: 500;
@@ -44,8 +47,25 @@
     .a-btn-green:hover {
     background: black;
     }
+  
+  .a-btn-green {
+    min-width: 12rem;
+    background: seagreen;
+    color: white;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+
+    }
+    .a-btn-green:hover {
+    background: black;
+    }
 
     .a-btn-blue {
+      min-width: 12rem;
       background: dodgerblue;
       color: white;
       padding: 6px;
@@ -54,15 +74,14 @@
       font-weight: 500;
       cursor: pointer;
       text-decoration: none;
-      justify-self: center;
-      align-items: center;
       }
       .a-btn-blue:hover {
       background: black;
       }
 
     .a-btn-red {
-      background: tomato;
+      min-width: 12rem;
+      background: crimson;
       color: white;
       padding: 6px;
       border: none;
@@ -70,11 +89,27 @@
       font-weight: 500;
       cursor: pointer;
       text-decoration: none;
-      justify-self: center;
+      align-items: center;
       }
       .a-btn-red:hover {
       background: black;
       }
+
+  
+      .a-btn-grey {
+        min-width: 12rem;
+        background: grey;
+        color: white;
+        padding: 6px;
+        border: none;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        }
+        .a-btn-grey:hover {
+        background: black;
+        }
 
   .headerBtns {
   display: flex;
@@ -169,6 +204,7 @@
     align-items: center;
     gap: 14px;
     font-size: 1.3rem;
+    justify-content: center;
   }
 
   .actions i {

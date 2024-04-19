@@ -5,6 +5,7 @@
     import { db } from "../../firebase";
     import { addDoc, updateDoc, deleteDoc, collection, onSnapshot } from "@firebase/firestore";
     import { authStore } from "../../store/store";
+    import { goto } from "$app/navigation";
     
     let locations = []; // array of locations
     let orts_location = "";
@@ -34,7 +35,7 @@
     const storage = getStorage(app);
     
     let imageChoosen = false;
-    let loacationSelected = false;
+    let locationSelected = false;
     let fileinput = "";
     let filename = "";
     let  avatar, image;
@@ -104,7 +105,7 @@
     
     const onSetLocation =(loc_name)=> {
                 orts_location = loc_name;
-                loacationSelected = true;
+                locationSelected = true;
             }
     
     let docRefOnBreak; // docRef of new location to use on break while uploading new image
@@ -157,7 +158,7 @@
         <img class="chooseImage pulsierend" src="select.png" alt="" on:click={()=>{fileinput.click();}} />
         <h4>Bildauswahl</h4>
         <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
-        {:else if (imageChoosen && !loacationSelected)}
+        {:else if (imageChoosen && !locationSelected)}
         <p>Ordne das Bild einer Örtlichkeit zu:</p>
         <div class="locationContainer">
             {#each locations as value}
@@ -182,17 +183,25 @@
         {/if}
         <br>
         {#if thanksForImage}
-        <h3>Vielen Dank für das Bild!</h3>
-        <br>
-        <a class="a-btn-blue" on:click={() => {thanksForImage = false; window.location.href = "/upload"}} on:keydown={() => {}} role="button" href="#">Weiteres Bild einstellen?</a>
+            <h3>Vielen Dank für das Bild!</h3>
+            <br>
+            <div class="btnwrapper">
+                <a class="a-btn-blue" on:click={() => {thanksForImage = false; goto(`/upload`)}} on:keydown={() => {}} role="button" href="/upload">Weiteres Bild einstellen?</a>
+                <br>
+                <br>
+                <a class="a-btn-green" on:click|preventDefault={() => {
+                    goto(`/locations/${orts_location}`);
+                }}>Weiter zur Ortsseite</a>
+            </div>
         {/if}
         <br>
-        {#if pseudo}
-        <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>
-        {:else}
-        <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
-        {/if}
-        
+        <div class="btnwrapper">
+            {#if pseudo}
+                <a class="a-btn-red" href="/dashboard" >Zurück zur Hauptseite</a>
+            {:else}
+                <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
+            {/if}
+        </div>
     </div>
     <style>
      
