@@ -14,7 +14,245 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
 		integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
 		crossorigin="anonymous" referrerpolicy="no-referrer" />
-		<link rel="stylesheet" href="/static/global.css" type="text/css">
+		<!--<link rel="stylesheet" href="/static/global.css" type="text/css">-->
+		<style>
+		* {
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+			transition-duration: 200ms;
+			}
+			
+			html {
+			font-family: 'Open Sans', sans-serif;
+			}
+		  
+			.mainContainer {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
+			padding: 1rem;
+			width: 100%;
+			max-width: 1280px;
+			margin: auto;
+			}
+			
+			
+			.headerContainer {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			margin: auto;
+			}
+		  
+			.btnwrapper {
+			  text-align: center;
+			}
+		  
+			.a-btn-green-location {
+			  min-width: 16rem;
+			  background: seagreen;
+			  color: white;
+			  padding: 10px;
+			  border: none;
+			  border-radius: 4px;
+			  font-weight: 500;
+			  cursor: pointer;
+			  text-decoration: none;
+			  justify-self: center;
+			  }
+			  .a-btn-green:hover {
+			  background: black;
+			  }
+			
+			.a-btn-green {
+			  min-width: 12rem;
+			  background: seagreen;
+			  color: white;
+			  padding: 6px;
+			  border: none;
+			  border-radius: 4px;
+			  font-weight: 500;
+			  cursor: pointer;
+			  text-decoration: none;
+		  
+			  }
+			  .a-btn-green:hover {
+			  background: black;
+			  }
+		  
+			  .a-btn-blue {
+				min-width: 12rem;
+				background: dodgerblue;
+				color: white;
+				padding: 6px;
+				border: none;
+				border-radius: 4px;
+				font-weight: 500;
+				cursor: pointer;
+				text-decoration: none;
+				}
+				.a-btn-blue:hover {
+				background: black;
+				}
+		  
+			  .a-btn-red {
+				min-width: 12rem;
+				background: crimson;
+				color: white;
+				padding: 6px;
+				border: none;
+				border-radius: 4px;
+				font-weight: 500;
+				cursor: pointer;
+				text-decoration: none;
+				align-items: center;
+				}
+				.a-btn-red:hover {
+				background: black;
+				}
+		  
+			
+				.a-btn-grey {
+				  min-width: 12rem;
+				  background: grey;
+				  color: white;
+				  padding: 6px;
+				  border: none;
+				  border-radius: 4px;
+				  font-weight: 500;
+				  cursor: pointer;
+				  text-decoration: none;
+				  }
+				  .a-btn-grey:hover {
+				  background: black;
+				  }
+		  
+			.headerBtns {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			}
+			.headerContainer button {
+			background: dimgrey;
+			color: white;
+			padding: 6px;
+			border: none;
+			border-radius: 4px;
+			font-weight: 500;
+			display: flex;
+			align-items: center;
+			gap: .5rem;
+			cursor: pointer;
+			}
+			.headerContainer button:hover {
+			background: black;
+			}
+		  
+			.locationContainer  {
+			width: 16rem;
+			display: grid;
+			grid-gap: 1rem;
+			grid-template-columns: auto;
+			grid-auto-rows: minmax(2.2rem, auto);
+			}
+		  
+			@media (min-width: 768px) {
+			.locationContainer  {
+			  width: 36rem;
+			  display: grid;
+			  grid-gap: 1rem;
+			  grid-template-columns: auto auto;
+			  grid-auto-rows: minmax(2.2rem, auto);
+					  }
+			}
+		  
+			@media (min-width: 992px) {
+			.locationContainer  {
+			  width: 52rem;
+			  display: grid;
+			  grid-gap: 1rem;
+			  grid-template-columns: auto auto auto;
+			  grid-auto-rows: minmax(2.2rem, auto);
+					  }
+			}
+		  
+			@media (min-width: 1400px) {
+			  .locationContainer  {
+				width: 70rem;
+				display: grid;
+				grid-gap: 1rem;
+				grid-template-columns: auto auto auto auto;
+				grid-auto-rows: minmax(2.2rem, auto);
+						}
+			  }
+		  
+			.locationContainer button {
+			max-width: 20rem;
+			background: dimgrey;
+			color: white;
+			padding: 1rem;
+			border-width: 0px;
+			border-radius: 4px;
+			font-weight: 500;
+			display: flex;
+			align-items: center;
+			gap: .5rem;
+			cursor: pointer;
+			justify-content: center;
+			}
+			.locationContainer button:hover {
+			background: black;
+			}
+		  
+			.images {
+			margin: auto;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			
+		  }
+		  .images img {
+			max-width: 80vw;
+		  }
+		  .actions {
+			  display: flex;
+			  align-items: center;
+			  gap: 14px;
+			  font-size: 1.3rem;
+			  justify-content: center;
+			}
+		  
+			.actions i {
+			  cursor: pointer;
+			}
+		  
+			.actions i:hover {
+			  color: coral;
+			}
+		  
+			
+			.commentcolor {
+			  color: navy;
+			  font-style: italic;
+			  font-weight: 500;
+		  }
+		  
+		  .loadingSpinner {
+			  animation: spin 1s linear infinite;
+		  }
+		  
+		  @keyframes spin {
+			  from {
+				  transform: rotate(0deg);
+			  }
+			  to {
+				  transform: rotate(360deg);
+			  }
+		  }
+		</style>
 
 	</head>
 	<body data-sveltekit-preload-data="hover">
