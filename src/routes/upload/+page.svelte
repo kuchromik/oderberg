@@ -22,8 +22,8 @@
                     let location = { ...doc.data(), id: doc.id};
                     locListe = [location, ...locListe];
                     })
-                    locations = locListe;
-                    locations.sort((a, b) => a.loc_name.localeCompare(b.loc_name)); // sort locations by name
+                    locListe.sort((a, b) => a.loc_name.localeCompare(b.loc_name)); // sort locations by name
+                    locations = locListe
                     }
                     )
         
@@ -111,16 +111,27 @@
     
     let docRefOnBreak; // docRef of new location to use on break while uploading new image
     
-    const createNewLocation =(value)=> {      
+    const createNewLocation =(value)=> {
+                
                 if (value) {
-                new_loc = value;
-                orts_location = new_loc;
-                locationSelected = true;
-                const locationsRef = collection(db, 'locations');
-                addDoc(locationsRef, { loc_name: new_loc }) .then((docref) => { docRefOnBreak = docref }) .catch(error => { console.log(error); });
-                } else {
-                    orts_location = "z.Z. nicht zugeordnet";
+                    // check if location already exists
+                    const locationExists = locations.some(location => location.loc_name === value);
+                    if (locationExists) {
+                    // Location already exists
+                    orts_location = value;
                     locationSelected = true;
+                    } else {
+                    // Location does not exist
+                    new_loc = value;
+                    orts_location = new_loc;
+                    locationSelected = true;
+                    const locationsRef = collection(db, 'locations');
+                    addDoc(locationsRef, { loc_name: new_loc }) .then((docref) => { docRefOnBreak = docref }) .catch(error => { console.log(error); });
+                    }
+                } else {
+                 
+                orts_location = "z.Z. nicht zugeordnet";
+                locationSelected = true;
                 }
             }
     

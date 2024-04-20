@@ -181,6 +181,40 @@
         
         }
     
+    let orts_location = "";
+    let new_loc = "";
+    let locationSelected = false;
+    let docRefOnBreak; // docRef of new location to use on break while uploading new image
+    let value = ''; //new_loc
+
+    const createNewLocation =(value) => {
+            
+            if (value) {
+                // check if location already exists
+                const locationExists = locList.some(location => location.loc_name === value);
+                if (locationExists) {
+                // Location already exists
+                orts_location = value;
+                locationSelected = true;
+                } else {
+                // Location does not exist
+                new_loc = value;
+                orts_location = new_loc;
+                locationSelected = true;
+                const locationsRef = collection(db, 'locations');
+                addDoc(locationsRef, { loc_name: new_loc })
+                .then((docref) => { docRefOnBreak = docref })
+                .catch(error => { console.log(error); })
+                .then(() => setImageLoc(orts_location))
+                .then (() => goto(`/locations/${new_loc}`))
+                
+                }
+            } else {
+                
+            orts_location = "z.Z. nicht zugeordnet";
+            locationSelected = true;
+            }
+        }
     
 </script>
 <center>
@@ -223,6 +257,14 @@
                     {/each}
                 </select>
                 <br>
+                <p>Eine passende Örtlichkeit ist nicht in der Liste?</p>
+                <form on:submit|preventDefault={() => createNewLocation(value)}>
+                    <label>
+                        Neue Örtlichkeit:
+                        <input bind:value />
+                    </label>
+                    <button>Anlegen</button>
+                </form>
             {/if}
         {/if}
         <br>
