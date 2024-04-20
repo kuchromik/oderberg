@@ -21,8 +21,7 @@
 
     //// get locations from Firestore
 
-    let locListToCleanUp = [];
-    let selected_Location;
+    let locList = [];
 
     async function getLocations() {
         const locRef = collection(db, "locations");
@@ -42,8 +41,8 @@
             }
         })
     // generate an aphabetical sprted list of locations without the location "z.Z. nicht zugeordnet"
-    locListToCleanUp = locListInsideGetDocs.filter(location => location.loc_name !== "z.Z. nicht zugeordnet");
-    locListToCleanUp.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
+    locList = locListInsideGetDocs.filter(location => location.loc_name !== "z.Z. nicht zugeordnet");
+    locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
     }
 
  getLocations();
@@ -63,11 +62,6 @@
             imgList = imgListInsideSnapshot.sort(
                 (b, a) => Number(a.uploadDate) - Number(b.uploadDate)
                 );
-            
-            // set newComWatch to false for all images
-            for ( let i=0; i< imgList.length; i++ ) {
-                newComWatch.push(false)
-            }
         }
     )
 
@@ -86,129 +80,16 @@
             comList = comListInsideSnapshot;
             // Comment-Liste sortieren
             comList.sort((a, b) => b.date.localeCompare(a.date));
-            comListReady = true;
+            comListReady = true
             })
             
-   
-    //// delete image from storage and image from Firestore incl. comments
-    let deleteImgRealy = false;
-    let deleteCommentRealy = false;
-
-    async function deleteImage(imageID, url) {
-
-        // delete image-url from imgList
-
-        let delIMGIndex = imgList.indexOf(imageID);
-        
-        if (delIMGIndex !== -1) {
-            imgList.splice(delIMGIndex, 1)
-        }
-
-        
-        // delete image from storage and image from Firestore incl. comments
-
-        const searchTerm = 'images%2F';
-        const indexOfFirst = url.indexOf(searchTerm);
-
-        let imageName = `images/${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
-
-        const desertRef = ref(storage, imageName);
-        deleteObject(desertRef);
-        console.log("Image deleted from Storage successfully", url);
-        const docRef = doc(db, "images", imageID);
-        deleteDoc(docRef);
-        console.log("Image deleted from Store successfully", imageID);
-        comList.forEach(function(com) {
-            if (com.image === url.slice(indexOfFirst + 9,indexOfFirst + 45)) {
-                const docRef = doc(db, "comments", com.id);
-                deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); })
-                }
-            }
-        )
-        deleteImgRealy = false;
-        }
-    
-
-    // handle comments
-    
-    let comment = 'Neuer Kommentar';
-    let newComWatch = []; // Array of Booleans on make a new comment -> set visibility of new-comment-part
-    let comWatch = []; // Array of Booleans -> set visibility of comments
-    let commentEditMode = false;
-    let commToEdit;
-    let commToDelete;
-    let commToEditContent;
-
-    const newComClearAndSet = (i) => {
-        for ( let i=0; i< imgList.length; i++ ) {
-                newComWatch[i] = false
-            };
-        newComWatch[i] = true;
-        }
-
-    const createNewComment =(newcomm, image, i)=> {        
-            let newComment = newcomm;
-            let commentImage = image;
-
-            const date = new Date().toLocaleString('de-de') ;
-            
-            const commentRef = collection(db, 'comments');
-            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date });
-
-            newComWatch[i] = false;
-            comment = 'Neuer Kommentar'
-        }
-
-    const deleteComment =(delcom)=> {        
-        const docRef = doc(db, "comments", delcom);
-        deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); });
-        deleteCommentRealy = false
-        }
-
-    const editComment =(editcom, updatedDoc)=> {   
-        const date = new Date().toLocaleString('de-de') ;     
-        const docRef = doc(db, "comments", editcom);
-        updateDoc(docRef, {"comment": updatedDoc, "date": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
-        commentEditMode = false;
-        comment = 'Neuer Kommentar'
-        }
-
-    
-
-    async function setImageLoc(location, url) {
-
-        console.log("Start Location setting: ", location, url);
-
-        const searchTerm = 'images%2F';
-        const indexOfFirst = url.indexOf(searchTerm);
-
-        let imageName = `${url.slice(indexOfFirst + 9,indexOfFirst + 45)}`;
-
-        
-
-        
-        for (let i = 0; i < imgList.length; i++) {
-            if (imgList[i].imagename === imageName) {
-            const docRef = doc(db, "images", imgList[i].id);
-            await updateDoc(docRef, {
-            location: location
-            });
-            console.log("Location updated successfully", location);
-            selected_Location = "";
-            }
-        } 
-        
-    }
-
-    
-    function countComments(i) {
+   function countComments(i) {
         let commentCounter = 0;
         comList.forEach(com => {
             if (com.image === imgList[i].imagename) {
                 commentCounter++
                 }
             })
-        
         return commentCounter;
     }
 </script>
@@ -223,8 +104,17 @@
         {#each imgList as img, i (i)}
             {#if img.location === choosedLocation}
             <br>
-            <div class="images headerContainer">
+            <div class="">
                 <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
+                {#if comListReady}
+                    {#if countComments(i) === 1}
+                        <p><b>1</b> Kommentar</p>
+                    {:else if countComments(i) === 0}
+                        <p>Keine Kommentare</p>
+                    {:else}
+                        <p><b>{countComments(i)}</b> Kommentare</p>
+                    {/if}
+                {/if}
             </div>
             {/if}
         {/each}
@@ -237,9 +127,9 @@
 <div class="mainPageButtonOnRight">
     <div class="btnwrapper">
         {#if pseudo}
-            <a class="a-btn-red fixed" href="/dashboard">Zurück zur Hauptseite</a>
+            <a class="a-btn-red fixed" href="/dashboard">Zur Hauptseite</a>
         {:else}
-            <a class="a-btn-red fixed" href="/">Zurück zur Hauptseite</a>
+            <a class="a-btn-red fixed" href="/">Zur Hauptseite</a>
         {/if}
     </div>
 </div>
@@ -260,8 +150,9 @@
 .imagedivision {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
     
 }
 

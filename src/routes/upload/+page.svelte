@@ -13,6 +13,7 @@
     let value = ''; //new_loc
     let pseudo = "";
     
+    
     const colRef = collection(db, "locations"); // reference to locations collection at firestore
     
     const unsubscribe = onSnapshot(colRef, querysnapshot => {
@@ -114,19 +115,19 @@
                 if (value) {
                 new_loc = value;
                 orts_location = new_loc;
-                loacationSelected = true;
+                locationSelected = true;
                 const locationsRef = collection(db, 'locations');
                 addDoc(locationsRef, { loc_name: new_loc }) .then((docref) => { docRefOnBreak = docref }) .catch(error => { console.log(error); });
                 } else {
                     orts_location = "z.Z. nicht zugeordnet";
-                    loacationSelected = true;
+                    locationSelected = true;
                 }
             }
     
     // break upload process by user
     const onUploadBreak =()=> {
                 imageChoosen = false;
-                loacationSelected = false;
+                locationSelected = false;
                 avatar = false;
                 if (value) {
                     deleteDoc(docRefOnBreak) .then(() => { docRefOnBreak = {} }) .catch((error) => { console.error("Error removing new location: ", error); });
@@ -143,7 +144,7 @@
         <h2>Bild einstellen</h2>
         <h4>Rechtliche Aspekte:</h4>
         <p>Bei Bildern aus der Zeit vor dem 2. Weltkrieg, um die es hier in erster Linie geht, sind die Rechte in der Regel verjährt.</p>
-        <p>Im Zweifel sollte fachlicher Rat eingeholt werden.</p>
+        <p>Bilder können nach dem Upload jederzeit vom Einsteller wieder gelöscht werden.</p>
         <br>
         <h4>Technische Aspekte:</h4>
         <p>Die Bilder sollten im Format .jpg oder .png vorliegen und eine Mindestbreite ca. 800 Pixeln haben.</p>

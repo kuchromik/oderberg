@@ -57,6 +57,7 @@
 <div class="headerContainer">
         {#if pseudo}
         <h3>Hallo {pseudo}</h3>
+        <br>
         <button on:click={authHandlers.logout}>
         <i class="fa-solid fa-right-from-bracket" />
         <p>Logout</p></button>

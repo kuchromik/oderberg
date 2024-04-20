@@ -40,7 +40,6 @@
     }
 
     getImage().then(() => {
-        console.log("Image loaded")
         const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
             let comListInsideSnapshot = [];
             querysnapshot.forEach((doci) => {
@@ -63,24 +62,6 @@
     let comList = [];
     const comRef = collection(db, "comments");
     let comListReady = false; // wait for comList to be ready
-    /*
-    const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
-            let comListInsideSnapshot = [];
-            querysnapshot.forEach((doci) => {
-            let comment = { ...doci.data(), id: doci.id};
-            comListInsideSnapshot = [comment, ...comListInsideSnapshot]; 
-            })
-           
-            // only comments to the choosen image
-            comList = comListInsideSnapshot.filter(com => com.image === img.imagename);
-        
-            // sort comments by date
-            comList.sort((a, b) => b.date.localeCompare(a.date));
-            commentCounter = comList.length;
-            comListReady = true;
-            })
-   
-   */
 
     // handle comments
     
@@ -312,6 +293,9 @@
             {/if}
         {/each}
     <br>
+    <button class="a-btn-grey" on:click|preventDefault={() => {
+        goto(`/locations/${data.post.location}`);
+        }}>Zurück zu {data.post.location}</button>
     {/if}
     {#if afterDelete}
         <p>Das Bild wurde erfolgreich gelöscht.</p>
@@ -324,3 +308,10 @@
         }}>Zurück zur Hauptseite</button>
     {/if}
 </center>
+<style>
+    a {
+        color: black;
+        text-decoration: none;
+        
+        }
+</style>
