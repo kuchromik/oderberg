@@ -257,13 +257,14 @@
                     {/each}
                 </select>
                 <br>
+                <br>
                 <p>Eine passende Örtlichkeit ist nicht in der Liste?</p>
                 <form on:submit|preventDefault={() => createNewLocation(value)}>
                     <label>
                         Neue Örtlichkeit:
                         <input bind:value />
                     </label>
-                    <button>Anlegen</button>
+                    <button class="a-btn-grey">Anlegen & zuordnen</button>
                 </form>
             {/if}
         {/if}
