@@ -343,9 +343,15 @@
     <button class="a-btn-green" on:click|preventDefault={() => {
         goto(`/locations/${data.post.location}`);
         }}>Zur Ortsseite</button>
+    {#if pseudo}
+        <button class="a-btn-red" on:click|preventDefault={() => {
+            goto(`/dashboard`);
+        }}>Zur Hauptseite</button>
+    {:else}
     <button class="a-btn-red" on:click|preventDefault={() => {
-        goto(`/dashboard`);
+        goto(`/`);
     }}>Zur Hauptseite</button>
+    {/if}
     {/if}
     {#if afterDelete}
         <p>Das Bild wurde erfolgreich gelöscht.</p>
