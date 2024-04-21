@@ -178,7 +178,6 @@
             {/each}
         </div>
         <br>
-        <br>
         <p>Eine passende Örtlichkeit ist nicht in der Liste?</p>
         <form on:submit|preventDefault={() => createNewLocation(value)}>
             <label>
@@ -194,8 +193,6 @@
             <button on:click={onUploadBreak}>Vorgang abbrechen</button>
         {/if}
         {/if}
-        <br>
-        <br>
         {#if thanksForImage}
             <h3>Vielen Dank für das Bild!</h3>
             <br>
