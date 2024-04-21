@@ -110,9 +110,8 @@
         let locListInsideGetDocs = [];
         querySnapshot_loc.forEach((doci) => {
             let location = { ...doci.data(), id: doci.id};
-        
             //check if location is empty and delete empty location
-            if (location.loc_name !== "") {
+            if (doci.data().loc_name !== "") {
                 locListInsideGetDocs = [location, ...locListInsideGetDocs]; 
             }
             else {
@@ -341,9 +340,12 @@
             {/if}
         {/each}
     <br>
-    <button class="a-btn-grey" on:click|preventDefault={() => {
+    <button class="a-btn-green" on:click|preventDefault={() => {
         goto(`/locations/${data.post.location}`);
-        }}>Zurück zu {data.post.location}</button>
+        }}>Zur Ortsseite</button>
+    <button class="a-btn-red" on:click|preventDefault={() => {
+        goto(`/dashboard`);
+    }}>Zur Hauptseite</button>
     {/if}
     {#if afterDelete}
         <p>Das Bild wurde erfolgreich gelöscht.</p>
