@@ -31,7 +31,7 @@
     <p>Sie ist nicht kommerziell und dient ausschließlich privaten Zwecken.</p>
     <p>Die alten Ortsansichten können ohne Registrierung betrachtet werden.</p>
     <p><b>Bitte hilf mit, das alte {localName} zu bewahren!</b></p>
-    <p>Registriere Dich oder logge Dich ein, um weitere Bilder einzustellen sowie Kommentare zu lesen oder zu schreiben.</p>
+    <p>Registriere Dich oder logge Dich ein, um weitere Bilder einzustellen oder Kommentare zu schreiben.</p>
     {/if}
 </center>
 

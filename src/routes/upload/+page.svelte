@@ -178,6 +178,7 @@
             {/each}
         </div>
         <br>
+        <br>
         <p>Eine passende Örtlichkeit ist nicht in der Liste?</p>
         <form on:submit|preventDefault={() => createNewLocation(value)}>
             <label>
@@ -194,6 +195,7 @@
         {/if}
         {/if}
         <br>
+        <br>
         {#if thanksForImage}
             <h3>Vielen Dank für das Bild!</h3>
             <br>
@@ -207,11 +209,12 @@
             </div>
         {/if}
         <br>
+        <br>
         <div class="btnwrapper">
             {#if pseudo}
-                <a class="a-btn-red" href="/dashboard" >Zurück zur Hauptseite</a>
+                <a class="a-btn-red" href="/dashboard" >Zur Hauptseite</a>
             {:else}
-                <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
+                <a class="a-btn-red" href="/">Zur Hauptseite</a>
             {/if}
         </div>
     </div>

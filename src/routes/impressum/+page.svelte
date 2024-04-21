@@ -7,6 +7,8 @@
 
     let pseudo = "";
 
+    let localName = import.meta.env.VITE_LOCAL_NAME;
+
      // Authentification
      authStore.subscribe((curr) => {
             // @ts-ignore
@@ -43,7 +45,7 @@
     <br>
     <h4>Datenschutz</h4>
     <br>
-    <p>Die von Ihnen zur Registrierung benutzte E-Mail-Adresse wird ausschließlich im Rahmen dieser Website genutzt und keinesfalls an Dritte weitergegeben. Falls die Löschung einer Registrierung gewünscht wird senden Sie bitte eine E-Mail von der registrierten Mail-Adresse aus mit dem Betreff "Löschung der Registrierung" an:</p>
+    <p>Die von Ihnen zur Registrierung benutzte E-Mail-Adresse wird ausschließlich im Rahmen dieser Website genutzt und keinesfalls an Dritte weitergegeben. Falls die Löschung einer Registrierung gewünscht wird senden Sie bitte eine E-Mail von der registrierten Mail-Adresse aus mit dem Betreff "Löschung meiner Registrierung {localName}-Seite " an:</p>
     <p><strong>{adminData.mail}</strong></p>
     <br>
     {#if pseudo}
@@ -53,9 +55,9 @@
     {/if}
     <br>
     {#if pseudo}
-    <a class="a-btn-red" href="/dashboard">Zurück zur Hauptseite</a>
+    <a class="a-btn-red" href="/dashboard">Zur Hauptseite</a>
     {:else}
-    <a class="a-btn-red" href="/">Zurück zur Hauptseite</a>
+    <a class="a-btn-red" href="/">Zur Hauptseite</a>
     {/if}
     <br>
     <br>
