@@ -103,7 +103,6 @@
         <div class="imagedivision">
         {#each imgList as img, i (i)}
             {#if img.location === choosedLocation}
-            <br>
             <div class="">
                 <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
                 {#if comListReady}

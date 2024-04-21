@@ -345,10 +345,10 @@
         <br>
         <button class="a-btn-green" on:click|preventDefault={() => {
             goto(`/locations/${data.post.location}`);
-            }}>Zurück zur Ortsseite</button>
+            }}>Zur Ortsseite</button>
         <button class="a-btn-red" on:click|preventDefault={() => {
             goto(`/dashboard`);
-        }}>Zurück zur Hauptseite</button>
+        }}>Zur Hauptseite</button>
     {/if}
 </center>
 <style>
