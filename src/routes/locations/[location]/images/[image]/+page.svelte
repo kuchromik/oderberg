@@ -186,9 +186,10 @@
     let locationSelected = false;
     let docRefOnBreak; // docRef of new location to use on break while uploading new image
     let value = ''; //new_loc
+    let locationAlreadyExists = false;
 
     const createNewLocation =(value) => {
-            
+            locationAlreadyExists = false;
             if (value) {
                 // check if location already exists
                 const locationExists = locList.some(location => location.loc_name === value);
@@ -196,6 +197,7 @@
                 // Location already exists
                 orts_location = value;
                 locationSelected = true;
+                locationAlreadyExists = true;
                 } else {
                 // Location does not exist
                 new_loc = value;
@@ -264,6 +266,9 @@
                         Neue Örtlichkeit:
                         <input bind:value />
                     </label>
+                    {#if locationAlreadyExists}
+                        <p style="color: red;">Die Örtlichkeit {value} existiert bereits. Bitte wähle sie aus der Liste.</p>
+                    {/if}
                     <button class="a-btn-grey">Anlegen & zuordnen</button>
                 </form>
             {/if}
