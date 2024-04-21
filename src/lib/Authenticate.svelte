@@ -147,7 +147,7 @@
     }
 
     form button {
-        background: grey;
+        background: dimgrey;
         color: white;
         border: none;
         padding: 14px 0;
