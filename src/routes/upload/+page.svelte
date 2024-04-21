@@ -198,8 +198,7 @@
             <br>
             <div class="btnwrapper">
                 <a class="a-btn-blue" on:click={() => {thanksForImage = false; goto(`/upload`)}} on:keydown={() => {}} role="button" href="/upload">Weiteres Bild einstellen?</a>
-                <br>
-                <br>
+                
                 <a class="a-btn-green" on:click|preventDefault={() => {
                     goto(`/locations/${orts_location}`);
                 }}>Weiter zur Ortsseite</a>
