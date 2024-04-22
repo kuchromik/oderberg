@@ -231,8 +231,8 @@
         const docRef = doc(db, "images", imgID);
         updateDoc(docRef, {
             imagetitel: value
-        }).then (() => goto(`/locations/${data.post.location}/images/${imgID}`))
-    
+        }).then (() => getImage())
+        //(() => goto(`/locations/${data.post.location}/images/${imgID}`))
     }
     
 </script>
