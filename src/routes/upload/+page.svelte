@@ -39,10 +39,11 @@
     let locationSelected = false;
     let fileinput = "";
     let filename = "";
-    let  avatar, image;
+    let avatar, image;
     let newWidth = 800; // resized new width of images before uploading
     let resizedImageURL = "";
     let canvas;
+    let imageTitel = "";
     
     // select image from local storage of user
     const onFileSelected =(e)=>{
@@ -92,6 +93,7 @@
                 
                         addDoc(imagesRef,
                             {imagename: randomFilename,
+                            imagetitel: imageTitel,
                             location: orts_location,
                             uploader: pseudo,
                             uploadDate: date,
@@ -140,6 +142,7 @@
                 imageChoosen = false;
                 locationSelected = false;
                 avatar = false;
+                imageTitel = "";
                 if (value) {
                     deleteDoc(docRefOnBreak) .then(() => { docRefOnBreak = {} }) .catch((error) => { console.error("Error removing new location: ", error); });
                     }
@@ -148,6 +151,14 @@
             }
     
     let setLoadMode = false;
+
+    const setImageTitel = (value) => {
+                imageTitel = value;
+                if (!value) {
+                    imageTitel = "Bild ohne Titel";
+                }
+            }
+    
     
     </script>
     <div class="headerContainer">
@@ -170,8 +181,18 @@
         <img class="chooseImage pulsierend" src="select.png" alt="" on:click={()=>{fileinput.click();}} />
         <h4>Bildauswahl</h4>
         <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
-        {:else if (imageChoosen && !locationSelected)}
-        <p>Ordne das Bild einer Örtlichkeit zu:</p>
+        {:else if (imageChoosen && !imageTitel && !locationSelected)}
+        <p>Erstelle einen Bildtitel:</p>
+        <form on:submit|preventDefault={() => setImageTitel(value)}>
+            <label>
+                Bildtitel:
+                <input bind:value />
+            </label>
+            <button>Anlegen</button>
+            <button on:click={onUploadBreak}>Vorgang abbrechen</button>
+        </form>
+        {:else if (imageChoosen && imageTitel && !locationSelected)}
+        <p>Ordne dem Bild &raquo;{imageTitel}&laquo; eine Örtlichkeit zu:</p>
         <div class="locationContainer">
             {#each locations as value}
                 <button on:click={() => onSetLocation(value.loc_name)}>{value.loc_name}</button>

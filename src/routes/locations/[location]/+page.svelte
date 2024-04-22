@@ -105,6 +105,7 @@
             {#if img.location === choosedLocation}
             <div class="">
                 <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
+                <h3>{img.imagetitel}</h3>
                 {#if comListReady}
                     {#if countComments(i) === 1}
                         <p><b>1</b> Kommentar</p>

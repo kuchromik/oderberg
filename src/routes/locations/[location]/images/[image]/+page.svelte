@@ -66,6 +66,7 @@
     // handle comments
     
     let comment = 'Neuer Kommentar';
+    let newImageName = 'Neuer Bildtitel';
     let newComWatch = false; // watch for new comment
     let commentEditMode = false; // watch for comment edit
     let commToEdit;
@@ -216,13 +217,46 @@
             locationSelected = true;
             }
         }
+
+    let changeImagetitel = false;
+
+    const  onBreak =() => {
+        changeImagetitel = false;
+
+        }
+    
+
+    const setImageTitel = (value) => {
+        changeImagetitel = false;
+        const docRef = doc(db, "images", imgID);
+        updateDoc(docRef, {
+            imagetitel: value
+        }).then (() => goto(`/locations/${data.post.location}/images/${imgID}`))
+    
+    }
     
 </script>
 <center>
     {#if imageReady && !afterDelete}
         <a href="/locations/{data.post.location}"><h1>{data.post.location}</h1></a>
         <br>
+        <div class="changeImagetitel">
+            <h2>{img.imagetitel}</h2>
+            {#if !changeImagetitel}
+                <button class="a-btn-grey" on:click={() => changeImagetitel = true}>Titel ändern</button>
+            {/if}
+            {#if changeImagetitel}
+                <form on:submit|preventDefault={() => setImageTitel(value)}>
+                    <label>
+                        Neuer Titel:
+                        <input bind:value />
+                    </label>
+                <button>Ändern</button>
+                <button on:click={onBreak}>Vorgang abbrechen</button>
+            </form>
+        {/if}
         <small>Bild-ID: {img.imagename}</small>
+        </div>
         <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
         <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
 
@@ -369,5 +403,17 @@
         color: black;
         text-decoration: none;
         
+        }
+
+    .changeImagetitel {
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+        height: auto;
         }
 </style>
