@@ -5,6 +5,8 @@
 
     let pseudo = "";
 
+    let colorField = ["#2c5d14", "#335422", "#374b2c", "#3a4135", "#3b383d", "#3a2e45", "#38244d"]
+
      // Authentification
      authStore.subscribe((curr) => {
             // @ts-ignore
@@ -69,6 +71,26 @@
             }
         }
     )
+
+    let randomColor = () => {
+        let characters='0123456789ABCDEF';
+        let randomStringR='';
+        let randomStringG='';
+        let randomStringB='';
+        for (let i=0; i<1; i++) {
+            let randomIndex=Math.floor(Math.random()*characters.length);
+            randomStringR+=characters.charAt(randomIndex);
+            };
+        for (let i=0; i<1; i++) {
+            let randomIndex=Math.floor(Math.random()*characters.length);
+            randomStringG+=characters.charAt(randomIndex);
+            }
+        for (let i=0; i<2; i++) {
+            let randomIndex=Math.floor(Math.random()*characters.length);
+            randomStringB+=characters.charAt(randomIndex);
+            }
+        return '#5'+randomStringR+'5'+randomStringG+randomStringB;
+        }
 </script>
 
 <div class="mainContainer">
@@ -79,7 +101,7 @@
         
         {#each locList as loc, id(loc)}
             {#if (imagePerLocCounter[id].count)}
-                <a class="a-btn-green-location" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
+                <a class="a-btn-green-location" style="background: {randomColor()}" href="/locations/{loc.loc_name}">{loc.loc_name} ({imagePerLocCounter[id].count})</a>
             {/if}
         {/each}
     </div>   

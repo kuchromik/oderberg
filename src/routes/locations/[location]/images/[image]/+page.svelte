@@ -227,6 +227,10 @@
     
 
     const setImageTitel = (value) => {
+        if (!value) {
+            value = "Ohne Titel";
+        }
+
         changeImagetitel = false;
         const docRef = doc(db, "images", imgID);
         updateDoc(docRef, {
@@ -242,20 +246,22 @@
         <br>
         <div class="changeImagetitel">
             <h2>{img.imagetitel}</h2>
-            {#if !changeImagetitel}
-                <button class="a-btn-grey" on:click={() => changeImagetitel = true}>Titel ändern</button>
+            {#if pseudo==="Horst Kippowski" || pseudo === img.uploader}
+                {#if !changeImagetitel}
+                    <button class="a-btn-grey" on:click={() => changeImagetitel = true}>Titel ändern</button>
+                {/if}
+                {#if changeImagetitel}
+                    <form on:submit|preventDefault={() => setImageTitel(value)}>
+                        <label>
+                            Neuer Titel:
+                            <input bind:value />
+                        </label>
+                    <button class="a-btn-green">Ändern</button>
+                    <button class="a-btn-grey" on:click={onBreak}>Vorgang abbrechen</button>
+                    </form>
+                {/if}
+                <small>Bild-ID: {img.imagename}</small>
             {/if}
-            {#if changeImagetitel}
-                <form on:submit|preventDefault={() => setImageTitel(value)}>
-                    <label>
-                        Neuer Titel:
-                        <input bind:value />
-                    </label>
-                <button>Ändern</button>
-                <button on:click={onBreak}>Vorgang abbrechen</button>
-            </form>
-        {/if}
-        <small>Bild-ID: {img.imagename}</small>
         </div>
         <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
         <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
