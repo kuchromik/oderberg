@@ -21,11 +21,9 @@
             })
     
     userList = userListInsideGetDocs;
-    console.log(userList);
     userList.forEach((user) => {
         pseudoList.push(user.pseudo);
-    });
-    console.log(pseudoList);
+    })
 
     }
 
@@ -53,13 +51,12 @@
             // Pseudo exists in userList
             // Add your logic here
             alreadyExists = true;
-            pseudoinput = "";
-            console.log("Pseudo existiert bereits");
-            return;
-        } else {
+            pseudo = "";
+        }
+        
+        else {
             // Pseudo does not exist in userList
             // Add your logic here
-            console.log("Pseudo existiert noch nicht");
             try {
             // @ts-ignore
             const userRef = doc(db, "users", $authStore.user.uid);
@@ -77,6 +74,7 @@
             }
             //goto("/dashboard");
         }
+        
 
        
 
@@ -99,7 +97,7 @@
         <button on:click={authHandlers.logout}>
         <i class="fa-solid fa-right-from-bracket" />
         <p>Logout</p></button>
-        {:else if !$authStore.loading}
+        {:else if !$authStore.loading && alreadyExists == false}
         <h3>Willkommen</h3>
         <h4>Welches Pseudonym möchtest Du hier verwenden?</h4>
         <p>Dein Pseudonym wird an den Bildern und Kommentaren vermerkt, die Du einstellst.</p>
@@ -109,11 +107,12 @@
         <p class={pseudoinput ? " above" : " center"}>Pseudonym</p>
         <input bind:value={pseudoinput} type="text" placeholder="Pseudonym" />
         </label>
-        <button on:click={addPseudonym}>Speichern</button>
+        <button on:click|preventDefault={addPseudonym}>Speichern</button>
         </form>
-        {#if alreadyExists}
-        <p>Das Pseudonym {pseudoinput} existiert bereits. Bitte wähle ein anderes.</p>
         {/if}
+        {#if alreadyExists}
+        <p style="color:red">Das Pseudonym {pseudoinput} existiert bereits.</p>
+        <button on:click|preventDefault={() => {alreadyExists = false; pseudoinput = ""}}>Bitte wähle ein anderes</button>
         {/if}
 </div>
 
