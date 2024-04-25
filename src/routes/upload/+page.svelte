@@ -12,6 +12,19 @@
     let new_loc = "";
     let value = ''; //new_loc
     let pseudo = "";
+
+      //// get the logbuch from Firestore
+    
+
+    async function makeLogEntry(imageName) {
+        const imgRef = collection(db, "logbuch");
+        const date = new Date().toLocaleString('de-de') ;
+        addDoc(imgRef, {action: "Upload", image: imageName, user: pseudo, date: date})
+        .then(() => {
+            console.log("Logbuch updated");
+        })
+        
+    }
     
     
     const colRef = collection(db, "locations"); // reference to locations collection at firestore
@@ -101,6 +114,7 @@
                         )
                         .then (() => {
                             thanksForImage = true;
+                            makeLogEntry(randomFilename);
                         });
                     })
                 });

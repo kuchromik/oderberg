@@ -2,17 +2,41 @@
     import { db } from "../../firebase";
     import { authHandlers, authStore } from "../../store/store";
     // @ts-ignore
-    import { doc, updateDoc } from "@firebase/firestore";
+    import { doc, updateDoc, getDocs, collection } from "@firebase/firestore";
     import Merkliste from "$lib/Merkliste.svelte";
     import ChooseLocation from "$lib/ChooseLocation.svelte";
+    import { goto } from '$app/navigation';
     
     
+    let userList = [];
+    let pseudoList = [];
+
+    async function getUsers() {
+        const userRef = collection(db, "users");
+        const querySnapshot_loc = await getDocs(userRef);
+        let userListInsideGetDocs = [];
+        querySnapshot_loc.forEach((doci) => {
+            let user = { ...doci.data(), id: doci.id};
+            userListInsideGetDocs = [user, ...userListInsideGetDocs]; 
+            })
+    
+    userList = userListInsideGetDocs;
+    console.log(userList);
+    userList.forEach((user) => {
+        pseudoList.push(user.pseudo);
+    });
+    console.log(pseudoList);
+
+    }
+
+    getUsers();
 
     // @ts-ignore
     let todoList = [];
     
     let pseudo = "";
     let pseudoinput = "";
+    let alreadyExists = false;
 
     authStore.subscribe((curr) => {
         // @ts-ignore
@@ -25,7 +49,18 @@
         // @ts-ignore
         pseudo = pseudoinput;
 
-        try {
+        if (pseudoList.includes(pseudo)) {
+            // Pseudo exists in userList
+            // Add your logic here
+            alreadyExists = true;
+            pseudoinput = "";
+            console.log("Pseudo existiert bereits");
+            return;
+        } else {
+            // Pseudo does not exist in userList
+            // Add your logic here
+            console.log("Pseudo existiert noch nicht");
+            try {
             // @ts-ignore
             const userRef = doc(db, "users", $authStore.user.uid);
             await updateDoc(
@@ -39,9 +74,13 @@
         } catch (err) {
             console.log("Fehler beim speichern des Pseudonyms");
             pseudoinput = "";
+            }
+            //goto("/dashboard");
         }
 
-        window.location.href = "/dashboard";
+       
+
+        //window.location.href = "/dashboard";
 
     }
 
@@ -72,6 +111,9 @@
         </label>
         <button on:click={addPseudonym}>Speichern</button>
         </form>
+        {#if alreadyExists}
+        <p>Das Pseudonym {pseudoinput} existiert bereits. Bitte wähle ein anderes.</p>
+        {/if}
         {/if}
 </div>
 

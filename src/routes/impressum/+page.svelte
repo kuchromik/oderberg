@@ -59,6 +59,9 @@
     {:else}
     <a class="a-btn-red" href="/">Zur Hauptseite</a>
     {/if}
+    {#if pseudo === "Horst Kippowski"}
+    <a class="a-btn-blue" href="/logbuch">Zum Logbuch</a>
+    {/if}
     <br>
     <br>
     </center>
