@@ -173,16 +173,34 @@
                 }
             }
     
-    
+    let randomColor = () => {
+        let characters='0123456789ABCDEF';
+        let randomStringR='';
+        let randomStringG='';
+        let randomStringB='';
+        for (let i=0; i<1; i++) {
+            let randomIndex=Math.floor(Math.random()*characters.length);
+            randomStringR+=characters.charAt(randomIndex);
+            };
+        for (let i=0; i<1; i++) {
+            let randomIndex=Math.floor(Math.random()*characters.length);
+            randomStringG+=characters.charAt(randomIndex);
+            }
+        for (let i=0; i<2; i++) {
+            let randomIndex=Math.floor(Math.random()*characters.length);
+            randomStringB+=characters.charAt(randomIndex);
+            }
+        return '#5'+randomStringR+'5'+randomStringG+randomStringB;
+        }
     </script>
     <div class="headerContainer">
         {#if !thanksForImage}
         <h2>Bild einstellen</h2>
-        <h4>Rechtliche Aspekte:</h4>
+        <h3>Rechtliche Aspekte:</h3>
         <p>Bei Bildern aus der Zeit vor dem 2. Weltkrieg, um die es hier in erster Linie geht, sind die Rechte in der Regel verjährt.</p>
         <p>Bilder können nach dem Upload jederzeit vom Einsteller wieder gelöscht werden.</p>
         <br>
-        <h4>Technische Aspekte:</h4>
+        <h3>Technische Aspekte:</h3>
         <p>Die Bilder sollten im Format .jpg oder .png vorliegen und eine Mindestbreite ca. 800 Pixeln haben.</p>
         <p>Größere Bilder werden vor dem Upload automatisch auf eine Breite von 800 Pixeln heruntergerechnet, so dass keine langen Ladezeiten entstehen.</p>
         <br>
@@ -193,10 +211,11 @@
         {/if}
         {#if !imageChoosen}
         <img class="chooseImage pulsierend" src="select.png" alt="" on:click={()=>{fileinput.click();}} />
-        <h4>Bildauswahl</h4>
+        <h3>Bildauswahl</h3>
         <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
         {:else if (imageChoosen && !imageTitel && !locationSelected)}
-        <p>Erstelle einen Bildtitel:</p>
+        <h4>Erstelle einen Bildtitel:</h4>
+        <p>Ohne Eingabe wird automatisch &raquo;Ohne Titel&laquo; vergeben.</p>
         <form on:submit|preventDefault={() => setImageTitel(value)}>
             <label>
                 Bildtitel:
@@ -209,7 +228,7 @@
         <p>Ordne dem Bild &raquo;{imageTitel}&laquo; eine Örtlichkeit zu:</p>
         <div class="locationContainer">
             {#each locations as value}
-                <button on:click={() => onSetLocation(value.loc_name)}>{value.loc_name}</button>
+                <button style="background: {randomColor()}" on:click={() => onSetLocation(value.loc_name)}>{value.loc_name}</button>
             {/each}
         </div>
         <br>
@@ -250,6 +269,10 @@
         </div>
     </div>
     <style>
+
+        h2 {
+            margin-bottom: .5rem;
+        }
      
         .chooseImage{
             display:flex;
