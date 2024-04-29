@@ -1,6 +1,6 @@
 <script>
     import { db } from "../../firebase";
-    import { authHandlers, authStore } from "../../store/store";
+    import { authStore } from "../../store/store";
     // @ts-ignore
     import { doc, updateDoc, getDocs, collection } from "@firebase/firestore";
     import { goto } from '$app/navigation';

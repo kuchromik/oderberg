@@ -14,7 +14,6 @@
     authStore.subscribe((curr) => {
         // @ts-ignore
         pseudo = curr.data.pseudo;
-        console.log("Pseudo in Image: ", pseudo);
     });
 
     // connection to Firebase Storage (images)

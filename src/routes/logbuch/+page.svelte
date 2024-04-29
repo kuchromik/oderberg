@@ -44,7 +44,11 @@
         </div>
     {/each}
     {/if}
-    
+    {#if pseudo}
+    <a class="a-btn-red" href="/dashboard">Zur Hauptseite</a>
+    {:else}
+    <a class="a-btn-red" href="/">Zur Hauptseite</a>
+    {/if}
     
 </center>
 <style>
