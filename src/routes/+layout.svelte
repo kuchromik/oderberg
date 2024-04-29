@@ -6,9 +6,11 @@
     import { auth, db } from "../firebase";
     import { getDoc, doc, setDoc } from "@firebase/firestore";
     import { authStore } from "../store/store";
-
+    import { goto } from '$app/navigation';
     import { onNavigate } from '$app/navigation';
 
+
+    // only to show the page transition
     onNavigate((navigation) => {
 	if (!document.startViewTransition) return;
 
@@ -20,43 +22,53 @@
 	});
     });
 
-    const nonAuthRoutes = ["/"];
+    const nonAuthRoutes = ["/", "/impressum"];
+
 
     onMount(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            
             const currentPath = window.location.pathname;
 
-            if (!user && !nonAuthRoutes.includes(currentPath)) {
-                window.location.href = "/";
-                return;
-            }
+            if (!user) {
+                if (nonAuthRoutes.includes(currentPath)) {
+                    goto(currentPath);
+                    return;
+                } else {
+                    goto("/");
+                    return;
+                }
+            } 
+            
+
 
             if (user && currentPath === "/") {
-                window.location.href = "/dashboard";
-                return;
+                let dataToSetToStore;
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    const userRef = doc(db, "users", user.uid);
+                    dataToSetToStore = {
+                        email: user.email,
+                        pseudo: "",
+                        todos: [],
+                    };
+                    await setDoc(userRef, dataToSetToStore, { merge: true });
+                    authStore.update((curr) => {
+                        return {
+                            ...curr,
+                            user,
+                            data: dataToSetToStore,
+                            loading: false,
+                        };
+                    });
+                    goto("/pseudonym");
+                    return;
+                } else {
+                    const userData = docSnap.data();
+                    dataToSetToStore = userData;
             }
-
-            if (!user) {
-                return;
-            }
-
-            let dataToSetToStore;
-
-            const docRef = doc(db, "users", user.uid);
-            const docSnap = await getDoc(docRef);
-            if (!docSnap.exists()) {
-                const userRef = doc(db, "users", user.uid);
-                dataToSetToStore = {
-                    email: user.email,
-                    pseudo: "",
-                    todos: [],
-                };
-                await setDoc(userRef, dataToSetToStore, { merge: true });
-            } else {
-                const userData = docSnap.data();
-                dataToSetToStore = userData;
-            }
-
+            
             authStore.update((curr) => {
                 return {
                     ...curr,
@@ -65,6 +77,12 @@
                     loading: false,
                 };
             });
+            
+
+                goto("/dashboard");
+                return;
+            }
+
         })
         return unsubscribe;
     })
