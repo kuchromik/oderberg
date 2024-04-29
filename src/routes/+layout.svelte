@@ -17,10 +17,32 @@
             const currentPath = window.location.pathname;
 
             if (!user) {
+                let storeDataClear = {
+                        email: "",
+                        pseudo: "",
+                        todos: [],
+                    };
                 if (nonAuthRoutes.includes(currentPath)) {
+                    
+                    authStore.update((curr) => {
+                        return {
+                            ...curr,
+                            user,
+                            data: storeDataClear,
+                            loading: false,
+                        };
+                    });
                     goto(currentPath);
                     return;
                 } else {
+                    authStore.update((curr) => {
+                        return {
+                            ...curr,
+                            user,
+                            data: storeDataClear,
+                            loading: false,
+                        };
+                    });
                     goto("/");
                     return;
                 }
