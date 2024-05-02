@@ -18,8 +18,8 @@
 
     async function makeLogEntry(imageName) {
         const imgRef = collection(db, "logbuch");
-        const date = new Date().toLocaleString('de-de') ;
-        addDoc(imgRef, {action: "Upload", image: imageName, user: pseudo, date: date})
+        const date = new Date();
+        addDoc(imgRef, {action: "Upload Image", image: imageName, user: pseudo, date: date})
         .then(() => {
             console.log("Logbuch updated");
         })
@@ -215,7 +215,10 @@
         <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
         {:else if (imageChoosen && !imageTitel && !locationSelected)}
         <h4>Erstelle einen Bildtitel:</h4>
+        <p>Der Bildtitel wird später auf der Seite des Bildes angezeigt.</p>
+        <p>Bitte versuche daher, einen dem Bildinhalt möglichst gut entsprechenden Titel zu finden.</p>
         <p>Ohne Eingabe wird automatisch &raquo;Ohne Titel&laquo; vergeben.</p>
+        <p>Du kannst den Bildtitel auch noch nachträglich auf der Bildseite ändern.</p>
         <form on:submit|preventDefault={() => setImageTitel(value)}>
             <label>
                 Bildtitel:

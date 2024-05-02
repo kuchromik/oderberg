@@ -85,13 +85,18 @@
             addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date });
 
             newComWatch = false;
-            comment = 'Neuer Kommentar'
+            comment = 'Neuer Kommentar';
+            makeLogEntry(image, "New Comment");
         }
+        
+
+    
 
     const deleteComment =(delcom)=> {        
         const docRef = doc(db, "comments", delcom);
         deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); });
-        deleteCommentRealy = false
+        deleteCommentRealy = false;
+        makeLogEntry(img.imagename, "Deleted Comment");
         }
 
     const editComment =(editcom, updatedDoc)=> {   
@@ -99,7 +104,8 @@
         const docRef = doc(db, "comments", editcom);
         updateDoc(docRef, {"comment": updatedDoc, "date": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
         commentEditMode = false;
-        comment = 'Neuer Kommentar'
+        comment = 'Neuer Kommentar';
+        makeLogEntry(img.imagename, "Updated Comment");
         }
 
     let locList = [];
@@ -177,6 +183,11 @@
                 }).catch((error) => {
                 console.log("Error deleting image anyway: ", error);
                 })
+                .then(() => {
+                    makeLogEntry(img.imagename, "Deleted Image");
+                })
+
+        
         
         
         }
@@ -238,6 +249,17 @@
         }).then (() => getImage())
         //(() => goto(`/locations/${data.post.location}/images/${imgID}`))
     }
+
+    async function makeLogEntry(imageName, action) {
+        const imgRef = collection(db, "logbuch");
+        const date = new Date();
+        addDoc(imgRef, {action: action, image: imageName, user: pseudo, date: date})
+        .then(() => {
+            console.log("Logbuch updated ", action, imageName);
+        })
+        
+    }
+    
     
 </script>
 <center>

@@ -62,6 +62,15 @@
                 },
                 { merge: true }
             );
+            authStore.update((curr) => {
+                return {
+                    ...curr,
+                    data: {
+                        ...curr.data,
+                        todos: todoList,
+                    },
+                };
+            });
             hideSaveButton = true;
         } catch (err) {
             hideSaveButton = true;

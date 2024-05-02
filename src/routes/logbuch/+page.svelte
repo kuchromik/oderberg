@@ -24,9 +24,10 @@
             logListInsideSnapshot = [log, ...logListInsideSnapshot];  
             })
             logList = logListInsideSnapshot;
-            // Comment-Liste sortieren
-            logList.sort((a, b) => b.date.localeCompare(a.date));
-            logListReady = true
+            // nach Datum absteigend sortieren
+            logList.sort((a, b) => b.date-(a.date));
+            logListReady = true;
+            console.log("sortedlogList", logList);
             })
 
 
@@ -37,7 +38,7 @@
     
     {#each logList as log, i (i)}
         <div class="log">
-            <p>{log.date}</p>
+            <p>{log.date.toDate()}</p>
             <p>{log.user}</p>
             <p>{log.image}</p>
             <p>{log.action}</p>
