@@ -114,6 +114,9 @@
                         )
                         .then (() => {
                             thanksForImage = true;
+                            imageTitel = "";
+                            orts_location = "";
+                            locationSelected = false;
                             makeLogEntry(randomFilename);
                         });
                     })
