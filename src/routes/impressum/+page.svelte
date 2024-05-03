@@ -17,12 +17,13 @@
 
     const adminData = {
         name: import.meta.env.VITE_ADMIN_NAME,
+        pseudo: import.meta.env.VITE_ADMIN_PSEUDO,
         mail: import.meta.env.VITE_ADMIN_MAIL,
         phone: import.meta.env.VITE_ADMIN_PHONE,
         street: import.meta.env.VITE_ADMIN_STREET,
         zip: import.meta.env.VITE_ADMIN_ZIP,
         city: import.meta.env.VITE_ADMIN_CITY
-};
+        };
 
 </script>
 
@@ -59,7 +60,7 @@
     {:else}
     <a class="a-btn-red" href="/">Zur Hauptseite</a>
     {/if}
-    {#if pseudo === "Horst Kippowski"}
+    {#if pseudo === adminData.pseudo}
     <a class="a-btn-blue" href="/logbuch">Zum Logbuch</a>
     {/if}
     <br>

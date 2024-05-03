@@ -37,7 +37,7 @@
             else {
                 const locRef = doc(db, "locations", location.id);
                 deleteDoc(locRef);
-                console.log("Location without a name deleted successfully", location.id);
+                //console.log("Location without a name deleted successfully", location.id);
             }
         })
     // generate an aphabetical sprted list of locations without the location "z.Z. nicht zugeordnet"

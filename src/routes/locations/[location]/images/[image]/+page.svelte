@@ -16,6 +16,10 @@
         pseudo = curr.data.pseudo;
     });
 
+    const adminData = {
+        pseudo: import.meta.env.VITE_ADMIN_PSEUDO,
+        };
+
     // connection to Firebase Storage (images)
     const storage = getStorage(app);
 
@@ -124,7 +128,7 @@
             else {
                 const locRef = doc(db, "locations", location.id);
                 deleteDoc(locRef);
-                console.log("Location without a name deleted successfully", location.id);
+                //console.log("Location without a name deleted successfully", location.id);
             }
             
         })
@@ -255,7 +259,7 @@
         const date = new Date();
         addDoc(imgRef, {action: action, image: imageName, user: pseudo, date: date})
         .then(() => {
-            console.log("Logbuch updated ", action, imageName);
+            //console.log("Logbuch updated ", action, imageName);
         })
         
     }
@@ -268,7 +272,7 @@
         <br>
         <div class="changeImagetitel">
             <h2>{img.imagetitel}</h2>
-            {#if pseudo==="Horst Kippowski" || pseudo === img.uploader}
+            {#if pseudo === adminData.pseudo || pseudo === img.uploader}
                 {#if !changeImagetitel}
                     <button class="a-btn-grey" on:click={() => changeImagetitel = true}>Titel ändern</button>
                 {/if}
@@ -288,7 +292,7 @@
         <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
         <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
 
-        {#if (pseudo === img.uploader || pseudo === "Horst Kippowski")}
+        {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
             <div class="actions">
                 {#if !deleteImgRealy}
                     <i
@@ -362,7 +366,7 @@
                 <small>von {com.author} am {com.date}: </small>
                 <div class="actions">
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
-                    {#if (pseudo === com.author || pseudo === "Horst Kippowski")}
+                    {#if (pseudo === com.author || pseudo === adminData.pseudo)}
                     
                         {#if (!commentEditMode && !deleteCommentRealy)}
                             <i

@@ -21,7 +21,7 @@
         const date = new Date();
         addDoc(imgRef, {action: "Upload Image", image: imageName, user: pseudo, date: date})
         .then(() => {
-            console.log("Logbuch updated");
+            //console.log("Logbuch updated");
         })
         
     }
