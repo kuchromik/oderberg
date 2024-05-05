@@ -82,6 +82,7 @@
                 imageChoosen = true;
             }
     let thanksForImage = false;
+    let ortsLocTemp = "";
 
     const onUploadOrder =()=> {
                 // 'file' comes from the Blob or File API
@@ -115,6 +116,7 @@
                         .then (() => {
                             thanksForImage = true;
                             imageTitel = "";
+                            ortsLocTemp = orts_location;
                             orts_location = "";
                             locationSelected = false;
                             makeLogEntry(randomFilename);
@@ -254,13 +256,13 @@
         {/if}
         {/if}
         {#if thanksForImage}
-            <h3>Vielen Dank für das Bild!</h3>
+            <h3>Vielen Dank für das Bild zu {ortsLocTemp} !</h3>
             <br>
             <div class="btnwrapper">
                 <a class="a-btn-blue" on:click={() => {thanksForImage = false; goto(`/upload`)}} on:keydown={() => {}} role="button" href="/upload">Weiteres Bild einstellen?</a>
                 
                 <a class="a-btn-green" on:click|preventDefault={() => {
-                    goto(`/locations/${orts_location}`);
+                    goto(`/locations/${ortsLocTemp}`);
                 }}>Weiter zur Ortsseite</a>
             </div>
         {/if}

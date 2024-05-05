@@ -44,6 +44,14 @@
     <div class="log">
     {#if pseudo === adminData.pseudo}
     <h1>Logbuch</h1>
+    {#if pseudo}
+    <a class="a-btn-red logbutton" href="/dashboard">Zur Hauptseite</a>
+    {:else}
+    <a class="a-btn-red logbutton" href="/">Zur Hauptseite</a>
+    {/if}
+    {#if logList.length === 0}
+        <p>Das Logbuch ist leer.</p>
+    {/if}
     
     {#each logList as log, i (i)}
         <div class="logentry">
