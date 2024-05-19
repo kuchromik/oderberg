@@ -1,7 +1,7 @@
 <script>
 	import { app } from "../../../../../firebase";
     import { db } from "../../../../../firebase";
-    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs } from "@firebase/firestore";
+    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs, query, where, getDoc } from "@firebase/firestore";
     import { authStore } from "../../../../../store/store";
     import { getStorage, ref, deleteObject } from "firebase/storage";
 	import { goto } from "$app/navigation";
@@ -28,48 +28,44 @@
     let imgID;
     let imageReady = false;
 
+    let comList = [];
+    let comListReady = false; // wait for comList to be ready
+
     async function getImage() {
-        const imgRef = collection(db, "images");
-        const querySnapshot_img = await getDocs(imgRef);
-        
-        querySnapshot_img.forEach((doc) => {
-            
-            if (doc.id === data.post.image) {
-                img = doc.data();
-                imgID = doc.id;
-                imageReady = true
-            }
-        })
+        const imgRef = doc(db, "images", data.post.image);
+        const querySnapshot_img = await getDoc(imgRef);
+
+        if (querySnapshot_img.exists()) {
+            img = querySnapshot_img.data();
+            imgID = querySnapshot_img.id;
+            imageReady = true;
+        } else {
+            console.log("No such document!");
+        }
         
     }
 
     getImage().then(() => {
+        const comRef = query(collection(db, "comments"), where("image", "==", img.imagename));
         const unsubscribe3 = onSnapshot(comRef, querysnapshot => {
             let comListInsideSnapshot = [];
             querysnapshot.forEach((doci) => {
             let comment = { ...doci.data(), id: doci.id};
-            comListInsideSnapshot = [comment, ...comListInsideSnapshot]; 
-            })
-           
+            comListInsideSnapshot = [comment, ...comListInsideSnapshot];
+            });
             // only comments to the choosen image
-            comList = comListInsideSnapshot.filter(com => com.image === img.imagename);
+            comList = comListInsideSnapshot;//.filter(com => com.image === img.imagename);
         
             // sort comments by date
-            comList.sort((a, b) => b.date.localeCompare(a.date));
+            comList.sort((a, b) => b.date - (a.date));
             commentCounter = comList.length;
             comListReady = true;
             })
-    });
-    
-    //// get comments (comList) from Firestore
-
-    let comList = [];
-    const comRef = collection(db, "comments");
-    let comListReady = false; // wait for comList to be ready
+    })
 
     // handle comments
     
-    let comment = 'Neuer Kommentar';
+    let comment = 'Gib hier Deinen Kommentar ein';
     let newImageName = 'Neuer Bildtitel';
     let newComWatch = false; // watch for new comment
     let commentEditMode = false; // watch for comment edit
@@ -83,13 +79,14 @@
             let newComment = newcomm;
             let commentImage = image;
 
-            const date = new Date().toLocaleString('de-de') ;
+            //const date = new Date().toLocaleString('de-de') ;
+            const date = new Date();
             
             const commentRef = collection(db, 'comments');
             addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date });
 
             newComWatch = false;
-            comment = 'Neuer Kommentar';
+            comment = 'Gib hier Deinen Kommentar ein';
             makeLogEntry(image, "New Comment");
         }
         
@@ -104,11 +101,12 @@
         }
 
     const editComment =(editcom, updatedDoc)=> {   
-        const date = new Date().toLocaleString('de-de') ;     
+        const date = new Date();     
         const docRef = doc(db, "comments", editcom);
         updateDoc(docRef, {"comment": updatedDoc, "date": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
+        comList.sort((a, b) => b.date - (a.date));
         commentEditMode = false;
-        comment = 'Neuer Kommentar';
+        comment = 'Gib hier Deinen Kommentar ein';
         makeLogEntry(img.imagename, "Updated Comment");
         }
 
@@ -344,7 +342,7 @@
         {/if}
         <br>
         {#if pseudo}
-            <button class="a-btn-blue" on:click|preventDefault={() => newComWatch = true}>Neuer Kommentar zu diesem Bild?</button>
+            <button class="a-btn-blue" on:click|preventDefault={() => newComWatch = true}>Dein Kommentar zu diesem Bild?</button>
         {/if}
         <br>
             
@@ -354,20 +352,22 @@
                 <textarea bind:value="{comment}" rows="15" cols="40"></textarea>
                 <div class="actions">
                     <button class="a-btn-green" type="submit">Kommentar absenden</button>
-                    <button class="a-btn-grey" on:click|preventDefault={() => {newComWatch = false; comment = 'Neuer Kommentar'; console.log("klick")}}>Abbruch</button>
+                    <button class="a-btn-grey" on:click|preventDefault={() => {newComWatch = false; comment = 'Gib hier Deinen Kommentar ein'}}>Abbruch</button>
                 </div>
             </form>
         {/if}
         <br>
         <h3>Kommentare zu diesem Bild:</h3>
+        <div class="comments">
         {#each comList as com}
             <br>
+            <div class="singleComment">    
             {#if com.image === img.imagename}
-                <small>von {com.author} am {com.date}: </small>
-                <div class="actions">
+                <small>erstellt bzw. zuletzt geändert von {com.author} am {com.date.toDate().toLocaleString()}: </small>
+                
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
                     {#if (pseudo === com.author || pseudo === adminData.pseudo)}
-                    
+                    <div class="actions">
                         {#if (!commentEditMode && !deleteCommentRealy)}
                             <i
                             on:click={() => {
@@ -385,6 +385,7 @@
                             class="fa-regular fa-trash-can"
                             />
                         {/if}
+                        </div>
                         {#if deleteCommentRealy && (commToDelete === com.id)}
                             <button class="a-btn-grey" on:click|preventDefault={() => {
                                 deleteComment(com.id);
@@ -393,18 +394,27 @@
                                 deleteCommentRealy = false;
                                 }}>Abbruch</button>
                         {/if}
+                        <div class="editComment">
                         {#if commentEditMode && (commToEdit === com.id)}
                             <form on:submit|preventDefault={() => editComment(com.id, commToEditContent)}>
+                                <div class="editComment">
                                 <textarea bind:value="{commToEditContent}" rows="15" cols="60"></textarea>
                                 <button class="a-btn-grey" type="submit">Änderung speichern</button>
+                            </div>
                             </form>
+                            <button class="a-btn-grey" on:click|preventDefault={() => {
+                                commentEditMode = false;
+                                }}>Abbruch</button>
                         {/if}
+                        </div>
                         <br>
                     
                 {/if}
-            </div>
+            
             {/if}
+            </div>
         {/each}
+        </div>
     <br>
     <button class="a-btn-green" on:click|preventDefault={() => {
         goto(`/locations/${data.post.location}`);
@@ -447,5 +457,85 @@
         padding: 0;
         width: 100%;
         height: auto;
+        }
+
+    .comments {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+        height: auto;
+        }
+
+    .singleComment {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+        height: auto;
+        }
+
+    .editComment {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+        height: auto;
+        }
+
+    .actions {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 14px;
+            font-size: 1.3rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .actions i {
+            cursor: pointer;
+        }
+        
+        .actions i:hover {
+            color: coral;
+        }
+
+        textarea {
+        background-color: #dddddd;
+        color: #666666;
+        margin-top: 1rem;
+        padding: 1em;
+        border-radius: 10px;
+        border: 2px solid transparent;
+        outline: none;
+        font-family: "Heebo", sans-serif;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 1.4;
+        width: 100%;
+        height: 100px;
+        transition: all 0.2s;
+        }
+
+        textarea:hover {
+        cursor: pointer;
+        background-color: #eeeeee;
+        }
+
+        textarea:focus {
+        cursor: text;
+        color: #333333;
+        background-color: white;
+        border-color: #333333;
         }
 </style>

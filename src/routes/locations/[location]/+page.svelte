@@ -2,7 +2,7 @@
     import { app } from "../../../firebase";
     import { getStorage, ref, deleteObject } from "firebase/storage";
     import { db } from "../../../firebase";
-    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs } from "@firebase/firestore";
+    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs, where, query } from "@firebase/firestore";
     import { authStore } from "../../../store/store";
 
 	/** @type {import('./$types').PageData} */
@@ -40,7 +40,7 @@
                 //console.log("Location without a name deleted successfully", location.id);
             }
         })
-    // generate an aphabetical sprted list of locations without the location "z.Z. nicht zugeordnet"
+    // generate an aphabetical sorted list of locations without the location "z.Z. nicht zugeordnet"
     locList = locListInsideGetDocs.filter(location => location.loc_name !== "z.Z. nicht zugeordnet");
     locList.sort((a, b) => a.loc_name.localeCompare(b.loc_name));
     }
@@ -50,7 +50,7 @@
     //// get images (imgList) from Firestore
     let imgList = [];
 
-    const imgRef = collection(db, "images");
+    const imgRef = query(collection(db, "images"), where("location", "==", choosedLocation));
 
     const unsubscribe1 = onSnapshot(imgRef, querysnapshot => {
             let imgListInsideSnapshot = [];
@@ -61,7 +61,7 @@
             // sort Imagelist by date
             imgList = imgListInsideSnapshot.sort(
                 (b, a) => Number(a.uploadDate) - Number(b.uploadDate)
-                );
+                )
         }
     )
 
@@ -79,7 +79,7 @@
             })
             comList = comListInsideSnapshot;
             // Comment-Liste sortieren
-            comList.sort((a, b) => b.date.localeCompare(a.date));
+            comList.sort((a, b) => b.date - (a.date));
             comListReady = true
             })
             
@@ -102,7 +102,6 @@
         <br>
         <div class="imagedivision">
         {#each imgList as img, i (i)}
-            {#if img.location === choosedLocation}
             <div class="">
                 <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
                 <h3>{img.imagetitel}</h3>
@@ -116,7 +115,6 @@
                     {/if}
                 {/if}
             </div>
-            {/if}
         {/each}
         <br>
         </div>
