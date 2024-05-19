@@ -31,6 +31,9 @@
     let comList = [];
     let comListReady = false; // wait for comList to be ready
 
+    let answersList = [];
+    let answersListReady = false; // wait for answersList to be ready
+
     async function getImage() {
         const imgRef = doc(db, "images", data.post.image);
         const querySnapshot_img = await getDoc(imgRef);
@@ -53,15 +56,33 @@
             let comment = { ...doci.data(), id: doci.id};
             comListInsideSnapshot = [comment, ...comListInsideSnapshot];
             });
-            // only comments to the choosen image
-            comList = comListInsideSnapshot;//.filter(com => com.image === img.imagename);
+           
+            comList = comListInsideSnapshot;
         
             // sort comments by date
             comList.sort((a, b) => b.date - (a.date));
             commentCounter = comList.length;
             comListReady = true;
             })
+    }).then(() => {
+        const answersRef = collection(db, "answers");
+        const unsubscribe3 = onSnapshot(answersRef, querysnapshot => {
+            let answerListInsideSnapshot = [];
+            querysnapshot.forEach((doci) => {
+            let answer = { ...doci.data(), id: doci.id};
+            answerListInsideSnapshot = [answer, ...answerListInsideSnapshot];
+            });
+           
+            answersList = answerListInsideSnapshot;
+        
+            // sort comments by date
+            answersList.sort((a, b) => b.date - (a.date));
+            //commentCounter = comList.length;
+            answersListReady = true;
+            console.log(answersList);
+            })
     })
+    
 
     // handle comments
     
@@ -73,7 +94,13 @@
     let commToDelete;
     let commToEditContent;
     let commentCounter;
-    
+    let answer = 'Gib hier Deine Antwort ein';
+    let answerOnComment = false;
+    let commToAnswer;
+    let answerToEditContent;
+    let answerEditMode = false; // watch for answer edit
+    let answerToEdit;
+    let answerToDelete;
     
     const createNewComment =(newcomm, image)=> {        
             let newComment = newcomm;
@@ -108,6 +135,34 @@
         commentEditMode = false;
         comment = 'Gib hier Deinen Kommentar ein';
         makeLogEntry(img.imagename, "Updated Comment");
+        }
+
+    const createNewAnswer =(newans, comid)=> {
+        let newAnswer = newans;
+        let commentID = comid;
+        const date = new Date();
+        const answerRef = collection(db, 'answers');
+        addDoc(answerRef, { answer: newAnswer, author: pseudo, comment: commentID, date: date });
+        answerOnComment = false;
+        answer = 'Gib hier Deine Antwort ein';
+        makeLogEntry(img.imagename, "New Answer");
+        }
+
+    const deleteAnswer =(delanswer)=> {        
+        const docRef = doc(db, "answers", delanswer);
+        deleteDoc(docRef) .then(() => { console.log("Answer deleted") }) .catch(error => { console.log(error); });
+        deleteAnswerRealy = false;
+        makeLogEntry(img.imagename, "Deleted Answer");
+        }
+
+    const editAnswer =(editanswer, updatedAnswer)=> {   
+        const date = new Date();     
+        const docRef = doc(db, "answers", editanswer);
+        updateDoc(docRef, {"answer": updatedAnswer, "date": date}) .then(() => { console.log("Answer updated") }) .catch(error => { console.log(error); });
+        answersList.sort((a, b) => b.date - (a.date));
+        answerEditMode = false;
+        comment = 'Gib hier Deine Anwort ein';
+        makeLogEntry(img.imagename, "Updated Answer");
         }
 
     let locList = [];
@@ -151,6 +206,7 @@
      //// delete image from storage and image from Firestore incl. comments
     let deleteImgRealy = false;
     let deleteCommentRealy = false;
+    let deleteAnswerRealy = false;
     let afterDelete = false;
 
     function deleteImage() {
@@ -408,11 +464,88 @@
                         {/if}
                         </div>
                         <br>
-                    
-                {/if}
+                    {/if}
+                    {#if pseudo}
+                        <div class="actions">
+                            <div class="hover-text">
+                                <i on:click={() => {answerOnComment = true; commToAnswer = com.id}}
+                                    on:keydown={() => {}}
+                                    class="fa-regular fa-comments"></i> 
+                                <span class="tooltip-text">Auf den Kommentar antworten</span>
+                            </div>
+                        </div>
+                    {/if}
+
+                    {#if answerOnComment && (commToAnswer === com.id)}
+                        <form on:submit|preventDefault={() => createNewAnswer(answer, com.id)}>
+                            <textarea bind:value="{answer}" rows="15" cols="40"></textarea>
+                            <div class="actions">
+                                <button class="a-btn-green" type="submit">Anwort absenden</button>
+                                <button class="a-btn-grey" on:click|preventDefault={() => {answerOnComment = false; comment = 'Gib hier Deine Anwort ein'}}>Abbruch</button>
+                            </div>
+                        </form>
+                    {/if}
             
             {/if}
             </div>
+            <div class="answers">
+            <p>Antworten zum obigen Kommentar:</p>
+            
+            {#each answersList as answer}
+            <div class="singleComment"> 
+            <br>   
+            {#if answer.comment === com.id}
+                <small>erstellt bzw. zuletzt geändert von {answer.author} am {answer.date.toDate().toLocaleString()}: </small>
+                
+                    <p class="answercolor" align="left">&#187;{answer.answer}&#171;</p>
+                    {#if (pseudo === answer.author || pseudo === adminData.pseudo)}
+                    <div class="actions">
+                        {#if (!answerEditMode && !deleteAnswerRealy)}
+                            <i
+                            on:click={() => {
+                                answerEditMode = true;
+                                answerToEdit = answer.id;
+                                answerToEditContent = answer.answer
+                                }
+                            }
+                            on:keydown={() => {}}
+                            class="fa-regular fa-pen-to-square"
+                            />
+                            <i
+                            on:click={() => {deleteAnswerRealy = true; answerToDelete = answer.id}}
+                            on:keydown={() => {}}
+                            class="fa-regular fa-trash-can"
+                            />
+                        {/if}
+                        </div>
+                        {#if deleteAnswerRealy && (answerToDelete === answer.id)}
+                            <button class="a-btn-grey" on:click|preventDefault={() => {
+                                deleteAnswer(answer.id);
+                                }}>Diese Anwort wirklich löschen?</button>
+                            <button class="a-btn-grey" on:click|preventDefault={() => {
+                                deleteAnswerRealy = false;
+                                }}>Abbruch</button>
+                        {/if}
+                        <div class="editAnwer">
+                        {#if answerEditMode && (answerToEdit === answer.id)}
+                            <form on:submit|preventDefault={() => editAnswer(answer.id, answerToEditContent)}>
+                                <div class="editAnswer">
+                                <textarea bind:value="{answerToEditContent}" rows="15" cols="60"></textarea>
+                                <button class="a-btn-grey" type="submit">Änderung speichern</button>
+                            </div>
+                            </form>
+                            <button class="a-btn-grey" on:click|preventDefault={() => {
+                                answerEditMode = false;
+                                }}>Abbruch</button>
+                        {/if}
+                        </div>
+                        <br>
+                    {/if}
+            
+            {/if}
+            </div>
+        {/each}
+        </div>
         {/each}
         </div>
     <br>
@@ -474,7 +607,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: space-evenly;
         margin: 0 auto;
         padding: 0;
         width: 100%;
@@ -538,4 +671,48 @@
         background-color: white;
         border-color: #333333;
         }
+
+        
+
+    .tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    width: 180px;
+    color: white;
+    font-size: 12px;
+    background-color: #004471;
+    border-radius: 4px;
+    padding: 6px;
+    top: -8px;
+    left: 120%;
+    }
+
+    .hover-text:hover .tooltip-text {
+    visibility: visible;
+    }
+
+   
+
+    .hover-text {
+    position: relative;
+    display: inline-block;
+    margin: 0px;
+    font-family: Arial;
+    text-align: center;
+    }
+
+    .answers {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        width: 100%;
+        height: auto;
+        background-color: #dddddd;
+        border-bottom: double;
+        }
+
 </style>
