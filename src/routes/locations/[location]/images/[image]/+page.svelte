@@ -78,8 +78,7 @@
             // sort comments by date
             answersList.sort((a, b) => b.date - (a.date));
             //commentCounter = comList.length;
-            answersListReady = true;
-            console.log(answersList);
+            answersListReady = true
             })
     })
     
@@ -110,7 +109,7 @@
             const date = new Date();
             
             const commentRef = collection(db, 'comments');
-            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date });
+            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date, lastmodified: date});
 
             newComWatch = false;
             comment = 'Gib hier Deinen Kommentar ein';
@@ -122,6 +121,23 @@
 
     const deleteComment =(delcom)=> {        
         const docRef = doc(db, "comments", delcom);
+
+         // Delete associated answers
+         const answersRef = collection(db, "answers");
+            const answersQuery = query(answersRef, where("comment", "==", delcom));
+            getDocs(answersQuery).then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    deleteDoc(doc.ref)
+                        .then(() => {
+                            makeLogEntry(img.imagename, "Deleted Answer");
+                            console.log("Answer deleted");
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                });
+            });
+        
         deleteDoc(docRef) .then(() => { console.log("Comment deleted") }) .catch(error => { console.log(error); });
         deleteCommentRealy = false;
         makeLogEntry(img.imagename, "Deleted Comment");
@@ -130,7 +146,7 @@
     const editComment =(editcom, updatedDoc)=> {   
         const date = new Date();     
         const docRef = doc(db, "comments", editcom);
-        updateDoc(docRef, {"comment": updatedDoc, "date": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
+        updateDoc(docRef, {"comment": updatedDoc, "lastmodified": date}) .then(() => { console.log("Comment updated") }) .catch(error => { console.log(error); });
         comList.sort((a, b) => b.date - (a.date));
         commentEditMode = false;
         comment = 'Gib hier Deinen Kommentar ein';
@@ -142,7 +158,7 @@
         let commentID = comid;
         const date = new Date();
         const answerRef = collection(db, 'answers');
-        addDoc(answerRef, { answer: newAnswer, author: pseudo, comment: commentID, date: date });
+        addDoc(answerRef, { answer: newAnswer, author: pseudo, image: img.imagename, comment: commentID, date: date, lastmodified: date});
         answerOnComment = false;
         answer = 'Gib hier Deine Antwort ein';
         makeLogEntry(img.imagename, "New Answer");
@@ -158,7 +174,7 @@
     const editAnswer =(editanswer, updatedAnswer)=> {   
         const date = new Date();     
         const docRef = doc(db, "answers", editanswer);
-        updateDoc(docRef, {"answer": updatedAnswer, "date": date}) .then(() => { console.log("Answer updated") }) .catch(error => { console.log(error); });
+        updateDoc(docRef, {"answer": updatedAnswer, "lastmodified": date}) .then(() => { console.log("Answer updated") }) .catch(error => { console.log(error); });
         answersList.sort((a, b) => b.date - (a.date));
         answerEditMode = false;
         comment = 'Gib hier Deine Anwort ein';
@@ -419,7 +435,7 @@
             <br>
             <div class="singleComment">    
             {#if com.image === img.imagename}
-                <small>erstellt bzw. zuletzt geändert von {com.author} am {com.date.toDate().toLocaleString()}: </small>
+                <small>erstellt von {com.author} am {com.date.toDate().toLocaleString()}, zuletzt geändert am {com.lastmodified.toDate().toLocaleString()}: </small>
                 
                     <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
                     {#if (pseudo === com.author || pseudo === adminData.pseudo)}
@@ -489,14 +505,11 @@
             {/if}
             </div>
             <div class="answers">
-            <p>Antworten zum obigen Kommentar:</p>
-            
-            {#each answersList as answer}
-            <div class="singleComment"> 
-            <br>   
-            {#if answer.comment === com.id}
-                <small>erstellt bzw. zuletzt geändert von {answer.author} am {answer.date.toDate().toLocaleString()}: </small>
-                
+                <p>Antworten zum obigen Kommentar:</p>
+                {#each answersList as answer}
+                <div class="singleComment">    
+                {#if answer.comment === com.id}
+                    <small>erstellt von {answer.author} am {answer.date.toDate().toLocaleString()}, zuletzt geändert am {answer.lastmodified.toDate().toLocaleString()}: </small>
                     <p class="answercolor" align="left">&#187;{answer.answer}&#171;</p>
                     {#if (pseudo === answer.author || pseudo === adminData.pseudo)}
                     <div class="actions">
@@ -541,11 +554,10 @@
                         </div>
                         <br>
                     {/if}
-            
-            {/if}
+                {/if}
             </div>
-        {/each}
-        </div>
+            {/each}
+            </div>
         {/each}
         </div>
     <br>
@@ -601,6 +613,8 @@
         padding: 0;
         width: 100%;
         height: auto;
+        background-color: #ddd;
+        border-radius: 4px;
         }
 
     .singleComment {
@@ -609,6 +623,7 @@
         align-items: center;
         justify-content: space-evenly;
         margin: 0 auto;
+        margin-top: .5rem;
         padding: 0;
         width: 100%;
         height: auto;
@@ -623,6 +638,13 @@
         padding: 0;
         width: 100%;
         height: auto;
+        }
+
+    .commentcolor {
+            color: navy;
+            font-style: italic;
+            font-weight: 500;
+            padding: 1rem;
         }
 
     .actions {
@@ -644,8 +666,8 @@
         }
 
         textarea {
-        background-color: #dddddd;
-        color: #666666;
+        background-color: #ddd;
+        color: #333;
         margin-top: 1rem;
         padding: 1em;
         border-radius: 10px;
@@ -656,20 +678,21 @@
         font-size: 16px;
         line-height: 1.4;
         width: 100%;
+        max-width: 50rem;
         height: 100px;
         transition: all 0.2s;
         }
 
         textarea:hover {
         cursor: pointer;
-        background-color: #eeeeee;
+        background-color: #ddd;
         }
 
         textarea:focus {
         cursor: text;
-        color: #333333;
-        background-color: white;
-        border-color: #333333;
+        color: #111;
+        background-color: #ccc;
+        border-color: #333;
         }
 
         
@@ -707,12 +730,20 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin: 0 auto;
-        padding: 0;
+        margin: 1rem auto;
+        padding: 1rem;
         width: 100%;
         height: auto;
-        background-color: #dddddd;
+        background-color: #bbb;
         border-bottom: double;
+        border-radius: 4px;
         }
+
+    .answercolor {
+        color: #111;
+        font-size: .9rem;
+        margin-top: .5rem;
+        }
+
 
 </style>
