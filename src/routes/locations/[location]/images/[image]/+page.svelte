@@ -666,7 +666,7 @@
         }
 
         textarea {
-        background-color: #ddd;
+        background-color: #ccc;
         color: #333;
         margin-top: 1rem;
         padding: 1em;
