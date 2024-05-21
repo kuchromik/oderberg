@@ -2,6 +2,7 @@
     import { authHandlers, authStore } from "../../store/store";
     import Merkliste from "$lib/Merkliste.svelte";
     import ChooseLocation from "$lib/ChooseLocation.svelte";
+    import Textsearch from "$lib/Textsearch.svelte";
 
     let todoList = [];
     let pseudo = "";
@@ -26,6 +27,8 @@
 
 {#if pseudo}
     <ChooseLocation />
+    <br>
+    <Textsearch />
     <br>
     <Merkliste />
 {/if}
