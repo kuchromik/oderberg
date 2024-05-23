@@ -86,7 +86,6 @@
     // handle comments
     
     let comment = 'Gib hier Deinen Kommentar ein';
-    let newImageName = 'Neuer Bildtitel';
     let newComWatch = false; // watch for new comment
     let commentEditMode = false; // watch for comment edit
     let commToEdit;
@@ -109,7 +108,7 @@
             const date = new Date();
             
             const commentRef = collection(db, 'comments');
-            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, date: date, lastmodified: date});
+            addDoc(commentRef, { comment: newComment, author: pseudo, image: commentImage, imageID: data.post.image, location: img.location,  date: date, lastmodified: date});
 
             newComWatch = false;
             comment = 'Gib hier Deinen Kommentar ein';
@@ -158,7 +157,7 @@
         let commentID = comid;
         const date = new Date();
         const answerRef = collection(db, 'answers');
-        addDoc(answerRef, { answer: newAnswer, author: pseudo, image: img.imagename, comment: commentID, date: date, lastmodified: date});
+        addDoc(answerRef, { answer: newAnswer, author: pseudo, image: img.imagename, comment: commentID, imageID: data.post.image, location: img.location, date: date, lastmodified: date});
         answerOnComment = false;
         answer = 'Gib hier Deine Antwort ein';
         makeLogEntry(img.imagename, "New Answer");
