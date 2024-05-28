@@ -29,12 +29,19 @@
         searchStringTitel = '';
         images = [];
         answers = [];
+        searchStringAnswers = '';
         const q = query(collection(db, "comments"));
         const querySnapshot = await getDocs(q);
         comments = [];
         querySnapshot.forEach((doc) => {
             if(doc.data().comment.includes(searchStringComments)) {
-                comments = [...comments, { ...doc.data(), id: doc.id }]
+                
+                let point = doc.data().comment.indexOf(searchStringComments);
+                let prestring = doc.data().comment.substring(0, point);
+                let afterstring = doc.data().comment.substring(point + searchStringComments.length);
+                prestring = removeTags(prestring);
+                afterstring = removeTags(afterstring);
+                comments = [...comments, { ...doc.data(), id: doc.id, comment: prestring + '<span style="background-color: yellow;">' + searchStringComments + '</span>' + afterstring }];
             }
         })
     }
@@ -43,15 +50,35 @@
         searchStringTitel = '';
         images = [];
         comments = [];
+        searchStringComments = '';
         const q = query(collection(db, "answers"));
         const querySnapshot = await getDocs(q);
         answers = [];
         querySnapshot.forEach((doc) => {
             if(doc.data().answer.includes(searchStringAnswers)) {
-                answers = [...answers, { ...doc.data(), id: doc.id }]
+                let point = doc.data().answer.indexOf(searchStringAnswers);
+                let prestring = doc.data().answer.substring(0, point);
+                
+                let afterstring = doc.data().answer.substring(point + searchStringAnswers.length);
+                prestring = removeTags(prestring);
+                console.log(prestring);
+                afterstring = removeTags(afterstring);
+                answers = [...answers, { ...doc.data(), id: doc.id, answer: prestring + '<span style="background-color: yellow;">' + searchStringAnswers + '</span>' + afterstring}]
             }
         })
     }
+
+    function removeTags(str) {
+    if ((str === null))
+        return false;
+    else
+        str = str.toString();
+
+    // Regular expression to identify HTML tags in
+    // the input string. Replacing the identified
+    // HTML tag with a null string.
+    return str.replace(/(<([^>]+)>)/ig, '');
+}
   
 </script>
 <div class="searchinput">
@@ -83,7 +110,7 @@
     {#each comments as comment}
         <div class="comment">
            <small>Kommentar von {comment.author} vom {comment.date.toDate().toLocaleString()}</small>
-            <p>{comment.comment}</p>
+            <p>{@html comment.comment}</p>
             <a href="/locations/{comment.location}/images/{comment.imageID}">zum kommentierten Bild</a>
         </div>
     {/each}
@@ -93,7 +120,7 @@
     {#each answers as answer}
         <div class="comment">
            <small>Antwort von {answer.author} vom {answer.date.toDate().toLocaleString()}</small>
-            <p>{answer.answer}</p>
+            <p>{@html answer.answer}</p>
             <a href="/locations/{answer.location}/images/{answer.imageID}">zum kommentierten Bild</a>
         </div>
     {/each}
