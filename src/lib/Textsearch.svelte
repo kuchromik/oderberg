@@ -7,29 +7,49 @@
     let searchStringTitel = '';
     let searchStringComments = '';
     let searchStringAnswers = '';
+    let searchID = '';
     let images = [];
     let comments = [];
     let answers = [];
 
+    let IDnotFound = false;
+    let TitlenotFound = false;
+    let CommentsnotFound = false;
+    let AnswersnotFound = false;
+
     const searchByTitel = async () => {
         searchStringComments = '';
+        searchStringAnswers = '';
         comments = [];
         answers = [];
+        searchID = '';
+        IDnotFound = false;
+        TitlenotFound = false;
+        CommentsnotFound = false;
+        AnswersnotFound = false;
         const q = query(collection(db, "images"));
         const querySnapshot = await getDocs(q);
         images = [];
         querySnapshot.forEach((doc) => {
             if(doc.data().imagetitel.includes(searchStringTitel)) {
-                images = [...images, { ...doc.data(), id: doc.id }]
-            }
+                images = [...images, { ...doc.data(), id: doc.id }];
+            } 
         })
+        if (images.length == 0) {
+                    TitlenotFound = true;
+                }
     }
 
     const searchByComments = async () => {
         searchStringTitel = '';
         images = [];
         answers = [];
+        searchID = '';
         searchStringAnswers = '';
+        IDnotFound = false;
+        TitlenotFound = false;
+        CommentsnotFound = false;
+        AnswersnotFound = false;
         const q = query(collection(db, "comments"));
         const querySnapshot = await getDocs(q);
         comments = [];
@@ -43,6 +63,10 @@
                 afterstring = removeTags(afterstring);
                 comments = [...comments, { ...doc.data(), id: doc.id, comment: prestring + '<span style="background-color: yellow;">' + searchStringComments + '</span>' + afterstring }];
             }
+            else {
+                console.log("No such comment!");
+                CommentsnotFound = true;
+            }
         })
     }
 
@@ -51,6 +75,11 @@
         images = [];
         comments = [];
         searchStringComments = '';
+        searchID = '';
+        IDnotFound = false;
+        TitlenotFound = false;
+        CommentsnotFound = false;
+        AnswersnotFound = false;
         const q = query(collection(db, "answers"));
         const querySnapshot = await getDocs(q);
         answers = [];
@@ -61,13 +90,40 @@
                 
                 let afterstring = doc.data().answer.substring(point + searchStringAnswers.length);
                 prestring = removeTags(prestring);
-                console.log(prestring);
                 afterstring = removeTags(afterstring);
                 answers = [...answers, { ...doc.data(), id: doc.id, answer: prestring + '<span style="background-color: yellow;">' + searchStringAnswers + '</span>' + afterstring}]
+            }
+            else {
+                console.log("No such answer!");
+                AnswersnotFound = true;
             }
         })
     }
 
+    const searchByImageID = async () => {
+        searchStringTitel = '';
+        searchStringComments = '';
+        searchStringAnswers = '';
+        comments = [];
+        answers = [];
+        images = [];
+        IDnotFound = false;
+        TitlenotFound = false;
+        CommentsnotFound = false;
+        AnswersnotFound = false;
+        const q = query(collection(db, "images"), where("imagename", "==", searchID));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            const docRef = querySnapshot.docs[0].ref;
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+            images = [{ ...docSnap.data(), id: docSnap.id }]
+            }
+        } else {
+            console.log("No such ID!");
+            IDnotFound = true;
+        }
+    }
     function removeTags(str) {
     if ((str === null))
         return false;
@@ -81,17 +137,41 @@
 }
   
 </script>
-<div class="searchinput">
-    <input type="text" bind:value={searchStringTitel} placeholder="im Bildtitel ist enthalten ..." />
-    <button on:click={searchByTitel}>Suche starten</button>
+<div class="inColoumn">
+    <div class="searchinput">
+        <input type="text" bind:value={searchStringTitel} placeholder="im Bildtitel ist enthalten ..." />
+        <button on:click={searchByTitel}>Suche starten</button>
+    </div>
+    {#if TitlenotFound}
+    <p style="color: red;">Bild mit dem Titel {searchStringTitel} nicht gefunden</p>
+    {/if}
 </div>
-<div class="searchinput">
-    <input type="text" bind:value={searchStringComments} placeholder="in Kommentaren ist enthalten ..." />
-    <button on:click={searchByComments}>Suche starten</button>
+<div class="inColoumn">
+    <div class="searchinput">
+        <input type="text" bind:value={searchStringComments} placeholder="in Kommentaren ist enthalten ..." />
+        <button on:click={searchByComments}>Suche starten</button>
+    </div>
+    {#if CommentsnotFound}
+    <p style="color: red;">Kommentare mit {searchStringComments} nicht gefunden</p>
+    {/if}
 </div>
-<div class="searchinput">
-    <input type="text" bind:value={searchStringAnswers} placeholder="in Anworten auf Kommentare ist enthalten ..." />
-    <button on:click={searchByAnswers}>Suche starten</button>
+<div class="inColoumn">
+    <div class="searchinput">
+        <input type="text" bind:value={searchStringAnswers} placeholder="in Anworten auf Kommentare ist enthalten ..." />
+        <button on:click={searchByAnswers}>Suche starten</button>
+    </div>
+    {#if AnswersnotFound}
+    <p style="color: red;">Antworten mit {searchStringAnswers} nicht gefunden</p>
+    {/if}
+</div>
+<div class="inColoumn">
+    <div class="searchinput">
+        <input type="text" bind:value={searchID} placeholder="Bild nach ID suchen" />
+        <button on:click={searchByImageID}>Suche starten</button>
+    </div>
+    {#if IDnotFound}
+        <p style="color: red;">Bild mit ID {searchID} nicht gefunden</p>
+    {/if}
 </div>
 <center>
 <div class="imagedivision">
@@ -127,6 +207,14 @@
 </div>
 </center>
 <style>
+
+    .inColoumn {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+    }
     .searchinput {
         display: flex;
         justify-content: center;

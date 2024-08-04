@@ -358,7 +358,10 @@
                 <small>Bild-ID: {img.imagename}</small>
             {/if}
         </div>
-        <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
+        <div class="imagecontainer">
+            <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
+            <button class="a-btn-green">Wie sieht es heute dort aus?</button>
+        </div>
         <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
 
         {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
@@ -743,6 +746,23 @@
         font-size: .9rem;
         margin-top: .5rem;
         }
+
+    .imagecontainer {
+        position: relative;
+        width: 100%;
+        max-width: 1600px;
+    }
+
+    .imagecontainer button {
+        position: absolute;
+        top: 5%;
+        left: 90%;
+        transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        cursor: pointer;
+        border-radius: 5px;
+        text-align: center;
+    }
 
 
 </style>
