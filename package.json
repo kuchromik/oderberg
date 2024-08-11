@@ -27,6 +27,7 @@
 	"type": "module",
 	"dependencies": {
 		"firebase": "^10.5.0",
+		"svelte-simple-modal": "^1.6.2",
 		"uuid": "^9.0.1"
 	}
 }

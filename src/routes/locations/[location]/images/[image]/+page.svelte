@@ -5,6 +5,11 @@
     import { authStore } from "../../../../../store/store";
     import { getStorage, ref, deleteObject } from "firebase/storage";
 	import { goto } from "$app/navigation";
+    import Modal from '../../../../../lib/Modal.svelte';
+
+	let showModal = false;
+
+
 
     /** @type {import('./$types').PageData} */
 	export let data;
@@ -357,13 +362,20 @@
                 {/if}
                 <small>Bild-ID: {img.imagename}</small>
             {/if}
+            <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
         </div>
         <div class="imagecontainer">
             <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
-            <button class="a-btn-green">Wie sieht es heute dort aus?</button>
         </div>
-        <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
-
+    
+        <button class="a-btn-grey" on:click={() => (showModal = true)}>Wie sieht es heute aus?</button>
+        
+        <Modal bind:showModal>
+            <div class="todayModal">
+            <img src={img.url} alt="heute">
+            </div>
+        </Modal>
+        
         {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
             <div class="actions">
                 {#if !deleteImgRealy}
@@ -750,19 +762,17 @@
     .imagecontainer {
         position: relative;
         width: 100%;
-        max-width: 1600px;
+        max-width: 1200px;
     }
 
-    .imagecontainer button {
-        position: absolute;
-        top: 5%;
-        left: 90%;
-        transform: translate(-50%, -50%);
-        -ms-transform: translate(-50%, -50%);
-        cursor: pointer;
-        border-radius: 5px;
-        text-align: center;
-    }
-
-
+    .todayModal {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        max-width: 100%;
+        height: auto;
+        }
 </style>
