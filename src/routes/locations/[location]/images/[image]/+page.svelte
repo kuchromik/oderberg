@@ -5,9 +5,8 @@
     import { authStore } from "../../../../../store/store";
     import { getStorage, ref, deleteObject } from "firebase/storage";
 	import { goto } from "$app/navigation";
-    import Modal from '../../../../../lib/Modal.svelte';
-
-	let showModal = false;
+    
+    import { fade } from 'svelte/transition';
 
 
 
@@ -337,7 +336,8 @@
         })
         
     }
-    
+
+    let today = false;
     
 </script>
 <center>
@@ -364,18 +364,27 @@
             {/if}
             <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
         </div>
-        <div class="imagecontainer">
-            <img src={img.url} alt="Bild" style="width: 100%; height: auto;">
-        </div>
-    
-        <button class="a-btn-grey" on:click={() => (showModal = true)}>Wie sieht es heute aus?</button>
-        
-        <Modal bind:showModal>
-            <div class="todayModal">
-            <img src={img.url} alt="heute">
+        <div class:today={today}>
+            <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
+                <img src={img.url} alt="Bild" style="width: 100%; height: auto; padding: 1rem">
             </div>
-        </Modal>
+
+            {#if today}
+                <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
+                    <img src={img.url} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
+                </div>
+            {/if}
+         
+        </div>
+
+
+        {#if !today}
+            <button class="a-btn-grey" on:click={() => today = true}>Wie sieht es heute aus?</button>
+        {:else}
+            <button class="a-btn-grey" on:click={() => today = false}>Bildvergleich beenden</button>
+        {/if}
         
+
         {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
             <div class="actions">
                 {#if !deleteImgRealy}
@@ -760,12 +769,11 @@
         }
 
     .imagecontainer {
-        position: relative;
-        width: 100%;
-        max-width: 1200px;
+       
+        max-width: 800px;
     }
 
-    .todayModal {
+    .today {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -775,4 +783,9 @@
         max-width: 100%;
         height: auto;
         }
+
+    @media (min-width: 800px) {
+	    .today { flex-direction: row; }
+}
+    
 </style>
