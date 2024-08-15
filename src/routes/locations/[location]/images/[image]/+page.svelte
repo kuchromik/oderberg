@@ -5,6 +5,8 @@
     import { authStore } from "../../../../../store/store";
     import { getStorage, ref, deleteObject } from "firebase/storage";
 	import { goto } from "$app/navigation";
+
+    import UploadToday from "$lib/UploadToday.svelte";
     
     import { fade } from 'svelte/transition';
 
@@ -38,6 +40,12 @@
     let answersList = [];
     let answersListReady = false; // wait for answersList to be ready
 
+     let today = false;
+     let todaysImage = false;
+     let todaysURL = "";
+     let uploadTodaysImage = false;
+     let oldImg;
+
     async function getImage() {
         const imgRef = doc(db, "images", data.post.image);
         const querySnapshot_img = await getDoc(imgRef);
@@ -45,7 +53,12 @@
         if (querySnapshot_img.exists()) {
             img = querySnapshot_img.data();
             imgID = querySnapshot_img.id;
+            todaysImage = querySnapshot_img.data().today;
+            if (todaysImage) {
+                todaysURL = querySnapshot_img.data().urlToday;
+            }
             imageReady = true;
+            oldImg = img;
         } else {
             console.log("No such document!");
         }
@@ -336,8 +349,6 @@
         })
         
     }
-
-    let today = false;
     
 </script>
 <center>
@@ -369,9 +380,21 @@
                 <img src={img.url} alt="Bild" style="width: 100%; height: auto; padding: 1rem">
             </div>
 
-            {#if today}
+            {#if (today && todaysImage)}
                 <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
-                    <img src={img.url} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
+                    <img src={img.urltoday} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
+                </div>
+            {:else if (today && !todaysImage && pseudo)}
+                <div>
+                    {#if !uploadTodaysImage}
+                    <center>
+                    <p>Von diesem Ort gibt es noch kein Bild aus heutiger Zeit.</p>
+                    <button class="a-btn-green" on:click={() => uploadTodaysImage = true}>Jetzt ein aktuelles Bild einstellen?</button>
+                    </center>
+                    {/if}
+                    {#if uploadTodaysImage}
+                        <UploadToday {imgID} />
+                    {/if}
                 </div>
             {/if}
          
@@ -379,7 +402,7 @@
 
 
         {#if !today}
-            <button class="a-btn-grey" on:click={() => today = true}>Wie sieht es heute aus?</button>
+            <button class={todaysImage ? 'a-btn-green' : 'a-btn-red'} on:click={() => today = true}>Wie sieht es heute aus?</button>
         {:else}
             <button class="a-btn-grey" on:click={() => today = false}>Bildvergleich beenden</button>
         {/if}
