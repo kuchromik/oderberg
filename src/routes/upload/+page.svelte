@@ -215,7 +215,7 @@
         <img class="avatar" src="https://fakeimg.pl/240x150/cccccc/909090?text=Vorschau" alt="" /> 
         {/if}
         {#if !imageChoosen}
-        <img class="chooseImage pulsierend" src="select.png" alt="" on:click={()=>{fileinput.click();}} />
+        <img class="chooseImage pulsierend" src="/select.png" alt="" on:click={()=>{fileinput.click();}} />
         <h3>Bildauswahl</h3>
         <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
         {:else if (imageChoosen && !imageTitel && !locationSelected)}
@@ -250,7 +250,7 @@
             <button on:click={onUploadBreak}>Vorgang abbrechen</button>
         </form>
             {:else}
-            <img class="chooseImage pulsierend" src="upload.png" alt="" on:click={onUploadOrder} />
+            <img class="chooseImage pulsierend" src="/upload.png" alt="" on:click={onUploadOrder} />
             <div>Bild zu <b>{orts_location || new_loc}</b> hochladen?</div>
             <button on:click={onUploadBreak}>Vorgang abbrechen</button>
         {/if}

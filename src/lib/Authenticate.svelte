@@ -8,6 +8,7 @@
     let error = false;
     let register = false;
     let authenticating = false;
+    let sesam = false
 
     async function handleAuthenticate() {
         if (authenticating) {
@@ -44,6 +45,7 @@
 </script>
 
 <div class="authContainer">
+    {#if sesam}
     <form>
         <h3>{register ? "Registrieren" : "Login"}</h3>
         {#if error}
@@ -96,6 +98,9 @@
             </div>
         {/if}
     </div>
+{:else}
+    <button class="a-btn-grey" on:click={() => sesam = true}>Ich bin dabei</button>
+{/if}
 </div>
 
 <style>
@@ -105,7 +110,6 @@
         align-items: center;
         justify-content: center;
         flex: 1;
-        padding: 1rem;
     }
 
     form {

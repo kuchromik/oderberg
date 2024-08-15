@@ -371,8 +371,8 @@
                     <button class="a-btn-grey" on:click={onBreak}>Vorgang abbrechen</button>
                     </form>
                 {/if}
-                <small>Bild-ID: {img.imagename}</small>
             {/if}
+            <small>Bild-ID: {img.imagename}</small>
             <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
         </div>
         <div class:today={today}>
