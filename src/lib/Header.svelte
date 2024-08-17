@@ -72,6 +72,11 @@
         
         color: grey;
         padding: 0rem;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
     }
 
     .logstatus button {
