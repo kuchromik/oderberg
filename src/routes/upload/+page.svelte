@@ -310,6 +310,7 @@
             display:flex;
             height:150px;
             width:240px;
+            border: 1px solid black;
         }
         
         button { display: inline; }

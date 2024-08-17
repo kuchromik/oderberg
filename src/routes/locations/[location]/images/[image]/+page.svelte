@@ -5,8 +5,6 @@
     import { authStore } from "../../../../../store/store";
     import { getStorage, ref, deleteObject } from "firebase/storage";
 	import { goto } from "$app/navigation";
-
-    import UploadToday from "$lib/UploadToday.svelte";
     
     import { fade } from 'svelte/transition';
 
@@ -44,7 +42,7 @@
      let todaysImage = false;
      let todaysURL = "";
      let uploadTodaysImage = false;
-     let oldImg;
+     let uploadertoday = "";
 
     async function getImage() {
         const imgRef = doc(db, "images", data.post.image);
@@ -56,9 +54,20 @@
             todaysImage = querySnapshot_img.data().today;
             if (todaysImage) {
                 todaysURL = querySnapshot_img.data().urlToday;
+                uploadertoday = querySnapshot_img.data().uploadertoday;   
             }
             imageReady = true;
-            oldImg = img;
+
+            authStore.update((curr) => {
+                return {
+                    ...curr,
+                    data: {
+                        ...curr.data,
+                        lastViewedImage: querySnapshot_img.id,
+                    },
+                };
+            });
+
         } else {
             console.log("No such document!");
         }
@@ -282,6 +291,49 @@
         
         }
     
+    let deleteTodaysImgRealy = false;
+    let afterTodaysDelete = false;
+
+    function deleteTodaysImage() {
+
+        // delete image from storage and update oldimage from Firestore 
+
+        let imageName = `today/${img.nametoday}`;
+        const desertRef = ref(storage, imageName);
+        const docRef = doc(db, "images", imgID);
+
+        deleteObject(desertRef)
+            .then(() => {
+                }).catch((error) => {
+                console.log("Error deleting image in Storage: ", error);
+                })
+                .then(() => {
+                updateDoc(docRef, {
+                            today: false,
+                            urltoday: "",
+                            nametoday: "",
+                            uploadertoday: ""
+                        })
+                }).catch((error) => {
+                console.log("Error updating image in Firestore: ", error);
+                })
+                .then(() => {
+                    deleteTodaysImgRealy = false;
+                    afterTodaysDelete = true;
+                   
+                }).catch((error) => {
+                console.log("Error deleting image anyway: ", error);
+                })
+                .then(() => {
+                    makeLogEntry(img.imagename, "Deleted TodaysImage");
+                    getImage();
+                })
+
+
+
+
+        }
+    
     let orts_location = "";
     let new_loc = "";
     let locationSelected = false;
@@ -375,58 +427,71 @@
             <small>Bild-ID: {img.imagename}</small>
             <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
         </div>
-        <div class:today={today}>
+        <div class:today={today && todaysImage}>
             <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
                 <img src={img.url} alt="Bild" style="width: 100%; height: auto; padding: 1rem">
             </div>
 
+
             {#if (today && todaysImage)}
-                <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
-                    <img src={img.urltoday} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
+                <div class="manageTodaysImage">
+                    <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
+                        <img src={img.urltoday} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
+                    </div>
+                    <small>Das heutige Ansicht wurde eingestellt von {uploadertoday}.</small>
+                    {#if (pseudo === uploadertoday || pseudo === adminData.pseudo)}
+                        {#if !deleteTodaysImgRealy}
+                        <button class="a-btn-red" on:click|preventDefault={() => deleteTodaysImgRealy = true}>Heutige Ansicht löschen</button>
+                        {/if}
+                        {#if deleteTodaysImgRealy}
+                            <button class="a-btn-red" on:click|preventDefault={() => deleteTodaysImage()}>Heutige Ansicht wirklich löschen?</button>
+                            <button class="a-btn-grey" on:click|preventDefault={() => deleteTodaysImgRealy = false}>Abbruch</button>
+                        {/if}
+                    {/if}
                 </div>
             {:else if (today && !todaysImage && pseudo)}
-                <div>
-                    {#if !uploadTodaysImage}
-                    <center>
-                    <p>Von diesem Ort gibt es noch kein Bild aus heutiger Zeit.</p>
-                    <button class="a-btn-green" on:click={() => uploadTodaysImage = true}>Jetzt ein aktuelles Bild einstellen?</button>
-                    </center>
-                    {/if}
-                    {#if uploadTodaysImage}
-                        <UploadToday {imgID} />
-                    {/if}
-                </div>
+                
+                        <p>Von diesem Ort gibt es noch kein Bild aus heutiger Zeit.</p>
+                        <br>
+                        <a class="a-btn-blue" href="/uploadtoday">Jetzt ein aktuelles Bild einstellen?</a>
+                    
+                
             {/if}
-         
-        </div>
+         </div>
 
 
         {#if !today}
             <button class={todaysImage ? 'a-btn-green' : 'a-btn-red'} on:click={() => today = true}>Wie sieht es heute aus?</button>
+        {:else if !pseudo && !todaysImage}
+            <center>
+                <p>Bitte registriere Dich oder melde Dich an, um eine heutige Ansicht einstellen zu können.</p>
+                
+            </center>
         {:else}
             <button class="a-btn-grey" on:click={() => today = false}>Bildvergleich beenden</button>
         {/if}
         
-
-        {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
-            <div class="actions">
-                {#if !deleteImgRealy}
-                    <i
-                        on:click={() => deleteImgRealy = true}
-                        on:keydown={() => {}}
-                        class="fa-regular fa-trash-can"
-                    />
-                {/if}
-                {#if deleteImgRealy}
-                    <button class="a-btn-red" on:click|preventDefault={() => {
-                        deleteImage();
-                        }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
-                    <button class="a-btn-grey" on:click|preventDefault={() => {
-                        deleteImgRealy = false;
-                        }}>Abbruch</button>
-                {/if}
-            <br>  
-            </div>
+        {#if !today}
+            {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
+                <div class="actions">
+                    {#if !deleteImgRealy}
+                        <i
+                            on:click={() => deleteImgRealy = true}
+                            on:keydown={() => {}}
+                            class="fa-regular fa-trash-can"
+                        />
+                    {/if}
+                    {#if deleteImgRealy}
+                        <button class="a-btn-red" on:click|preventDefault={() => {
+                            deleteImage();
+                            }}>Dieses Bild wirklich löschen? Alle Kommentare gehen dabei verloren</button>
+                        <button class="a-btn-grey" on:click|preventDefault={() => {
+                            deleteImgRealy = false;
+                            }}>Abbruch</button>
+                    {/if}
+                <br>  
+                </div>
+            {/if}
         {/if}
         <br>   
         <!-- nicht zugeordnetes Bild einer Location zuordnen -->
@@ -632,12 +697,7 @@
     {/if}
 </center>
 <style>
-    a {
-        color: black;
-        text-decoration: none;
-        
-        }
-
+  
     .changeImagetitel {
 
         display: flex;
@@ -809,6 +869,17 @@
 
     @media (min-width: 800px) {
 	    .today { flex-direction: row; }
-}
+        }
+
+    .manageTodaysImage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 0;
+        max-width: 100%;
+        height: auto;
+        }
     
 </style>
