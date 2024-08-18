@@ -1,20 +1,52 @@
 <script>
     import { page } from '$app/stores';
-    
     import { authStore, authHandlers } from "../store/store";
+    import { db } from "../firebase";
+    import { doc, setDoc } from "@firebase/firestore";
+
+
     let pseudo = "";
+    let todoList = [];
+    let lastViewedImage = "";
+
     authStore.subscribe((curr) => {
         // @ts-ignore
         pseudo = curr.data.pseudo;
+        todoList = curr.data.todos;
+        lastViewedImage = curr.data.lastViewedImage;
     });
+
     let localName = import.meta.env.VITE_LOCAL_NAME;
+
     
+    async function saveTodosAndLogout() {
+        try {
+            // @ts-ignore
+            const userRef = doc(db, "users", $authStore.user.uid);
+            await setDoc(
+                userRef,
+                {
+                    // @ts-ignore
+                    todos: todoList,
+                    lastViewedImage: lastViewedImage
+                },
+                { merge: true }
+            );
+           
+        } catch (err) {
+            console.log(err);
+        }
+        authHandlers.logout()
+    }
+    
+    
+
 </script>
 <div class="headerbox">
     <div class="logstatus">
         {#if pseudo}
         <p style="font-size: 0.8rem;">logged as {pseudo}</p>
-        <button on:click|preventDefault={authHandlers.logout}>
+        <button on:click|preventDefault={saveTodosAndLogout}>
         <i class="fa-solid fa-right-from-bracket" />
         <p>Logout</p></button>
         {/if}

@@ -73,7 +73,7 @@
                 } else {
                     const userData = docSnap.data();
                     dataToSetToStore = userData;
-            }
+                }
             
             authStore.update((curr) => {
                 return {
