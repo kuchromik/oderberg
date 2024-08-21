@@ -39,7 +39,9 @@
         
         }
     
-    getImage();
+    $: if (lastViewedImage) {
+        getImage();
+    }
     
 </script>
 
@@ -48,7 +50,7 @@
         <h3>Hallo {pseudo}</h3>
         {/if}
 </div>
-{#if lastViewedImage}
+{#if ortsLoc != ""}
     <center>
         <p>Dein zuletzt angesehenes Bild in {ortsLoc}</p>
         <a href="/locations/{ortsLoc}/images/{lastViewedImage}">
