@@ -8,9 +8,6 @@
     import { authStore } from "../store/store";
     import { goto } from '$app/navigation';
 
-    const nonAuthRoutes = ["/impressum"];
-
-
     onMount(() => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             
@@ -22,37 +19,26 @@
                         pseudo: "",
                         todos: [],
                     };
-                if (nonAuthRoutes.includes(currentPath)) {
-                    
-                    authStore.update((curr) => {
-                        return {
-                            ...curr,
-                            user,
-                            data: storeDataClear,
-                            loading: false,
+                
+                authStore.update((curr) => {
+                    return {
+                        ...curr,
+                        user,
+                        data: storeDataClear,
+                        loading: false,
                         };
                     });
-                    goto(currentPath);
-                    return;
-                } else {
-                    authStore.update((curr) => {
-                        return {
-                            ...curr,
-                            user,
-                            data: storeDataClear,
-                            loading: false,
-                        };
-                    });
-                    goto("/");
-                    return;
-                }
-            } 
+                goto(currentPath);
+                return;
+            } // close if (!user)
 
-            if (user && currentPath === "/") {
+            if (user ) { //&& currentPath === "/"
                 let dataToSetToStore;
                 const docRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(docRef);
+                
                 if (!docSnap.exists()) {
+                    console.log("IF");
                     const userRef = doc(db, "users", user.uid);
                     dataToSetToStore = {
                         email: user.email,
@@ -70,26 +56,35 @@
                     });
                     goto("/pseudonym");
                     return;
-                } else {
+                } // close if (!docSnap.exists())
+                // begin else if user exists in firestore
+                else {
+                    console.log("ELSE");
                     const userData = docSnap.data();
                     dataToSetToStore = userData;
-                }
-            
-            authStore.update((curr) => {
-                return {
-                    ...curr,
-                    user,
-                    data: dataToSetToStore,
-                    loading: false,
-                };
-            });
+                    console.log("dataToSetToStore", dataToSetToStore);
+
+                    authStore.update((curr) => {
+                        return {
+                        ...curr,
+                            user,
+                            data: dataToSetToStore,
+                            loading: false,
+                        };
+                    });
                 goto("/dashboard");
                 return;
-            }
+                }
+            
+              
+            } // close if (user && currentPath === "/")
 
-        })
+        }) // close onAuthStateChanged
         return unsubscribe;
-    })
+    }) // close onMount
+
+
+   
 </script>
 <div class="mainContainer">
 <Header />

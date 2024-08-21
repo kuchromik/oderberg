@@ -41,6 +41,16 @@
     
     getImage();
     
+console.log("In dashboard pseudo: ", pseudo);
+
+const storedUserData = localStorage.getItem('user')
+
+if (storedUserData) {
+  const userData = JSON.parse(storedUserData)
+  console.log('User data in local storage: ', userData)
+} else {
+  console.log('User data not found in local storage')
+}
 
 </script>
 
@@ -57,11 +67,12 @@
         </a>
     </center>
 {/if}
+
+<ChooseLocation />
+<br>
+<Textsearch />
+<br>
 {#if pseudo}
-    <ChooseLocation />
-    <br>
-    <Textsearch />
-    <br>
     <Merkliste />
 {/if}
 <style>
