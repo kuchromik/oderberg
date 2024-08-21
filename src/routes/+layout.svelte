@@ -13,6 +13,8 @@
             
             const currentPath = window.location.pathname;
 
+            console.log("currentPath", currentPath);
+
             if (!user) {
                 let storeDataClear = {
                         email: "",
@@ -72,7 +74,8 @@
                             loading: false,
                         };
                     });
-                goto("/dashboard");
+                    
+                    goto("/dashboard");
                 return;
                 }
             
