@@ -13,8 +13,6 @@
             
             const currentPath = window.location.pathname;
 
-            console.log("currentPath", currentPath);
-
             if (!user) {
                 let storeDataClear = {
                         email: "",
@@ -34,13 +32,12 @@
                 return;
             } // close if (!user)
 
-            if (user ) { //&& currentPath === "/"
+            if (user ) { 
                 let dataToSetToStore;
                 const docRef = doc(db, "users", user.uid);
                 const docSnap = await getDoc(docRef);
                 
                 if (!docSnap.exists()) {
-                    console.log("IF");
                     const userRef = doc(db, "users", user.uid);
                     dataToSetToStore = {
                         email: user.email,
@@ -61,10 +58,8 @@
                 } // close if (!docSnap.exists())
                 // begin else if user exists in firestore
                 else {
-                    console.log("ELSE");
                     const userData = docSnap.data();
                     dataToSetToStore = userData;
-                    console.log("dataToSetToStore", dataToSetToStore);
 
                     authStore.update((curr) => {
                         return {
