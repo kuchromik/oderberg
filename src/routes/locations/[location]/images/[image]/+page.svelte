@@ -1,23 +1,51 @@
 <script>
 	import { app } from "../../../../../firebase";
     import { db } from "../../../../../firebase";
-    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs, query, where, getDoc } from "@firebase/firestore";
+    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs, query, where, getDoc, setDoc } from "@firebase/firestore";
     import { authStore } from "../../../../../store/store";
     import { getStorage, ref, deleteObject } from "firebase/storage";
 	import { goto } from "$app/navigation";
+    import { onDestroy } from "svelte";
     
     import { fade } from 'svelte/transition';
 
+    async function saveLastViewedIage() {
+        try {
+            // @ts-ignore
+            const userRef = doc(db, "users", $authStore.user.uid);
+            await setDoc(
+                userRef,
+                {
+                    // @ts-ignore
+                    lastViewedImage: lastViewedImage
+                },
+                { merge: true }
+            );
+           
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
+    
+    onDestroy( () => {
+        console.log("Date Component removed");
+        if (pseudo) {
+        saveLastViewedIage()
+        }
+    });
 
     /** @type {import('./$types').PageData} */
 	export let data;
 	
      // get userinfo
      let pseudo = "";
+     let lastViewedImage = "";
+
     authStore.subscribe((curr) => {
         // @ts-ignore
         pseudo = curr.data.pseudo;
+        lastViewedImage = curr.data.lastViewedImage;
     });
 
     const adminData = {
