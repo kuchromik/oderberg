@@ -110,7 +110,7 @@
             <div class="">
                 <div class="image">
                     <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
-                    <div class="greenForToday" transition:fly={{ delay: 250, duration: 300, x: 100, y: 500, opacity: 0.5, easing: quintOut }}>
+                    <div class="greenForToday" transition:fly={{ delay: (i*250), duration: 300, x: 100, y: 500, opacity: 0.5, easing: quintOut }}>
                     {#if img.today}
                         <p>Heutige Ansicht verfügbar</p>
                     {/if}
