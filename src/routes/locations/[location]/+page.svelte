@@ -2,8 +2,13 @@
     import { app } from "../../../firebase";
     import { getStorage, ref, deleteObject } from "firebase/storage";
     import { db } from "../../../firebase";
-    import { doc, addDoc, deleteDoc, collection, onSnapshot, updateDoc, getDocs, where, query } from "@firebase/firestore";
+    import { doc, deleteDoc, collection, onSnapshot, getDocs, where, query } from "@firebase/firestore";
     import { authStore } from "../../../store/store";
+
+    
+	import { fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -103,8 +108,16 @@
         <div class="imagedivision">
         {#each imgList as img, i (i)}
             <div class="">
-                <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
+                <div class="image">
+                    <a href="/locations/{img.location}/images/{img.id}"><img src = "{img.url}" alt="Image from Firebase"></a>
+                    <div class="greenForToday" transition:fly={{ delay: 250, duration: 300, x: 100, y: 500, opacity: 0.5, easing: quintOut }}>
+                    {#if img.today}
+                        <p>Heutige Ansicht verfügbar</p>
+                    {/if}
+                    </div>
+                </div>
                 <h3>{img.imagetitel}</h3>
+                
                 {#if comListReady}
                     {#if countComments(i) === 1}
                         <p><b>1</b> Kommentar</p>
@@ -132,7 +145,27 @@
     </div>
 </div>
 <style>
-    .fixed {
+.image {
+    display: flex;
+    position: relative;}
+
+.greenForToday {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: white;
+    margin: 3px;
+    padding: 3px;
+    border-radius: 3px;
+}
+
+.greenForToday p {
+    color: green;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.fixed {
   position: fixed;
   top: 92%;
   left: 50%;

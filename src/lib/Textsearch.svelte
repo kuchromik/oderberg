@@ -63,11 +63,10 @@
                 afterstring = removeTags(afterstring);
                 comments = [...comments, { ...doc.data(), id: doc.id, comment: prestring + '<span style="background-color: yellow;">' + searchStringComments + '</span>' + afterstring }];
             }
-            else {
-                console.log("No such comment!");
-                CommentsnotFound = true;
-            }
         })
+        if (comments.length == 0) {
+                    CommentsnotFound = true;
+                }
     }
 
     const searchByAnswers = async () => {
@@ -93,11 +92,10 @@
                 afterstring = removeTags(afterstring);
                 answers = [...answers, { ...doc.data(), id: doc.id, answer: prestring + '<span style="background-color: yellow;">' + searchStringAnswers + '</span>' + afterstring}]
             }
-            else {
-                console.log("No such answer!");
-                AnswersnotFound = true;
-            }
         })
+        if (answers.length == 0) {
+                    AnswersnotFound = true;
+                }
     }
 
     const searchByImageID = async () => {
@@ -191,7 +189,7 @@
         <div class="comment">
            <small>Kommentar von {comment.author} vom {comment.date.toDate().toLocaleString()}</small>
             <p>{@html comment.comment}</p>
-            <a href="/locations/{comment.location}/images/{comment.imageID}">zum kommentierten Bild</a>
+            <a class="linkToImage" href="/locations/{comment.location}/images/{comment.imageID}">zum kommentierten Bild</a>
         </div>
     {/each}
 </div>
@@ -201,7 +199,7 @@
         <div class="comment">
            <small>Antwort von {answer.author} vom {answer.date.toDate().toLocaleString()}</small>
             <p>{@html answer.answer}</p>
-            <a href="/locations/{answer.location}/images/{answer.imageID}">zum kommentierten Bild</a>
+            <a class="linkToImage" href="/locations/{answer.location}/images/{answer.imageID}">zum kommentierten Bild</a>
         </div>
     {/each}
 </div>
@@ -259,10 +257,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
+       
     }
 
     .commentdivision p {
         margin-top: 1rem;
+        margin-bottom: 1rem;
     }
 
     .comment {
@@ -272,4 +272,19 @@
         margin-top: 1rem;
         width: 100%;
     }
+    
+    .linkToImage {
+		font-size: .8rem;	 
+		background: dimgrey;
+		color: white;
+		padding: 6px;
+		border: none;
+		border-radius: 4px;
+		font-weight: 500;
+		cursor: pointer;
+		text-decoration: none;
+		}
+	.linkToImage:hover {
+		background: black;
+		}
 </style>

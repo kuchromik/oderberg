@@ -42,7 +42,7 @@
             ortsLoc = querySnapshot_img.data().location;
 
         } else {
-            console.log("No old image!");
+            console.log("No last image found");
         }
         
         }
