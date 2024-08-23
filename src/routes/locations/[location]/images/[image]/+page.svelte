@@ -29,7 +29,6 @@
 
     
     onDestroy( () => {
-        console.log("Date Component removed");
         if (pseudo) {
         saveLastViewedIage()
         }

@@ -4,6 +4,11 @@
     // @ts-ignore
     import { doc, setDoc } from "@firebase/firestore";
     import TodoItem from "$lib/TodoItem.svelte";
+    import { onDestroy } from "svelte";
+
+    onDestroy( () => {
+        saveTodos()
+        });
     
 
     // @ts-ignore
@@ -83,12 +88,14 @@
         <div class="headerContainer">
             <h3>Deine Merkliste</h3>
             <small>Dinge, die Du Dir hier merken willst</small>
+            <!--
             <div class="headerBtns">
                 <button class="blob" class:hideSaveButton disabled='{hideSaveButton}' on:click={saveTodos}>
                     <i class="fa-regular fa-floppy-disk" />
                     <p>Liste speichern</p></button
                 >
             </div>
+            -->
         </div>
         <div class="list">
             {#if todoList.length === 0}
