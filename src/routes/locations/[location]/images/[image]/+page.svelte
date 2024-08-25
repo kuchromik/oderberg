@@ -9,6 +9,9 @@
     
     import { fade } from 'svelte/transition';
 
+    let fullNewImage = false;
+    let fullOldImage = false;
+
     async function saveLastViewedIage() {
         try {
             // @ts-ignore
@@ -455,15 +458,15 @@
             <small>eingestellt von {img.uploader} am {img.uploadDate.toDate().toLocaleString()}</small>
         </div>
         <div class:today={today && todaysImage}>
-            <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
-                <img src={img.url} alt="Bild" style="width: 100%; height: auto; padding: 1rem">
+            <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer" class:fullimage={fullOldImage}>
+                <img on:click|preventDefault={() => fullOldImage = !fullOldImage} src={img.url} alt="altes Bild" style="width: 100%; height: auto; padding: 1rem">
             </div>
 
 
             {#if (today && todaysImage)}
                 <div class="manageTodaysImage">
-                    <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
-                        <img src={img.urltoday} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
+                    <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer" class:fullimage={fullNewImage}>
+                        <img on:click|preventDefault={() => fullNewImage = !fullNewImage} src={img.urltoday} alt="heutiges Bild" style="width: 100%; height: auto; padding: 1rem">
                     </div>
                     
                     <small>Die heutige Ansicht wurde eingestellt von {uploadertoday}.</small>
@@ -911,6 +914,27 @@
         padding: 0;
         max-width: 100%;
         height: auto;
+        }
+
+    .fullimage {
+        display: flex;
+        position: fixed;
+        top: 0;
+        left: 0;
+        max-width: 100vw;
+        max-height: 100vh;
+        width: 100vw;
+        height: 100vh;
+      
+
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 10;
+        
+        align-items: center;
+        justify-content: center;
+
+        overflow-y: scroll;
+        
         }
     
 </style>
