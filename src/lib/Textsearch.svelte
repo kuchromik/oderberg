@@ -209,9 +209,9 @@
     .inColoumn {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
         align-items: center;
         justify-content: center;
+        margin-bottom: .5rem;
     }
     .searchinput {
         display: flex;

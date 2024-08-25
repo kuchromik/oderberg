@@ -465,7 +465,8 @@
                     <div in:fade={{ delay: 50, duration: 300 }} class="imagecontainer">
                         <img src={img.urltoday} alt="todays Image" style="width: 100%; height: auto; padding: 1rem">
                     </div>
-                    <small>Das heutige Ansicht wurde eingestellt von {uploadertoday}.</small>
+                    
+                    <small>Die heutige Ansicht wurde eingestellt von {uploadertoday}.</small>
                     {#if (pseudo === uploadertoday || pseudo === adminData.pseudo)}
                         {#if !deleteTodaysImgRealy}
                         <button class="a-btn-red" on:click|preventDefault={() => deleteTodaysImgRealy = true}>Heutige Ansicht löschen</button>
@@ -475,6 +476,7 @@
                             <button class="a-btn-grey" on:click|preventDefault={() => deleteTodaysImgRealy = false}>Abbruch</button>
                         {/if}
                     {/if}
+                    
                 </div>
             {:else if (today && !todaysImage && pseudo)}
                 
@@ -884,10 +886,8 @@
     }
 
     .today {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        display: grid;
+        
         margin: 0 auto;
         padding: 0;
         max-width: 100%;
@@ -895,8 +895,12 @@
         }
 
     @media (min-width: 800px) {
-	    .today { flex-direction: row; }
+	            .today {
+                grid-template-columns: 1fr 1fr;
+            }
         }
+
+        
 
     .manageTodaysImage {
         display: flex;
