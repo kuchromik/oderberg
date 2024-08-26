@@ -31,6 +31,7 @@
         todoList = [...todoList, currTodo];
         currTodo = "";
         hideSaveButton = false;
+        saveTodos()
     }
 
     // @ts-ignore
@@ -43,6 +44,7 @@
         currTodo = todoList[index];
         todoList = newTodoList;
         hideSaveButton = false;
+        saveTodos()
     }
 
     // @ts-ignore
@@ -53,6 +55,7 @@
         });
         todoList = newTodoList;
         hideSaveButton = false;
+        saveTodos()
     }
 
     async function saveTodos() {
