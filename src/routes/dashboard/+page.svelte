@@ -52,7 +52,7 @@
 </div>
 {#if ortsLoc != ""}
     <center>
-        <p>Dein zuletzt angesehenes Bild in {ortsLoc}</p>
+        <p class="small">Dein zuletzt angesehenes Bild in {ortsLoc}</p>
         <a href="/locations/{ortsLoc}/images/{lastViewedImage}">
             <img src={oldImageURL} alt="old image" style="width: 300px; height: auto;">
         </a>
@@ -67,4 +67,5 @@
     <Merkliste />
 {/if}
 <style>
+ 
 </style>

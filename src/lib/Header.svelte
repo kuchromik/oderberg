@@ -69,18 +69,18 @@
             <i><a href="https://de.wikipedia.org/wiki/Andr%C3%A9_Malraux" target="_blank">André Malraux</a></i>
         </blockquote>
         <br>
-        <p>Dies ist eine private Website, die sich mit der Geschichte von {localName} beschäftigt.</p>
-        <p>Sie ist nicht kommerziell und dient ausschließlich privaten Zwecken.</p>
-        <p>Die alten Ortsansichten können ohne Registrierung betrachtet werden.</p>
+        <p class="small">Dies ist eine private Website, die sich mit der Geschichte von {localName} beschäftigt.</p>
+        <p class="small">Sie ist nicht kommerziell und dient ausschließlich privaten Zwecken.</p>
+        <p class="small">Die alten Ortsansichten können ohne Registrierung betrachtet werden.</p>
         <br>
-        <p><b>Bitte hilf mit, das alte {localName} zu bewahren!</b></p>
-        <p>Registriere Dich oder logge Dich ein, um weitere Bilder einzustellen oder Kommentare zu schreiben.</p>
+        <p class="small"><b>Bitte hilf mit, das alte {localName} zu bewahren!</b></p>
+        <p class="small">Registriere Dich oder logge Dich ein, um weitere Bilder einzustellen oder Kommentare zu schreiben.</p>
         {/if}
     </center>
 </div>
 <style>
     center {
-        padding: 1rem;
+        padding: .5rem;
     }
     #wappentext {
         font-family: 'Berkshire Swash', cursive;

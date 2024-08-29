@@ -116,15 +116,15 @@
                     {/if}
                     </div>
                 </div>
-                <h3>{img.imagetitel}</h3>
+                <p>{img.imagetitel}</p>
                 
                 {#if comListReady}
                     {#if countComments(i) === 1}
-                        <p><b>1</b> Kommentar</p>
+                        <small><b>1</b> Kommentar</small>
                     {:else if countComments(i) === 0}
-                        <p>Keine Kommentare</p>
+                        <small>Keine Kommentare</small>
                     {:else}
-                        <p><b>{countComments(i)}</b> Kommentare</p>
+                        <small><b>{countComments(i)}</b> Kommentare</small>
                     {/if}
                 {/if}
             </div>

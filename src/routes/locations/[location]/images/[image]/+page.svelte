@@ -580,7 +580,7 @@
             {#if com.image === img.imagename}
                 <small>erstellt von {com.author} am {com.date.toDate().toLocaleString()}, zuletzt geändert am {com.lastmodified.toDate().toLocaleString()}: </small>
                 
-                    <p class="commentcolor" align="left">&#187;{com.comment}&#171;</p>
+                    <p class="commentcolor">&#187;{com.comment}&#171;</p>
                     {#if (pseudo === com.author || pseudo === adminData.pseudo)}
                     <div class="actions">
                         {#if (!commentEditMode && !deleteCommentRealy)}
