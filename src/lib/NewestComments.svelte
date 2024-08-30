@@ -104,12 +104,8 @@
        
         gap: .3rem;
         max-height: 12rem;
-        overflow: auto;
+        overflow-y: auto;
         
-        justify-content: space-evenly;
-        justify-items: center;
-        align-content: space-evenly;
-        align-items: center;
     }
 
     .thumb {
