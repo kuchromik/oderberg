@@ -5,6 +5,8 @@
     import Textsearch from "$lib/Textsearch.svelte";
     import { db } from "../../firebase";
     import { doc, getDoc } from "@firebase/firestore";
+    import NewestImages from "$lib/NewestImages.svelte";
+    import NewestComments from "$lib/NewestComments.svelte";
 
     let todoList = [];
     let pseudo = "";
@@ -58,6 +60,11 @@
         </a>
     </center>
 {/if}
+<br>
+<NewestImages/>
+<br>
+<NewestComments/>
+<br>
 
 <ChooseLocation />
 <br>
@@ -67,5 +74,8 @@
     <Merkliste />
 {/if}
 <style>
+    br {
+        margin-top: 1rem;
+    }
  
 </style>
