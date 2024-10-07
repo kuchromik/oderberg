@@ -88,7 +88,7 @@
         {#if register}
             <div>
                 <p>Sie haben bereits Zugangsdaten?</p>
-                <p on:click={handleRegister} on:keydown={() => {}}>Login</p>
+                <p on:click={handleRegister} on:keydown={() => {}}>Anmelden</p>
             </div>
         {:else}
             <div>
@@ -98,7 +98,7 @@
         {/if}
     </div>
 {:else}
-    <button class="a-btn-grey" on:click={() => sesam = true}>Ich bin dabei</button>
+    <button class="a-btn-grey" on:click={() => sesam = true}>Anmeldung bzw. Registrieren</button>
 {/if}
 </div>
 

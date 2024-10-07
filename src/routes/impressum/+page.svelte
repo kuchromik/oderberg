@@ -31,6 +31,13 @@
     <center>
     <h1>Impressum</h1>
     <br>
+    <p>Dies ist eine private Website, die sich mit der Geschichte von {localName} beschäftigt.</p>
+    <p>Sie ist nicht kommerziell und dient ausschließlich privaten Zwecken.</p>
+    <p>Die alten Ortsansichten können ohne Registrierung betrachtet werden.</p>
+    <br>
+    <p><b>Bitte hilf mit, das alte {localName} zu bewahren!</b></p>
+    <p>Registriere Dich oder logge Dich ein, um weitere Bilder einzustellen oder Kommentare zu schreiben.</p>
+    <br>
     <small>Die folgenden Angaben entsprechen den Vorgaben von § 5 TMG:</small>
     <p>{adminData.name}</p>
 

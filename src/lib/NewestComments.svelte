@@ -25,7 +25,7 @@
 
         });
         lastComments = comList.slice(0, 10);
-        console.log(lastComments);
+    
         for (let i = 0; i < lastComments.length; i++) {
             lastComments[i].location = await asignLocation(lastComments[i].imageID);
             lastComments[i].url = await asignUrl(lastComments[i].imageID);

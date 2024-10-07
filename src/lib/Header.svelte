@@ -45,10 +45,10 @@
 <div class="headerbox">
     <div class="logstatus">
         {#if pseudo}
-        <p style="font-size: 0.8rem;">logged as {pseudo}</p>
+        <p style="font-size: 0.8rem;">angemeldet als {pseudo}</p>
         <button on:click|preventDefault={saveTodosAndLogout}>
         <i class="fa-solid fa-right-from-bracket" />
-        <p>Logout</p></button>
+        <p>Abmelden</p></button>
         {/if}
 
     </div>
@@ -68,13 +68,7 @@
             </b>
             <i><a href="https://de.wikipedia.org/wiki/Andr%C3%A9_Malraux" target="_blank">André Malraux</a></i>
         </blockquote>
-        <br>
-        <p class="small">Dies ist eine private Website, die sich mit der Geschichte von {localName} beschäftigt.</p>
-        <p class="small">Sie ist nicht kommerziell und dient ausschließlich privaten Zwecken.</p>
-        <p class="small">Die alten Ortsansichten können ohne Registrierung betrachtet werden.</p>
-        <br>
-        <p class="small"><b>Bitte hilf mit, das alte {localName} zu bewahren!</b></p>
-        <p class="small">Registriere Dich oder logge Dich ein, um weitere Bilder einzustellen oder Kommentare zu schreiben.</p>
+       
         {/if}
     </center>
 </div>

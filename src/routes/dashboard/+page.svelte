@@ -61,21 +61,39 @@
     </center>
 {/if}
 <br>
-<NewestImages/>
-<br>
-<NewestComments/>
-<br>
-
-<ChooseLocation />
-<br>
-<Textsearch />
-<br>
+<div class="grid-container">
+  <div class="left-column">
+    
+    <ChooseLocation/>
+    <br>
+    <Textsearch />
+  </div>
+  <div class="right-column">
+    <NewestImages/>
+    <br>
+    <NewestComments/>
+  </div>
+</div>
 {#if pseudo}
     <Merkliste />
 {/if}
 <style>
     br {
         margin-top: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .grid-container {
+      display: grid;
+      grid-template-columns: 5fr 1fr;
+      gap: 1rem;
+      }
+      .left-column {
+      grid-column: 1;
+      }
+      .right-column {
+      grid-column: 2;
+      }
     }
  
 </style>
