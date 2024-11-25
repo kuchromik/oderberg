@@ -31,7 +31,7 @@
         const querySnapshot = await getDocs(q);
         images = [];
         querySnapshot.forEach((doc) => {
-            if(doc.data().imagetitel.includes(searchStringTitel)) {
+            if(doc.data().imagetitel.toLowerCase().includes(searchStringTitel.toLowerCase())) {
                 images = [...images, { ...doc.data(), id: doc.id }];
             } 
         })

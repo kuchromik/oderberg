@@ -526,10 +526,10 @@
             {/if}
         {/if}
         <br>   
-        <!-- nicht zugeordnetes Bild einer Location zuordnen -->
-        {#if pseudo}
-            {#if img.location === "z.Z. nicht zugeordnet"}
-                <p>Dem Bild einen Ort zuordnen?</p>
+        <!-- Bild einer anderen Location zuordnen -->
+        {#if (pseudo === img.uploader || pseudo === adminData.pseudo)}
+            <div class="changeLocationBox">
+                <p>Dem Bild einen Ort anderen zuordnen?</p>
                 
                 <select bind:value={selected_Location} on:change ={() => setImageLoc(selected_Location)}>
                     {#each locList as location}
@@ -549,7 +549,7 @@
                     {/if}
                     <button class="a-btn-grey">Anlegen & zuordnen</button>
                 </form>
-            {/if}
+            </div>
         {/if}
         <br>
         {#if comListReady}
@@ -935,6 +935,20 @@
 
         overflow-y: scroll;
         
+        }
+
+    .changeLocationBox {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: .5rem auto;
+        padding: .5rem;
+        max-width: 50%;
+        height: auto;
+        background-color: #ddd;
+        border-radius: 4px;
+        border: 1px solid black;
         }
     
 </style>
